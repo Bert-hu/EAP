@@ -163,7 +163,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(label5);
             groupBox_1.Controls.Add(label1);
             groupBox_1.Font = new Font("宋体", 12F);
-            groupBox_1.Location = new Point(12, 35);
+            groupBox_1.Location = new Point(12, 40);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
@@ -235,20 +235,21 @@ namespace EAP.Client.Forms
             button_CompareRecipe.Size = new Size(108, 33);
             button_CompareRecipe.TabIndex = 5;
             button_CompareRecipe.Text = "比较参数";
+            button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             button_CompareRecipe.Click += button_CompareRecipe_Click;
             // 
             // richTextBox1
             // 
             richTextBox1.FillColor = Color.White;
             richTextBox1.Font = new Font("宋体", 10F);
-            richTextBox1.Location = new Point(14, 347);
+            richTextBox1.Location = new Point(14, 368);
             richTextBox1.Margin = new Padding(4, 5, 4, 5);
             richTextBox1.MinimumSize = new Size(1, 1);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.Padding = new Padding(2);
             richTextBox1.ReadOnly = true;
             richTextBox1.ShowText = false;
-            richTextBox1.Size = new Size(588, 279);
+            richTextBox1.Size = new Size(588, 258);
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
@@ -261,6 +262,7 @@ namespace EAP.Client.Forms
             uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
             uiButton_ScanToDownloadRecipe.TabIndex = 5;
             uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
+            uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // MainForm
