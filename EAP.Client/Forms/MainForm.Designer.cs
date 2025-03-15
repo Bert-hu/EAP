@@ -52,7 +52,7 @@ namespace EAP.Client.Forms
             // 
             // textBox_panelid
             // 
-            textBox_panelid.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox_panelid.Font = new Font("Microsoft YaHei UI", 15F);
             textBox_panelid.Location = new Point(202, 119);
             textBox_panelid.Margin = new Padding(4, 5, 4, 5);
             textBox_panelid.MinimumSize = new Size(1, 16);
@@ -67,7 +67,7 @@ namespace EAP.Client.Forms
             // label_1
             // 
             label_1.AutoSize = true;
-            label_1.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label_1.Font = new Font("Microsoft YaHei UI", 15F);
             label_1.ForeColor = Color.FromArgb(48, 48, 48);
             label_1.Location = new Point(15, 122);
             label_1.Name = "label_1";
@@ -78,7 +78,7 @@ namespace EAP.Client.Forms
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Microsoft YaHei UI", 15F);
             label1.ForeColor = Color.FromArgb(48, 48, 48);
             label1.Location = new Point(15, 170);
             label1.Name = "label1";
@@ -88,7 +88,7 @@ namespace EAP.Client.Forms
             // 
             // textBox_modelname
             // 
-            textBox_modelname.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox_modelname.Font = new Font("Microsoft YaHei UI", 15F);
             textBox_modelname.Location = new Point(202, 167);
             textBox_modelname.Margin = new Padding(4, 5, 4, 5);
             textBox_modelname.MinimumSize = new Size(1, 16);
@@ -102,7 +102,7 @@ namespace EAP.Client.Forms
             // 
             // textBox_machinerecipe
             // 
-            textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 15F);
             textBox_machinerecipe.Location = new Point(202, 69);
             textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
             textBox_machinerecipe.MinimumSize = new Size(1, 16);
@@ -117,7 +117,7 @@ namespace EAP.Client.Forms
             // label2
             // 
             label2.AutoSize = true;
-            label2.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label2.Font = new Font("Microsoft YaHei UI", 15F);
             label2.ForeColor = Color.FromArgb(48, 48, 48);
             label2.Location = new Point(15, 72);
             label2.Name = "label2";
@@ -128,7 +128,7 @@ namespace EAP.Client.Forms
             // label_updatetime_aoi
             // 
             label_updatetime_aoi.AutoSize = true;
-            label_updatetime_aoi.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            label_updatetime_aoi.Font = new Font("宋体", 12F);
             label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
             label_updatetime_aoi.Location = new Point(296, 40);
             label_updatetime_aoi.Name = "label_updatetime_aoi";
@@ -140,7 +140,7 @@ namespace EAP.Client.Forms
             // 
             label_conn_status.AutoSize = true;
             label_conn_status.BackColor = Color.Gray;
-            label_conn_status.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label_conn_status.Font = new Font("Microsoft YaHei UI", 15F);
             label_conn_status.ForeColor = Color.White;
             label_conn_status.Location = new Point(21, 32);
             label_conn_status.Name = "label_conn_status";
@@ -162,7 +162,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(label_1);
             groupBox_1.Controls.Add(label5);
             groupBox_1.Controls.Add(label1);
-            groupBox_1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            groupBox_1.Font = new Font("宋体", 12F);
             groupBox_1.Location = new Point(12, 35);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
@@ -178,7 +178,7 @@ namespace EAP.Client.Forms
             // 
             checkBox_checkrecipe.AutoSize = true;
             checkBox_checkrecipe.Checked = true;
-            checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 15F);
             checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
             checkBox_checkrecipe.Location = new Point(21, 265);
             checkBox_checkrecipe.MinimumSize = new Size(1, 1);
@@ -192,7 +192,7 @@ namespace EAP.Client.Forms
             // 
             label_ProcessState.AutoSize = true;
             label_ProcessState.BackColor = Color.Gray;
-            label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F);
             label_ProcessState.ForeColor = Color.White;
             label_ProcessState.Location = new Point(178, 32);
             label_ProcessState.Name = "label_ProcessState";
@@ -203,7 +203,7 @@ namespace EAP.Client.Forms
             // 
             // textBox_projectname
             // 
-            textBox_projectname.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            textBox_projectname.Font = new Font("Microsoft YaHei UI", 15F);
             textBox_projectname.Location = new Point(202, 219);
             textBox_projectname.Margin = new Padding(4, 5, 4, 5);
             textBox_projectname.MinimumSize = new Size(1, 16);
@@ -218,7 +218,7 @@ namespace EAP.Client.Forms
             // label5
             // 
             label5.AutoSize = true;
-            label5.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Font = new Font("Microsoft YaHei UI", 15F);
             label5.ForeColor = Color.FromArgb(48, 48, 48);
             label5.Location = new Point(15, 222);
             label5.Name = "label5";
@@ -228,20 +228,19 @@ namespace EAP.Client.Forms
             // 
             // button_CompareRecipe
             // 
-            button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
             button_CompareRecipe.Location = new Point(490, 101);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
             button_CompareRecipe.TabIndex = 5;
             button_CompareRecipe.Text = "比较参数";
-            button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             button_CompareRecipe.Click += button_CompareRecipe_Click;
             // 
             // richTextBox1
             // 
             richTextBox1.FillColor = Color.White;
-            richTextBox1.Font = new Font("宋体", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            richTextBox1.Font = new Font("宋体", 10F);
             richTextBox1.Location = new Point(14, 347);
             richTextBox1.Margin = new Padding(4, 5, 4, 5);
             richTextBox1.MinimumSize = new Size(1, 1);
@@ -255,14 +254,13 @@ namespace EAP.Client.Forms
             // 
             // uiButton_ScanToDownloadRecipe
             // 
-            uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
             uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
             uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
             uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
             uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
             uiButton_ScanToDownloadRecipe.TabIndex = 5;
             uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
-            uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point);
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // MainForm
@@ -275,7 +273,7 @@ namespace EAP.Client.Forms
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
-            Text = "HANMI Jigsaw EAP Client";
+            Text = "EAP Client";
             ZoomScaleRect = new Rectangle(15, 15, 614, 638);
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
