@@ -163,7 +163,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(label5);
             groupBox_1.Controls.Add(label1);
             groupBox_1.Font = new Font("宋体", 12F);
-            groupBox_1.Location = new Point(12, 35);
+            groupBox_1.Location = new Point(12, 40);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
