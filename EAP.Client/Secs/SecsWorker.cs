@@ -12,7 +12,7 @@ namespace EAP.Client.Secs
     internal partial class SecsWorker : BackgroundService
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-        private readonly ILog eqpLog = LogManager.GetLogger("Equipment");
+        private readonly ILog eqpLog = LogManager.GetLogger("Secs");
         private readonly ILog traLog = LogManager.GetLogger("Trace");
 
         private readonly ISecsGem _secsGem;
