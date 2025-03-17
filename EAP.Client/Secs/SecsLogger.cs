@@ -8,7 +8,7 @@ namespace EAP.Client.Secs
     internal class SecsLogger : ISecsGemLogger
     {
 
-        private ILog secsLogger = LogManager.GetLogger("secsLogger");
+        private ILog secsLogger = LogManager.GetLogger("Secs");
 
         public void MessageIn(SecsMessage msg, int id)
         {

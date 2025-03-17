@@ -16,7 +16,7 @@ namespace EAP.Client.RabbitMq
     internal class RabbitMqWorker : BackgroundService
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-        private readonly ILog eqpLog = LogManager.GetLogger("Equipment");
+        private readonly ILog eqpLog = LogManager.GetLogger("Secs");
         private readonly ILog traLog = LogManager.GetLogger("Trace");
 
         private readonly IConfiguration _configuration;
