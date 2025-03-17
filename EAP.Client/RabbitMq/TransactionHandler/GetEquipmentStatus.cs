@@ -42,7 +42,7 @@ namespace EAP.Client.RabbitMq
                         };
                         var s1f4 = await secsGem.SendAsync(s1f3);
                         var controlStateCode = s1f4.SecsItem[0].FirstValue<byte>();
-                        var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
+                        var processStateCode = s1f4.SecsItem[1].GetString();
                         string controlState = "Unknown";
                         string processState = "Unknown";
                         switch (controlStateCode)
