@@ -6,7 +6,21 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
     internal class TestEvent : IEventHandler
     {
-        public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper, RabbitMq.RabbitMqService rabbitMq, ISecsGem secsGem, CommonLibrary commonLibrary)
+
+        private RabbitMqService rabbitMqService;
+        private readonly ISecsGem secsGem;
+        private readonly CommonLibrary commonLibrary;
+        private readonly IServiceProvider serviceProvider;
+
+        public TestEvent(RabbitMqService rabbitMqService, ISecsGem secsGem, CommonLibrary commonLibrary, IServiceProvider serviceProvider)
+        {
+            this.rabbitMqService = rabbitMqService;
+            this.secsGem = secsGem;
+            this.commonLibrary = commonLibrary;
+            this.serviceProvider = serviceProvider;
+        }
+
+        public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
         {
             return Task.CompletedTask;
         }
