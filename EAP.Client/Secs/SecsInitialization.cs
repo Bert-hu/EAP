@@ -25,7 +25,7 @@ namespace EAP.Client.Secs
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                     var token = cancellationTokenSource.Token;
                     await Task.Delay(1000);
-                   // var s1f13 = _commonLibrary.GetSecsMessageByName("S1F13");
+                   // var s1f13 = commonLibrary.GetSecsMessageByName("S1F13");
                    var s1f13 = new SecsMessage(1, 13, true)
                    {
                        SecsItem = L()

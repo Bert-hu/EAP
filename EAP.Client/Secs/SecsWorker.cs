@@ -106,8 +106,13 @@ namespace EAP.Client.Secs
             var type = Assembly.GetExecutingAssembly().GetTypes().Where(t => interfaceType.IsAssignableFrom(t) && t.Name == streamfunction).FirstOrDefault();
             if (type != null)
             {
-                IPrimaryMessageHandler obj = (IPrimaryMessageHandler)Activator.CreateInstance(type);
-                await obj.HandlePrimaryMessage(wrapper, _rabbitMqService, _secsGem, _commonLibrary);
+                //IPrimaryMessageHandler obj = (IPrimaryMessageHandler)Activator.CreateInstance(type);
+                //await obj.HandlePrimaryMessage(wrapper, _rabbitMqService, _secsGem, commonLibrary);
+                using (var scope = _serviceProvider.CreateAsyncScope())
+                {
+                    var handler = (IPrimaryMessageHandler)scope.ServiceProvider.GetRequiredService(type);
+                    await handler.HandlePrimaryMessage(wrapper);
+                }
             }
             else
             {

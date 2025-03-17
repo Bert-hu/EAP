@@ -1,5 +1,6 @@
 ﻿using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Secs4Net;
 using System.Reflection;
 
@@ -7,7 +8,15 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
 {
     internal class S6F11 : IPrimaryMessageHandler
     {
-        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper, RabbitMq.RabbitMqService rabbitMq, ISecsGem secsGem, CommonLibrary commonLibrary)
+        private readonly IServiceProvider serviceProvider;
+        private readonly CommonLibrary commonLibrary;
+
+        public S6F11(IServiceProvider serviceProvider, CommonLibrary commonLibrary)
+        {
+            this.serviceProvider = serviceProvider;
+            this.commonLibrary = commonLibrary;
+        }
+        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper)
         {
             //答复S6F12
             if (wrapper.PrimaryMessage.ReplyExpected)
@@ -30,8 +39,14 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
                 var type = Assembly.GetExecutingAssembly().GetTypes().Where(t => interfaceType.IsAssignableFrom(t) && t.Name == ceid.Name).FirstOrDefault();
                 if (type != null)
                 {
-                    IEventHandler obj = (IEventHandler)Activator.CreateInstance(type);
-                    await obj.HandleEvent(ceid, wrapper, rabbitMq, secsGem, commonLibrary);
+                    //IEventHandler obj = (IEventHandler)Activator.CreateInstance(type);
+                    //await obj.HandleEvent(ceid, wrapper);
+
+                    using (var scope = serviceProvider.CreateAsyncScope())
+                    {
+                        var handler = (IEventHandler)scope.ServiceProvider.GetRequiredService(type);
+                        handler.HandleEvent(ceid, wrapper);
+                    }
                 }
             }
 

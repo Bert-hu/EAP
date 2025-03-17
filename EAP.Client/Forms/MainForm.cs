@@ -125,42 +125,6 @@ namespace EAP.Client.Forms
             }));
         }
 
-        public void UpdateProcessState(int stateCode)
-        {
-            this.Invoke(new Action(() =>
-            {
-                var backcolor = Color.Gray;
-                string state = "Unknown";
-                switch (stateCode)
-                {
-                    case 0:
-                        state = "Init";
-                        backcolor = Color.Yellow;
-                        break;
-                    case 1:
-                        state = "Idle";
-                        backcolor = Color.Yellow;
-                        break;
-                    case 4:
-                        state = "Executing";
-                        backcolor = Color.Green;
-                        break;
-                    case 5:
-                        state = "Pause";
-                        backcolor = Color.Yellow;
-                        break;
-                    default:
-                        state = "Unknown";
-                        backcolor = Color.Gray;
-                        break;
-                }
-
-                this.label_ProcessState.Text = state;
-                this.label_ProcessState.BackColor = backcolor;
-
-            }));
-        }
-
         public bool ConfirmMessageBox(string showtext)
         {
             DialogResult dr = MessageBox.Show($"{showtext}", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
@@ -546,7 +510,7 @@ namespace EAP.Client.Forms
                                         if (deleteRecipe)
                                         {
                                             //DeleteAllRecipes deleteAll = new DeleteAllRecipes();
-                                            //await deleteAll.HandleTransaction(new RabbitMqTransaction(), null, _secsGem, null, _commonLibrary);
+                                            //await deleteAll.HandleTransaction(new RabbitMqTransaction(), null, _secsGem, null, commonLibrary);
                                             SecsMessage s7f19 = new(7, 19, true)
                                             {
                                             };

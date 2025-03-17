@@ -5,7 +5,16 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
 {
     internal class S5F1 : IPrimaryMessageHandler
     {
-        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper, RabbitMq.RabbitMqService rabbitMq, ISecsGem secsGem, CommonLibrary commonLibrary)
+        private readonly RabbitMqService rabbitMq;
+        private readonly CommonLibrary commonLibrary;
+        public S5F1(RabbitMqService rabbitMq, CommonLibrary commonLibrary)
+        {
+            this.rabbitMq = rabbitMq;
+            this.commonLibrary = commonLibrary;
+        }
+
+
+        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper)
         {
             var alarmset = wrapper.PrimaryMessage.SecsItem[0].FirstValue<byte>() > 128;
             var equipmentId = commonLibrary.CustomSettings["EquipmentId"];
