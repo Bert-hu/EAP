@@ -46,8 +46,11 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             }
             catch (Exception ex)
             {
+                reptrans.Parameters.Add("Result", false);
+                reptrans.Parameters.Add("Message", $"EAP Error {ex.Message}");
                 dbgLog.Error(ex.ToString());
             }
+            rabbitMq.Produce(trans.ReplyChannel, reptrans);
         }
     }
 }
