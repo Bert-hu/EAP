@@ -1,5 +1,6 @@
 ﻿using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
+using EAP.Client.Secs.PrimaryMessageHandler.EventHandler;
 using EAP.Client.Sfis;
 using EAP.Client.Utils;
 using log4net;
@@ -13,7 +14,7 @@ namespace EAP.Client.Forms
 {
     public partial class MainForm : UIForm
     {
-        private static MainForm instance;
+        private static MainForm? instance;
         private readonly IConfiguration _configuration;
         private readonly ISecsConnection _secsConnection;
         private readonly CommonLibrary _commonLibrary;
@@ -96,6 +97,16 @@ namespace EAP.Client.Forms
                 // if (string.IsNullOrEmpty(modelname))
                 this.textBox_modelname.Text = modelname;
                 this.label_updatetime_aoi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
+            }));
+        }
+
+        public void UpdateSpiPanelAndModelname(string panelid, string modelname)
+        {
+            this.Invoke(new Action(() =>
+            {
+                this.textBox_spipanelid.Text = panelid;
+                this.textBox_spimodelname.Text = modelname;
+                this.label_updatetime_spi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
             }));
         }
 
@@ -639,6 +650,100 @@ namespace EAP.Client.Forms
                 });
 
             });
+        }
+
+        private void button_getModelName_Click(object sender, EventArgs e)
+        {
+            var panelsn = textBox_spipanelid.Text;
+            string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
+            int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
+            BaymaxService baymax = new BaymaxService();
+            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
+
+            //(bool success, string sfisResponse, string errorMessage) = SendMessageToSfis(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
+
+
+            if (trans.Result)
+            {
+                if (trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+                {
+                    // Parse SFIS response to get model name and wafer IDs
+                    Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                        .Where(keyValueArray => keyValueArray.Length == 2)
+                        .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                    string modelName = sfisParameters["SN_MODEL_NAME_INFO"];
+                    MainForm.Instance.UpdateSpiPanelAndModelname(panelsn, modelName);
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //是否需要切换recipe
+            DialogResult dialogResult = MessageBox.Show("是否需要切换recipe？将发送停止指令给AOI", "提示", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                var relatedRecipe = GetAoiRelatedRecipe(textBox_spimodelname.Text);
+                if (string.IsNullOrEmpty(relatedRecipe))
+                {
+                    MessageBox.Show($"未找到设备与'{textBox_spimodelname.Text}'相关的recipe");
+                    return;
+                }
+                //var processStateVID = _commonLibrary.GetGemSvid("ProcessState");
+                //SecsMessage s1f3 = new(1, 3, true)
+                //{
+                //    SecsItem = L(
+                //      U4((uint)processStateVID.ID)
+                //      )
+                //};
+                //var s1f4 = _secsGem.SendAsync(s1f3).Result;
+                //var processStateCode = s1f4.SecsItem[0].FirstValue<byte>();
+                //if (processStateCode == 1)
+                //{
+                //    var s2f41ppselect = new SecsMessage(2, 41)
+                //    {
+                //        SecsItem = L(
+                //                  A("PP-SELECT"),
+                //                  L(
+                //                      L(
+                //                      A("PPID"),
+                //                      A(relatedRecipe)
+                //                      )
+                //                      )
+                //                  )
+                //    };
+                //    _ = _secsGem.SendAsync(s2f41ppselect).Result;
+                //}
+                //else
+                {
+                    var s2f41ppselect = new SecsMessage(2, 41)
+                    {
+                        SecsItem = L(A("STOP"), L())
+                    };
+                    _ = _secsGem.SendAsync(s2f41ppselect).Result;
+                    ProcessStateChanged.NeedChangeRecipe = true;
+                    ProcessStateChanged.ChangeRecipeName = relatedRecipe;
+                    ProcessStateChanged.ChangeDateTime = DateTime.Now;
+
+                    MessageBox.Show($"已发送停止指令，2分钟内设备进入Idle状态将自动切换到{relatedRecipe}");
+                }
+            }
+
+        }
+
+        internal string? GetAoiRelatedRecipe(string recipeGroupName)
+        {
+            SecsMessage s7f19 = new(7, 19, true)
+            {
+            };
+            var rep = _secsGem.SendAsync(s7f19).Result;
+            List<string> EPPD = new List<string>();//2103-19010X-XXT.recipe
+            foreach (var item in rep.SecsItem.Items)
+            {
+                EPPD.Add(item.GetString());
+            }
+            var relatedRecipe = EPPD.FirstOrDefault(it => it.Substring(0, it.Length > 10 ? 10 : it.Length) == recipeGroupName.Substring(0, recipeGroupName.Length > 10 ? 10 : recipeGroupName.Length));
+            return relatedRecipe;
         }
     }
 }
