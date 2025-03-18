@@ -48,6 +48,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 dbgLog.Error(ex.ToString());
             }
+            rabbitMq.Produce(trans.ReplyChannel, reptrans);
         }
     }
 }
