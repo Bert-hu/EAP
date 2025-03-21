@@ -334,8 +334,8 @@ namespace EAP.Client.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //确认后关闭
-            DialogResult dr = MessageBox.Show("是否关闭程序？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-            if (dr == DialogResult.OK)
+            var dr = UIMessageBox.ShowAsk2("是否关闭程序？");
+            if (dr)
             {
                 Environment.Exit(0);
             }
