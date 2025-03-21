@@ -1,4 +1,5 @@
-﻿using EAP.Client.RabbitMq;
+﻿using EAP.Client.Forms;
+using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
 using EAP.Client.Sfis;
 using log4net;
@@ -66,6 +67,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         else
                         {
                             traLog.Info($"{waferId} Wafer In 自动过站成功");
+                            MainForm.Instance.UpdateWaferId(waferId);
                         }
                     }
                     else

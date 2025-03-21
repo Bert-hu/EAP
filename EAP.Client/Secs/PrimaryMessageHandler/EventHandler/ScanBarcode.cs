@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Secs4Net.Item;
+using EAP.Client.Forms;
 
 namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
@@ -67,6 +68,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                         // Check recipe group
                         //(string recipeName, string recipeErrorMessage) = await CheckRecipeGroupAsync(rmsApiUrl, equipmentId, modelName);
+                        MainForm.Instance.UpdateLotAndModelname(lotId, modelName);
+
                         string url = rmsApiUrl.TrimEnd('/') + "/api/checkrecipegroup";
                         var req = new
                         {
@@ -121,6 +124,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         _ = secsGem.SendAsync(s2f41);
                         traLog.Debug($"Send PP-SELECT Success.");
                         traLog.Debug($"Lot ({lotId}) Start: {string.Join(",", markingTexts)})");
+                        MainForm.Instance.UpdateMachineRecipe(recipeRes.RecipeName);
                     }
                 }
                 else
