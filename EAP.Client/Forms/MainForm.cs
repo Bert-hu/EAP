@@ -211,6 +211,7 @@ namespace EAP.Client.Forms
                 {
                     string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
                     string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+                    string equipmentType = _commonLibrary.CustomSettings["EquipmentType"];
                     int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
                     //var getModelNameReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???";
                     var getModelProjextReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
@@ -246,7 +247,7 @@ namespace EAP.Client.Forms
 
                             var rmsUrl = _commonLibrary.CustomSettings["RmsApiUrl"];
                             var reqUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeNameAlias";
-                            var req = new { EquipmentTypeId = "Hanmi_jigsaw", RecipeName = recipeName };
+                            var req = new { EquipmentTypeId = equipmentType, RecipeName = recipeName };
                             var rep = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameAliasResponse>(reqUrl, req).Result;
                             if (rep != null)
                             {
