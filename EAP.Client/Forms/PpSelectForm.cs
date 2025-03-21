@@ -15,10 +15,15 @@ namespace EAP.Client.Forms
     public partial class PpSelectForm : UIForm
     {
         public string Value { get; set; }
-
         public PpSelectForm()
         {
             InitializeComponent();
+
+        }
+        public PpSelectForm(string title = "Please scan Barcode")
+        {
+            InitializeComponent();
+            this.Text = title;
         }
 
         private void button_confirm_Click(object sender, EventArgs e)

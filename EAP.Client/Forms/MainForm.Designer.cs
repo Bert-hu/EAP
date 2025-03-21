@@ -47,6 +47,8 @@ namespace EAP.Client.Forms
             button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
             uiButton_ScanToDownloadRecipe = new UIButton();
+            uiButton_WaferOut = new UIButton();
+            uiButton_WaferIn = new UIButton();
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -186,6 +188,7 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe.Size = new Size(250, 32);
             checkBox_checkrecipe.TabIndex = 4;
             checkBox_checkrecipe.Text = "MP模式（检查Recipe）";
+            checkBox_checkrecipe.Visible = false;
             checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
             // 
             // label_ProcessState
@@ -228,6 +231,7 @@ namespace EAP.Client.Forms
             // 
             // button_CompareRecipe
             // 
+            button_CompareRecipe.Enabled = false;
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
             button_CompareRecipe.Location = new Point(490, 101);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
@@ -255,6 +259,7 @@ namespace EAP.Client.Forms
             // 
             // uiButton_ScanToDownloadRecipe
             // 
+            uiButton_ScanToDownloadRecipe.Enabled = false;
             uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
             uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
             uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
@@ -265,10 +270,36 @@ namespace EAP.Client.Forms
             uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
+            // uiButton_WaferOut
+            // 
+            uiButton_WaferOut.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_WaferOut.Location = new Point(490, 241);
+            uiButton_WaferOut.MinimumSize = new Size(1, 1);
+            uiButton_WaferOut.Name = "uiButton_WaferOut";
+            uiButton_WaferOut.Size = new Size(108, 35);
+            uiButton_WaferOut.TabIndex = 9;
+            uiButton_WaferOut.Text = "Wafer Out";
+            uiButton_WaferOut.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_WaferOut.Click += uiButton_WaferOut_Click;
+            // 
+            // uiButton_WaferIn
+            // 
+            uiButton_WaferIn.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_WaferIn.Location = new Point(490, 200);
+            uiButton_WaferIn.MinimumSize = new Size(1, 1);
+            uiButton_WaferIn.Name = "uiButton_WaferIn";
+            uiButton_WaferIn.Size = new Size(108, 35);
+            uiButton_WaferIn.TabIndex = 9;
+            uiButton_WaferIn.Text = "Wafer In";
+            uiButton_WaferIn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_WaferIn.Click += uiButton_WaferIn_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 638);
+            Controls.Add(uiButton_WaferIn);
+            Controls.Add(uiButton_WaferOut);
             Controls.Add(uiButton_ScanToDownloadRecipe);
             Controls.Add(richTextBox1);
             Controls.Add(button_CompareRecipe);
@@ -307,5 +338,7 @@ namespace EAP.Client.Forms
         private UILabel label5;
         private UIButton button_CompareRecipe;
         private UIButton uiButton_ScanToDownloadRecipe;
+        private UIButton uiButton_WaferOut;
+        private UIButton uiButton_WaferIn;
     }
 }

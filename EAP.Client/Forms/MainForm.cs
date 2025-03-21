@@ -334,8 +334,8 @@ namespace EAP.Client.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //确认后关闭
-            DialogResult dr = MessageBox.Show("是否关闭程序？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-            if (dr == DialogResult.OK)
+            var dr = UIMessageBox.ShowAsk2("是否关闭程序？");
+            if (dr)
             {
                 Environment.Exit(0);
             }
@@ -639,6 +639,90 @@ namespace EAP.Client.Forms
                     uiButton_ScanToDownloadRecipe.Enabled = true;
                 });
 
+            });
+        }
+
+        private void uiButton_WaferIn_Click(object sender, EventArgs e)
+        {
+            uiButton_WaferIn.Enabled = false;
+            Task.Run(() =>
+            {
+                try
+                {
+                    PpSelectForm form = new PpSelectForm("输入WaferID");
+                    DialogResult dr = form.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        var waferId = form.Value;
+                        string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
+                        int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
+                        string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+
+                        BaymaxService service = new BaymaxService();
+                        var waferIn = $"{equipmentId}_WF_IN,{waferId},2,M090616,JORDAN,,OK,";
+                        var waferInTrans = service.GetBaymaxTrans(sfisIp, sfisPort, waferIn);
+                        if (!waferInTrans.Result)
+                        {
+                            traLog.Error($"{waferId} Wafer In 过站失败，请检查");
+                            UIMessageBox.ShowError2($"{waferId} Wafer In 过站失败，请检查");
+                        }
+                        else
+                        {
+                            traLog.Info($"{waferId} Wafer In 过站成功");
+                            UIMessageBox.ShowInfo2($"{waferId} Wafer In 过站成功");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UIMessageBox.ShowError2(ex.Message);
+                }
+                this.Invoke(() =>
+                {
+                    uiButton_WaferIn.Enabled = true;
+                });
+            });
+        }
+
+        private void uiButton_WaferOut_Click(object sender, EventArgs e)
+        {
+            uiButton_WaferOut.Enabled = false;
+            Task.Run(() =>
+            {
+                try
+                {
+                    PpSelectForm form = new PpSelectForm("输入WaferID");
+                    DialogResult dr = form.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        var waferId = form.Value;
+                        string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
+                        int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
+                        string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+
+                        BaymaxService service = new BaymaxService();
+                        var waferIn = $"{equipmentId}_WF_OUT,{waferId},2,M090616,JORDAN,,OK,";
+                        var waferInTrans = service.GetBaymaxTrans(sfisIp, sfisPort, waferIn);
+                        if (!waferInTrans.Result)
+                        {
+                            traLog.Error($"{waferId} Wafer Out 过站失败，请检查");
+                            UIMessageBox.ShowError2($"{waferId} Wafer In 过站失败，请检查");
+                        }
+                        else
+                        {
+                            traLog.Info($"{waferId} Wafer In 过站成功");
+                            UIMessageBox.ShowInfo2($"{waferId} Wafer In 过站成功");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UIMessageBox.ShowError2(ex.Message);
+                }
+                this.Invoke(() =>
+                {
+                    uiButton_WaferOut.Enabled = true;
+                });
             });
         }
     }
