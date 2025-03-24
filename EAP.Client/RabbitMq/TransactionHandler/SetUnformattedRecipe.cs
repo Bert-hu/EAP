@@ -37,7 +37,7 @@ namespace EAP.Client.RabbitMq
                     SecsItem =
                     L(
                         A(recipename),
-                        U4((uint)recipebody.Length)
+                        U2((ushort)recipebody.Length)
                     )
                 };
                 var s7f2 = await secsGem.SendAsync(s7f1);
