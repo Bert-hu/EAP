@@ -38,10 +38,10 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                 // Send message to SFIS to get WAFER ID
 
-                //(bool success, string sfisResponse, string errorMessage) = await SendMessageToSfisAsync(sfisIp, sfisPort, $"{equipmentId},{waferId},1,M090616,JORDAN,,OK,");
+                //(bool success, string sfisResponse, string errorMessage) = await SendMessageToSfisAsync(sfisIp, sfisPort, $"{equipmentId},{waferId},1,M090111,JORDAN,,OK,");
 
                 BaymaxService service = new BaymaxService();
-                var trans = service.GetBaymaxTrans(sfisIp, sfisPort, $"{equipmentId}_WF_IN,{waferId},1,M090616,JORDAN,,OK,");
+                var trans = service.GetBaymaxTrans(sfisIp, sfisPort, $"{equipmentId}_WF_IN,{waferId},1,M090111,JORDAN,,OK,");
 
 
                 if (trans.Result)
@@ -58,7 +58,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         };
                         await secsGem.SendAsync(s2f41);
                         //TODO: Wafer In
-                        var waferIn = $"{equipmentId}_WF_IN,{waferId},2,M090616,JORDAN,,OK,";
+                        var waferIn = $"{equipmentId}_WF_IN,{waferId},2,M090111,JORDAN,,OK,";
                         var waferInTrans = service.GetBaymaxTrans(sfisIp, sfisPort, waferIn);
                         if (!waferInTrans.Result)
                         {

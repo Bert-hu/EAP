@@ -45,7 +45,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                     if (successCode == 3)
                     {
                         BaymaxService service = new BaymaxService();
-                        var waferOut = $"{equipmentId}_WF_OUT,{waferId},2,M090616,JORDAN,,OK,";
+                        var waferOut = $"{equipmentId}_WF_OUT,{waferId},2,M090111,JORDAN,,OK,";
                         var waferOutTrans = service.GetBaymaxTrans(sfisIp, sfisPort, waferOut);
                         if (!waferOutTrans.Result)
                         {
