@@ -41,7 +41,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 //(bool success, string sfisResponse, string errorMessage) = await SendMessageToSfisAsync(sfisIp, sfisPort, $"{equipmentId},{waferId},1,M090616,JORDAN,,OK,");
 
                 BaymaxService service = new BaymaxService();
-                var trans = service.GetBaymaxTrans(sfisIp, sfisPort, $"{equipmentId},{waferId},1,M090616,JORDAN,,OK,");
+                var trans = service.GetBaymaxTrans(sfisIp, sfisPort, $"{equipmentId}_WF_IN,{waferId},1,M090616,JORDAN,,OK,");
 
 
                 if (trans.Result)
