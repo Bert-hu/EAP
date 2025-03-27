@@ -718,8 +718,8 @@ namespace EAP.Client.Forms
                         }
                         else
                         {
-                            traLog.Info($"{waferId} Wafer In 过站成功");
-                            UIMessageBox.ShowInfo2($"{waferId} Wafer In 过站成功");
+                            traLog.Info($"{waferId} Wafer Out 过站成功");
+                            UIMessageBox.ShowInfo2($"{waferId} Wafer Out 过站成功");
                         }
                     }
                 }
