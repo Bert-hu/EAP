@@ -130,7 +130,7 @@ namespace EAP.Client.RabbitMq
                 {
                     SecsItem = A(recipename)
                 };
-                var s7f26 = secsGem.SendAsync(s7f25).Result;
+                var s7f26 = await secsGem.SendAsync(s7f25);
                 Dictionary<string, string> ccParameter = new Dictionary<string, string>();
                 foreach (Item item in s7f26.SecsItem.Items[3].Items)
                 {
@@ -140,21 +140,23 @@ namespace EAP.Client.RabbitMq
                         var ccName = ccCodeNameDic[ccCode];
                         var ccType = ccCodeTypeDic[ccCode];
                         string ccValue = string.Empty;
+                        dbgLog.Debug(ccName);
+                        dbgLog.Debug(ccType);
                         if (ccType == typeof(uint))
                         {
-                            ccValue = item.Items[1].FirstValue<uint>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<uint>().ToString();
                         }
                         else if (ccType == typeof(int))
                         {
-                            ccValue = item.Items[1].FirstValue<int>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<int>().ToString();
                         }
                         else if (ccType == typeof(string))
                         {
-                            ccValue = item.Items[1].GetString();
+                            ccValue = item.Items[1][0].GetString();
                         }
                         else if (ccType == typeof(ushort))
                         {
-                            ccValue = item.Items[1].FirstValue<ushort>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<ushort>().ToString();
                         }
                         ccParameter.Add(ccName, ccValue);
                     }

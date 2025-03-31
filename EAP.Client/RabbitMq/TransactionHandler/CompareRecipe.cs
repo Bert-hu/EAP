@@ -56,19 +56,19 @@ namespace EAP.Client.RabbitMq
                         string ccValue = string.Empty;
                         if (ccType == typeof(uint))
                         {
-                            ccValue = item.Items[1].FirstValue<uint>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<uint>().ToString();
                         }
                         else if (ccType == typeof(int))
                         {
-                            ccValue = item.Items[1].FirstValue<int>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<int>().ToString();
                         }
                         else if (ccType == typeof(string))
                         {
-                            ccValue = item.Items[1].GetString();
+                            ccValue = item.Items[1][0].GetString();
                         }
                         else if (ccType == typeof(ushort))
                         {
-                            ccValue = item.Items[1].FirstValue<ushort>().ToString();
+                            ccValue = item.Items[1][0].FirstValue<ushort>().ToString();
                         }
                         machineParameter.Add(ccName, ccValue);
                     }
