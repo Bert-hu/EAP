@@ -16,7 +16,6 @@ namespace EAP.Client.RabbitMq
 {
     public class RabbitMqService
 
-
     {
         private readonly IConfiguration configuration;
 
@@ -39,9 +38,16 @@ namespace EAP.Client.RabbitMq
             factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
             factory.RequestedHeartbeat = TimeSpan.FromSeconds(10);
 
-            connection = factory.CreateConnectionAsync().Result;
-            channel = connection.CreateChannelAsync().Result;
+            try
+            {
+                connection = factory.CreateConnectionAsync().Result;
+                channel = connection.CreateChannelAsync().Result;
 
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex);
+            }
 
         }
         public void Produce(string routingKey, RabbitMqTransaction trans)

@@ -20,6 +20,10 @@ namespace EAP.Client
         [STAThread]
         static void Main(string[] args)
         {
+            string configFilePath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
+            XmlConfigurator.Configure(new FileInfo(configFilePath));
+            ILog dbgLog = LogManager.GetLogger("Debug");
+
             string currentProcessPath = Process.GetCurrentProcess().MainModule.FileName;
             string currentProcessName = Process.GetCurrentProcess().ProcessName;
 
@@ -39,12 +43,9 @@ namespace EAP.Client
 
             if (runningProcesses.Count > 1) // 说明已有相同路径的程序在运行
             {
-                Console.WriteLine("相同路径的程序已在运行，不能重复启动！");
+                dbgLog.Error("相同路径的程序已在运行，不能重复启动！");
                 return;
             }
-
-            string configFilePath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
-            XmlConfigurator.Configure(new FileInfo(configFilePath));
 
 
             var host = Host.CreateDefaultBuilder(args).UseWindowsService()
