@@ -215,7 +215,7 @@ namespace EAP.Client.Forms
                     int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
                     //var getModelNameReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???";
                     var getModelProjextReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
-                    var trans = sender.GetBaymaxTrans(sfisIp, sfisPort, getModelProjextReq);
+                    var trans = sender.GetBaymaxTrans(sfisIp, sfisPort, getModelProjextReq).Result;
                     if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                     {
                         Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
@@ -470,7 +470,7 @@ namespace EAP.Client.Forms
                         var getLotGrpInfo = $"EQXXXXXX01,{lotno},7,Admin,JORDAN,,OK,LOT_GRP_INFO_V2=???";
                         BaymaxService baymax = new BaymaxService();
                         traLog.Info($"Send to SFIS: {getLotGrpInfo}");
-                        var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo);
+                        var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo).Result;
                         if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
                             traLog.Info(trans.BaymaxResponse);
