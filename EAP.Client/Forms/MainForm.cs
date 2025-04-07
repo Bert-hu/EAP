@@ -1,4 +1,5 @@
-﻿using EAP.Client.RabbitMq;
+﻿using AutoUpdaterDotNET;
+using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
 using EAP.Client.Secs.PrimaryMessageHandler.EventHandler;
 using EAP.Client.Sfis;
@@ -8,6 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Secs4Net;
 using Sunny.UI;
+using System.Drawing.Imaging;
+using System.Globalization;
+using System.Net;
+using System.Reflection;
+using System.Windows.Threading;
 using static Secs4Net.Item;
 
 namespace EAP.Client.Forms
@@ -53,6 +59,7 @@ namespace EAP.Client.Forms
             _secsConnection.ConnectionChanged += _secsConnection_ConnectionChanged;
             var appender = LogManager.GetRepository().GetAppenders().First(it => it.Name == "TraceLog") as RichTextBoxAppender;
             appender.RichTextBox = this.richTextBox1;
+
         }
 
         private void _secsConnection_ConnectionChanged(object? sender, ConnectionState e)
@@ -172,18 +179,89 @@ namespace EAP.Client.Forms
             }
             this.Invoke(new Action(() =>
             {
-                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"];
+                Assembly assembly = Assembly.GetExecutingAssembly();
+
+                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] +" Version: "+ assembly.GetName().Version.ToString();
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
             }));
 
             string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
             int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
-            BaymaxService baymax = new BaymaxService();
-            baymax.OnBaymaxTransCompleted += Baymax_OnBaymaxTrans;
-            baymax.StartBaymaxForwardingService(_secsConnection.IpAddress.ToString(), 21347, sfisIp, sfisPort, HandleBaymaxResponse);
+            //BaymaxService baymax = new BaymaxService();
+            //baymax.OnBaymaxTransCompleted += Baymax_OnBaymaxTrans;
+            //baymax.StartBaymaxForwardingService(_secsConnection.IpAddress.ToString(), 21347, sfisIp, sfisPort, HandleBaymaxResponse);
 
+            var updateUrl = _configuration.GetSection("Custom")["UpdateUrl"].TrimEnd('/') + "/" + _commonLibrary.CustomSettings["EquipmentType"] + "/AutoUpdate.xml";
+            Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("zh");
+            AutoUpdater.LetUserSelectRemindLater = true;
+            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
+            AutoUpdater.RemindLaterAt = 1;
+            AutoUpdater.ReportErrors = true;
+
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+
+            AutoUpdater.Start(updateUrl);
+
+            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(1) };//定时去检测更新根据自己业务需求
+            timer.Tick += delegate
+            {
+                AutoUpdater.Start(updateUrl);
+            };
+            timer.Start();
         }
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args.Error == null)
+            {
+                if (args.IsUpdateAvailable)
+                {
+                    var eqpType = _commonLibrary.CustomSettings["EquipmentType"];
+                    this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
+                    bool dialogResult =
+                            UIMessageBox.ShowAsk2(
+                                $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新，否则点击取消");
+
+
+                    // Uncomment the following line if you want to show standard update dialog instead.
+                    //AutoUpdater.ShowUpdateForm(args);
+
+                    if (dialogResult)
+                    {
+                        try
+                        {
+                            if (AutoUpdater.DownloadUpdate(args))
+                            {
+                                Application.Exit();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            UIMessageBox.ShowError(exception.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    Assembly assembly = Assembly.GetExecutingAssembly();
+                    this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + args.InstalledVersion + " 最新版本";
+                }
+            }
+            else
+            {
+                if (args.Error is WebException)
+                {
+                    UIMessageBox.ShowError(
+                        @"There is a problem reaching update server. Please check your internet connection and try again later.");
+                }
+                else
+                {
+                    UIMessageBox.ShowError(args.Error.Message);
+                }
+            }
+        }
+
+
 
         private void Baymax_OnBaymaxTrans(object? sender, BaymaxService.BaymaxTrans e)
         {
@@ -222,10 +300,11 @@ namespace EAP.Client.Forms
                 {
                     string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
                     string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+                    string equipmentType = _commonLibrary.CustomSettings["EquipmentType"];
                     int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
                     //var getModelNameReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???";
                     var getModelProjextReq = $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
-                    var trans = sender.GetBaymaxTrans(sfisIp, sfisPort, getModelProjextReq);
+                    var trans = sender.GetBaymaxTrans(sfisIp, sfisPort, getModelProjextReq).Result;
                     if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                     {
                         Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
@@ -257,7 +336,7 @@ namespace EAP.Client.Forms
 
                             var rmsUrl = _commonLibrary.CustomSettings["RmsApiUrl"];
                             var reqUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeNameAlias";
-                            var req = new { EquipmentTypeId = "Hanmi_jigsaw", RecipeName = recipeName };
+                            var req = new { EquipmentTypeId = equipmentType, RecipeName = recipeName };
                             var rep = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameAliasResponse>(reqUrl, req).Result;
                             if (rep != null)
                             {
@@ -344,8 +423,8 @@ namespace EAP.Client.Forms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //确认后关闭
-            DialogResult dr = MessageBox.Show("是否关闭程序？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-            if (dr == DialogResult.OK)
+            var dr = UIMessageBox.ShowAsk2("是否关闭程序？");
+            if (dr)
             {
                 Environment.Exit(0);
             }
@@ -480,7 +559,7 @@ namespace EAP.Client.Forms
                         var getLotGrpInfo = $"EQXXXXXX01,{lotno},7,Admin,JORDAN,,OK,LOT_GRP_INFO_V2=???";
                         BaymaxService baymax = new BaymaxService();
                         traLog.Info($"Send to SFIS: {getLotGrpInfo}");
-                        var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo);
+                        var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo).Result;
                         if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
                             traLog.Info(trans.BaymaxResponse);
@@ -658,7 +737,7 @@ namespace EAP.Client.Forms
             string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
             int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
             BaymaxService baymax = new BaymaxService();
-            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
+            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???").Result;
 
             //(bool success, string sfisResponse, string errorMessage) = SendMessageToSfis(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
 

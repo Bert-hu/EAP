@@ -46,7 +46,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 traLog.Info($"BarcodeScanned: {panelsn},{machinerecipename}");
                 // Send message to SFIS to get LOT INFO
                 BaymaxService baymax = new BaymaxService();
-                 var baymaxTrans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
+                 var baymaxTrans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???").Result;
 
                 //(bool success, string sfisResponse, string errorMessage) = SendMessageToSfis(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
 

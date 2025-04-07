@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EAP.Client.Sfis
 {
@@ -46,7 +47,7 @@ namespace EAP.Client.Sfis
                             byte[] buffer = new byte[102400];
                             int bytesRead = stream.Read(buffer, 0, buffer.Length);
                             string requestStr = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                            BaymaxTrans baymaxTrans = GetBaymaxTrans(baymaxIp, bayMaxPort, requestStr);
+                            BaymaxTrans baymaxTrans = GetBaymaxTrans(baymaxIp, bayMaxPort, requestStr).Result;
                             OnBaymaxTransCompleted?.Invoke(this, baymaxTrans);
 
                             if (handle != null && baymaxTrans.Result)
@@ -80,7 +81,7 @@ namespace EAP.Client.Sfis
             task.Start();
         }
 
-        public BaymaxTrans GetBaymaxTrans(string baymaxIp, int bayMaxPort, string request)
+        public async Task<BaymaxTrans> GetBaymaxTrans(string baymaxIp, int bayMaxPort, string request)
         {
             BaymaxTrans baymaxTrans = new BaymaxTrans();
             baymaxTrans.MachineRequest = request;
@@ -88,12 +89,13 @@ namespace EAP.Client.Sfis
             {
                 TcpClient baymaxClient = new TcpClient(baymaxIp, bayMaxPort);
                 NetworkStream baymaxStream = baymaxClient.GetStream();
+                byte[] baymaxBuffer = new byte[102400];
+                Task<int> readTask = baymaxStream.ReadAsync(baymaxBuffer, 0, baymaxBuffer.Length); // 先异步读取，避免因设备速度太慢导致数据丢失
                 byte[] baymaxRequest = Encoding.UTF8.GetBytes(request);
-                baymaxStream.Write(baymaxRequest, 0, baymaxRequest.Length);
-                baymaxStream.Flush();
+                await baymaxStream.WriteAsync(baymaxRequest, 0, baymaxRequest.Length);
+                await baymaxStream.FlushAsync();
                 traLog.Info($"Send to SFIS: {request}");
-                byte[] baymaxBuffer = new byte[102400];//SEMES emappingbufer要大些
-                int baymaxBytesRead = baymaxStream.Read(baymaxBuffer, 0, baymaxBuffer.Length);
+                int baymaxBytesRead = await readTask;
                 baymaxTrans.BaymaxResponse = Encoding.UTF8.GetString(baymaxBuffer, 0, baymaxBytesRead);
                 Thread.Sleep(10);
                 baymaxStream.Flush();
