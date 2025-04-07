@@ -45,6 +45,9 @@
     <None Update="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Machine.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Secs\SecsLibrary.sml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
