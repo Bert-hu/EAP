@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Secs4Net;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace EAP.Client
 {
@@ -17,6 +18,7 @@ namespace EAP.Client
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
+
         [STAThread]
         static void Main(string[] args)
         {
@@ -56,14 +58,10 @@ namespace EAP.Client
                     services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
                     services.AddSingleton<CommonLibrary>();
 
-
                     //RabbitMqService
                     services.AddRabbitMq();
 
 
-                    //Http
-                    //services.AddHostedService<HttpListenerService>();
-                    //services.AddHostedService<WinFormWorker>();
                     services.AddHostedService<SecsWorker>();
                     services.AddSingleton<MainForm>();
 
