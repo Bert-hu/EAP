@@ -43,7 +43,6 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe = new UICheckBox();
             uiButton_ScanToDownloadRecipe = new UIButton();
             label_ProcessState = new UILabel();
-            button_CompareRecipe = new UIButton();
             textBox_projectname = new UITextBox();
             label5 = new UILabel();
             richTextBox1 = new UIRichTextBox();
@@ -163,7 +162,6 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(uiButton_ScanToDownloadRecipe);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
-            groupBox_1.Controls.Add(button_CompareRecipe);
             groupBox_1.Controls.Add(textBox_panelid);
             groupBox_1.Controls.Add(textBox_projectname);
             groupBox_1.Controls.Add(textBox_modelname);
@@ -223,18 +221,6 @@ namespace EAP.Client.Forms
             label_ProcessState.TabIndex = 3;
             label_ProcessState.Text = "Unknown";
             label_ProcessState.Visible = false;
-            // 
-            // button_CompareRecipe
-            // 
-            button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(472, 72);
-            button_CompareRecipe.MinimumSize = new Size(1, 1);
-            button_CompareRecipe.Name = "button_CompareRecipe";
-            button_CompareRecipe.Size = new Size(108, 33);
-            button_CompareRecipe.TabIndex = 5;
-            button_CompareRecipe.Text = "比较参数";
-            button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            button_CompareRecipe.Click += button_CompareRecipe_Click;
             // 
             // textBox_projectname
             // 
@@ -422,7 +408,6 @@ namespace EAP.Client.Forms
         private UIRichTextBox richTextBox1;
         private UITextBox textBox_projectname;
         private UILabel label5;
-        private UIButton button_CompareRecipe;
         private UIButton uiButton_ScanToDownloadRecipe;
         private UITextBox textBox_spipanelid;
         private UITextBox textBox_spimodelname;
