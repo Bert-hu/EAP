@@ -460,78 +460,7 @@ namespace EAP.Client.Forms
             isAutoCheckRecipe = checkBox_checkrecipe.Checked;
         }
 
-        private void button_CompareRecipe_Click(object sender, EventArgs e)
-        {
-            button_CompareRecipe.Enabled = false;
-            Task.Run(() =>
-            {
-
-                try
-                {
-                    var s1f3 = new SecsMessage(1, 3)
-                    {
-                        SecsItem = L(U2(1013), U2(1106))
-                    };
-                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                    var recipeName = s1f4.SecsItem.Items[0].GetString();
-
-                    string comparemsg = string.Empty;
-                    if (!string.IsNullOrEmpty(recipeName))
-                    {
-                        this.Invoke(() =>
-                        {
-                            this.textBox_machinerecipe.Text = recipeName;
-                        });
-                        string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
-
-                        var rabbitTrans = new RabbitMqTransaction()
-                        {
-                            TransactionName = "CompareRecipeBody",
-                            EquipmentID = equipmentId,
-                            Parameters = new Dictionary<string, object>()
-                                        {
-                                            {"EquipmentId",equipmentId},
-                                            {"RecipeName",recipeName},
-                                        },
-                        };
-                        var repTrans = _rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);
-                        if (repTrans != null)
-                        {
-                            var result = false;
-                            var message = string.Empty;
-                            if (repTrans.Parameters.TryGetValue("Result", out object _result)) result = (bool)_result;
-                            if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
-                            if (!result)
-                            {
-                                comparemsg = "Compare recipe fail: " + message;
-                                traLog.Error(comparemsg);
-                            }
-                            else
-                            {
-                                traLog.Info("Compare recipe success!");
-                            }
-                        }
-                        else
-                        {
-                            comparemsg = "Compare recipe fail: Timeout";
-                            traLog.Error(comparemsg);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    traLog.Error(ex);
-                }
-
-
-                this.Invoke(() =>
-                {
-                    button_CompareRecipe.Enabled = true;
-                });
-            });
-
-
-        }
+       
         public class DownloadEffectiveRecipeToMachineResponse
         {
             public bool Result { get; set; } = false;
