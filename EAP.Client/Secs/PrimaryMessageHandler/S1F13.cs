@@ -7,12 +7,20 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
     internal class S1F13 : IPrimaryMessageHandler
     {
         private  ISecsGem _secsGem;
-        private CommonLibrary _commonLibrary;
+        private readonly CommonLibrary commonLibrary
+            
+            ;
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper, RabbitMq.RabbitMqService rabbitMq, ISecsGem secsGem, CommonLibrary commonLibrary)
+
+        public S1F13(ISecsGem secsGem, CommonLibrary commonLibrary)
         {
             _secsGem = secsGem;
-            _commonLibrary = commonLibrary;
+            this.commonLibrary = commonLibrary;
+        }
+
+        public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper)
+        {
+
 
             if (wrapper.PrimaryMessage.ReplyExpected)
             {
@@ -24,7 +32,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
             //_  = _secsGem.SendAsync(s1f13);
             //if (rep.F == 14)
             //{
-            //    await Task.Run(() => SecsInitialization.Initialization(_secsGem, _commonLibrary));
+            //    await Task.Run(() => SecsInitialization.Initialization(_secsGem, commonLibrary));
             //}
         }
 

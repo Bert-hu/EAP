@@ -5,6 +5,6 @@ namespace EAP.Client.Secs
 {
     internal interface IPrimaryMessageHandler
     {
-        Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper, RabbitMq.RabbitMqService rabbitMq, ISecsGem secsGem, CommonLibrary commonLibrary);
+        Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper);
     }
 }

@@ -249,7 +249,7 @@ namespace EAP.Client.Forms
             richTextBox1.Padding = new Padding(2);
             richTextBox1.ReadOnly = true;
             richTextBox1.ShowText = false;
-            richTextBox1.Size = new Size(588, 258);
+            richTextBox1.Size = new Size(588, 223);
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
@@ -268,12 +268,13 @@ namespace EAP.Client.Forms
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
-            ClientSize = new Size(614, 638);
+            ClientSize = new Size(614, 609);
             Controls.Add(uiButton_ScanToDownloadRecipe);
             Controls.Add(richTextBox1);
             Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "MainForm";
             Text = "EAP Client";
             ZoomScaleRect = new Rectangle(15, 15, 614, 638);
