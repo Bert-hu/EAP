@@ -737,7 +737,7 @@ namespace EAP.Client.Forms
             string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
             int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
             BaymaxService baymax = new BaymaxService();
-            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
+            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???").Result;
 
             //(bool success, string sfisResponse, string errorMessage) = SendMessageToSfis(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
 
