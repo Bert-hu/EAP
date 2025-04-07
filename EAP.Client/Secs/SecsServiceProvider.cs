@@ -36,7 +36,7 @@ namespace EAP.Client.Secs
                 services.AddTransient(typeof(IEventHandler), handlerType);
             }
 
-
+            services.AddSingleton<CommonLibrary>();
             return services;
         }
     }
