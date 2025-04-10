@@ -134,12 +134,10 @@
       }
     ],
     "ProcessStateCodes": {
-      "1": "Run",
-      "2": "Alarm",
-      "5": "Idle",
-      "7": "Idle",
-      "10": "Run",
-      "15": "Idle"
+      "0": "Idle",
+      "1": "Idle",
+      "4": "Run",
+      "5": "Idle"
     }
   },
   "Others": {
