@@ -193,7 +193,7 @@ namespace EAP.Client.Forms
 
             AutoUpdater.Start(updateUrl);
 
-            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(1) };//定时去检测更新根据自己业务需求
+            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };//定时去检测更新根据自己业务需求
             timer.Tick += delegate
             {
                 AutoUpdater.Start(updateUrl);
