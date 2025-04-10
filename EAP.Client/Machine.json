@@ -113,7 +113,7 @@
         "ReportIds": []
       },
       {
-        "Name": "ProcessingStateChanged",
+        "Name": "ProcessStateChanged",
         "ID": 9,
         "ReportIds": [ 3 ]
       },

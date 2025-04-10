@@ -30,6 +30,7 @@ namespace EAP.Client.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             textBox_panelid = new UITextBox();
             label_1 = new UILabel();
@@ -54,6 +55,7 @@ namespace EAP.Client.Forms
             button_getModelName = new UIButton();
             uiLabel2 = new UILabel();
             uiLabel1 = new UILabel();
+            notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
             uiGroupBox1.SuspendLayout();
             SuspendLayout();
@@ -207,6 +209,7 @@ namespace EAP.Client.Forms
             uiButton_ScanToDownloadRecipe.TabIndex = 5;
             uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
             uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_ScanToDownloadRecipe.Visible = false;
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // label_ProcessState
@@ -367,6 +370,11 @@ namespace EAP.Client.Forms
             uiLabel1.TabIndex = 1;
             uiLabel1.Text = "Panel ID";
             // 
+            // notifyIcon
+            // 
+            notifyIcon.Text = "EAP.Client";
+            notifyIcon.Visible = true;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -415,5 +423,6 @@ namespace EAP.Client.Forms
         private UIGroupBox uiGroupBox1;
         private UILabel uiLabel2;
         private UILabel uiLabel1;
+        private NotifyIcon notifyIcon;
     }
 }
