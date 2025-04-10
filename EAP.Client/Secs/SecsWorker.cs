@@ -81,7 +81,6 @@ namespace EAP.Client.Secs
             {
                 _hsmsConnection.Start(stoppingToken);
                 _hsmsConnection.LinkTestEnabled = true;
-                //TODO: 改为进入类处理
                 await foreach (var primaryMessageWrapper in _secsGem.GetPrimaryMessageAsync(stoppingToken))
                 {
                     try

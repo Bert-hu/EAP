@@ -1,3 +1,4 @@
+using EAP.Client.File;
 using EAP.Client.Forms;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
@@ -57,6 +58,7 @@ namespace EAP.Client
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+
                     //Secs
                     services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
 
@@ -64,8 +66,13 @@ namespace EAP.Client
                     services.AddRabbitMq();
 
                     services.AddHostedService<SecsWorker>();
+
+                    services.AddHostedService<FileWorker>();
+
+
                     services.AddSingleton<MainForm>();
 
+               
                 });
             var _host = host.Build();
             var a = _host.StartAsync().IsCompleted;

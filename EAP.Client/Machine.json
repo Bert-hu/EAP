@@ -7,11 +7,11 @@
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 1005
+        "ID": 30104
       },
       {
         "Name": "ProcessState",
-        "ID": 1009
+        "ID": 30150
       }
 
     ],
@@ -25,7 +25,7 @@
     "CEIDList": [
       {
         "Name": "ProcessStateChanged",
-        "ID": 10150,
+        "ID": 2079,
         "ReportIds": []
       }
 
@@ -33,10 +33,10 @@
     "ProcessStateCodes": {
       "0": "Idle",
       "1": "Idle",
-      "2": "Idle",
-      "3": "Idle",
+      "2": "Run",
+      "3": "Run",
       "4": "Run",
-      "5": "Idle",
+      "5": "Run",
       "6": "Run"
     }
   },

@@ -38,9 +38,25 @@ namespace EAP.Client.RabbitMq
                 if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) recipebody = Convert.FromBase64String(_body.ToString());
                 if (trans.Parameters.TryGetValue("RecipeParameters", out object _parameters)) recipeParameters = _parameters.ToString();
 
-                reptrans.Parameters.Add("Result", false);
-                reptrans.Parameters.Add("Message", $"recipe内容比对方法未实现");
 
+                SecsMessage s7f5 = new(7, 5, true)
+                {
+                    SecsItem = A(recipename)
+                };
+                var rep = await secsGem.SendAsync(s7f5);
+                rep.Name = null;
+                var reprecipename = rep.SecsItem[0].GetString();
+                var data = rep.SecsItem[1].GetMemory<byte>().ToArray();
+                if (data == recipebody)
+                {
+                    reptrans.Parameters.Add("Result", true);
+                    reptrans.Parameters.Add("Message", $"Compare body OK");
+                }
+                else
+                {
+                    reptrans.Parameters.Add("Result", false);
+                    reptrans.Parameters.Add("Message", $"recipe内容不一致");
+                }      
             }
             catch (Exception ex)
             {

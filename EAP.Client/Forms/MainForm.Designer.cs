@@ -40,6 +40,7 @@ namespace EAP.Client.Forms
             label_updatetime_aoi = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiCheckBox_LotAction = new UICheckBox();
             checkBox_checkrecipe = new UICheckBox();
             label_ProcessState = new UILabel();
             textBox_projectname = new UITextBox();
@@ -128,11 +129,11 @@ namespace EAP.Client.Forms
             // label_updatetime_aoi
             // 
             label_updatetime_aoi.AutoSize = true;
-            label_updatetime_aoi.Font = new Font("宋体", 12F);
+            label_updatetime_aoi.Font = new Font("宋体", 10F);
             label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
+            label_updatetime_aoi.Location = new Point(223, 42);
             label_updatetime_aoi.Name = "label_updatetime_aoi";
-            label_updatetime_aoi.Size = new Size(103, 16);
+            label_updatetime_aoi.Size = new Size(91, 14);
             label_updatetime_aoi.TabIndex = 2;
             label_updatetime_aoi.Text = "Update Time:";
             // 
@@ -150,6 +151,7 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiCheckBox_LotAction);
             groupBox_1.Controls.Add(checkBox_checkrecipe);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
@@ -174,6 +176,21 @@ namespace EAP.Client.Forms
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
             // 
+            // uiCheckBox_LotAction
+            // 
+            uiCheckBox_LotAction.AutoSize = true;
+            uiCheckBox_LotAction.Checked = true;
+            uiCheckBox_LotAction.Font = new Font("Microsoft YaHei UI", 15F);
+            uiCheckBox_LotAction.ForeColor = Color.FromArgb(48, 48, 48);
+            uiCheckBox_LotAction.Location = new Point(332, 265);
+            uiCheckBox_LotAction.MinimumSize = new Size(1, 1);
+            uiCheckBox_LotAction.Name = "uiCheckBox_LotAction";
+            uiCheckBox_LotAction.ReadOnly = true;
+            uiCheckBox_LotAction.Size = new Size(126, 32);
+            uiCheckBox_LotAction.TabIndex = 4;
+            uiCheckBox_LotAction.Text = "LotAction";
+            uiCheckBox_LotAction.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
+            // 
             // checkBox_checkrecipe
             // 
             checkBox_checkrecipe.AutoSize = true;
@@ -194,7 +211,7 @@ namespace EAP.Client.Forms
             label_ProcessState.BackColor = Color.Gray;
             label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F);
             label_ProcessState.ForeColor = Color.White;
-            label_ProcessState.Location = new Point(178, 32);
+            label_ProcessState.Location = new Point(147, 32);
             label_ProcessState.Name = "label_ProcessState";
             label_ProcessState.Size = new Size(103, 27);
             label_ProcessState.TabIndex = 3;
@@ -229,12 +246,12 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
+            button_CompareRecipe.Location = new Point(490, 143);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
             button_CompareRecipe.TabIndex = 5;
-            button_CompareRecipe.Text = "比较参数";
+            button_CompareRecipe.Text = "比较Body";
             button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             button_CompareRecipe.Click += button_CompareRecipe_Click;
             // 
@@ -256,13 +273,14 @@ namespace EAP.Client.Forms
             // uiButton_ScanToDownloadRecipe
             // 
             uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
+            uiButton_ScanToDownloadRecipe.Location = new Point(490, 104);
             uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
             uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
             uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
             uiButton_ScanToDownloadRecipe.TabIndex = 5;
-            uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
+            uiButton_ScanToDownloadRecipe.Text = "扫Lot下载程式";
             uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_ScanToDownloadRecipe.Visible = false;
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // MainForm
@@ -308,5 +326,6 @@ namespace EAP.Client.Forms
         private UILabel label5;
         private UIButton button_CompareRecipe;
         private UIButton uiButton_ScanToDownloadRecipe;
+        private UICheckBox uiCheckBox_LotAction;
     }
 }
