@@ -181,7 +181,8 @@ namespace EAP.Client.Forms
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] +" Version: "+ assembly.GetName().Version.ToString();
+                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
+                notifyIcon.Text = _commonLibrary.CustomSettings["EquipmentType"] + " " + _commonLibrary.CustomSettings["EquipmentId"];
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
             }));
@@ -752,6 +753,29 @@ namespace EAP.Client.Forms
             }
             var relatedRecipe = EPPD.FirstOrDefault(it => it.Substring(0, it.Length > 10 ? 10 : it.Length) == recipeGroupName.Substring(0, recipeGroupName.Length > 10 ? 10 : recipeGroupName.Length));
             return relatedRecipe;
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Minimized;
+                this.Hide();
+            }
+            else if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            }
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Hide();
+            }
         }
     }
 }

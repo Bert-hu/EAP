@@ -56,6 +56,8 @@ namespace EAP.Client.Forms
             uiLabel2 = new UILabel();
             uiLabel1 = new UILabel();
             notifyIcon = new NotifyIcon(components);
+            uiButton_ScanToDownloadRecipe = new UIButton();
+            notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
             uiGroupBox1.SuspendLayout();
             SuspendLayout();
@@ -375,6 +377,13 @@ namespace EAP.Client.Forms
             notifyIcon.Text = "EAP.Client";
             notifyIcon.Visible = true;
             // 
+            // notifyIcon
+            // 
+            notifyIcon.Icon = (Icon)resources.GetObject("notifyIcon.Icon");
+            notifyIcon.Text = "EAP.Client";
+            notifyIcon.Visible = true;
+            notifyIcon.MouseClick += notifyIcon_MouseClick;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -388,6 +397,7 @@ namespace EAP.Client.Forms
             ZoomScaleRect = new Rectangle(15, 15, 614, 638);
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
+            SizeChanged += MainForm_SizeChanged;
             groupBox_1.ResumeLayout(false);
             groupBox_1.PerformLayout();
             uiGroupBox1.ResumeLayout(false);
