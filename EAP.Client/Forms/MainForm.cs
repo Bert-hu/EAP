@@ -241,8 +241,8 @@ namespace EAP.Client.Forms
             {
                 if (args.Error is WebException)
                 {
-                    UIMessageBox.ShowError(
-                        @"There is a problem reaching update server. Please check your internet connection and try again later.");
+                    //UIMessageBox.ShowError(@"There is a problem reaching update server. Please check your internet connection and try again later.");
+                    this.Text = _configuration.GetSection("Custom")["EquipmentId"] + " " + _configuration.GetSection("Custom")["EquipmentType"];
                 }
                 else
                 {
