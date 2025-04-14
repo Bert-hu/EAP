@@ -1,43 +1,43 @@
 {
   "Secs": {
     "HeartBeatInterval": 0,
-    "EnableAllAlarm": true,
-    "EnableDynamicEvent": true,
-    "EnableAllEvent": false,
+    "EnableAllAlarm": false,
+    "EnableDynamicEvent": false,
+    "EnableAllEvent": true,
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 1005
+        "ID": 10000
       },
       {
         "Name": "ProcessState",
-        "ID": 1009
+        "ID": 10001
       }
-
     ],
     "ReportList": [
-      //{
-      //  "ID": 100,
-      //  "SvidNames": [ "ControlState", "ProcessState" ]
-      //},
 
     ],
     "CEIDList": [
+
+      {
+        "Name": "BarcodeScanned",
+        "ID": 10302,
+        "ReportIds": []
+      },
       {
         "Name": "ProcessStateChanged",
-        "ID": 10150,
+        "ID": 10002,
         "ReportIds": []
       }
-
     ],
     "ProcessStateCodes": {
       "0": "Idle",
       "1": "Idle",
-      "2": "Idle",
-      "3": "Idle",
-      "4": "Run",
+      "2": "Run",
+      "3": "Alarm",
+      "4": "Idle",
       "5": "Idle",
-      "6": "Run"
+      "6": "Alarm"
     }
   },
   "Others": {

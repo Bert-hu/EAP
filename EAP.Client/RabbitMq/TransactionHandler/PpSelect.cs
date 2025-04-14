@@ -29,6 +29,22 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 var recipeName = string.Empty;
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipeName = _rec?.ToString();
+                var stop = new SecsMessage(2, 41)
+                {
+                    SecsItem = L(
+                                   A("STOP"),
+                                   L(
+                                       L(
+
+                                           )
+                                       ))
+                };
+                await secsGem.SendAsync(stop);
+
+                //等2秒
+                Thread.Sleep(5000);
+
+
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(

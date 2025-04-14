@@ -17,14 +17,12 @@ namespace EAP.Client.RabbitMq
         internal readonly ISecsConnection hsmsConnection;
         internal readonly CommonLibrary commonLibrary;
 
-        public CompareRecipe(RabbitMqService rabbitMq, ISecsGem secsGem, ISecsConnection hsmsConnection, CommonLibrary commonLibrary) 
+        public CompareRecipe(RabbitMqService rabbitMq, ISecsGem secsGem, ISecsConnection hsmsConnection, CommonLibrary commonLibrary)
         {
             this.rabbitMq = rabbitMq;
             this.secsGem = secsGem;
             this.hsmsConnection = hsmsConnection;
             this.commonLibrary = commonLibrary;
-
-
         }
 
         public async Task HandleTransaction(RabbitMqTransaction trans)
@@ -41,9 +39,8 @@ namespace EAP.Client.RabbitMq
 
                 var s1f3 = new SecsMessage(1, 3)
                 {
-                    SecsItem = L(
-      U4(10101)//Recipe Para,  
-  )
+                    SecsItem = L(U4(10101)//Recipe Para,
+                                                )
                 };
 
                 var s1f4 = secsGem.SendAsync(s1f3).Result;
@@ -71,7 +68,27 @@ namespace EAP.Client.RabbitMq
                     var compareResult = string.Empty;
                     var serverparas = JsonConvert.DeserializeObject<List<SinictecSpiRecipeParameter>>(recipeParameters);
 
+                    foreach (var s_groupPara in serverparas)
+                    {
+                        var m_groupPara = paras.FirstOrDefault(x => x.GroupName == s_groupPara.GroupName);
+                        if (m_groupPara == null)
+                        {
+                            compareResult += $"{s_groupPara.GroupName} 未找到\n";
+                            continue;
+                        }
+                        compareResult += CompareParameters(s_groupPara, m_groupPara);
+                    }
 
+                    if (string.IsNullOrEmpty(compareResult))
+                    {
+                        reptrans.Parameters.Add("Result", true);
+                        reptrans.Parameters.Add("Message", "Compare OK");
+                    }
+                    else
+                    {
+                        reptrans.Parameters.Add("Result", false);
+                        reptrans.Parameters.Add("Message", compareResult);
+                    }
                 }
 
             }
@@ -85,21 +102,37 @@ namespace EAP.Client.RabbitMq
         }
 
 
-        public string CompareDictionaries(Dictionary<string, object> machine, Dictionary<string, object> server)
+        List<string> compareProperties = new List<string>()
         {
-            StringBuilder result = new StringBuilder();
-            foreach (var kvPair in machine)
-            {
-                if (server.ContainsKey(kvPair.Key))
-                {
-                    if (server[kvPair.Key].ToString() != kvPair.Value.ToString())
-                    {
-                        result.AppendLine($"{kvPair.Key} Mahine:{kvPair.Value} vs Server:{server[kvPair.Key]}");
+            "HeightUSL",
+            "HeightLSL",
+            "AreaUSL",
+            "AreaLSL",
+            "VolumeUSL",
+            "VolumeLSL",
+            "ShiftXUSL",
+            "ShiftYUSL",
+            "StencilHeight"
+        };
 
-                    }
+        public string CompareParameters(SinictecSpiRecipeParameter param1, SinictecSpiRecipeParameter param2)
+        {
+            var differences = new List<string>();
+            var properties = typeof(SinictecSpiRecipeParameter).GetProperties();
+
+            foreach (var property in properties)
+            {
+                if (!compareProperties.Contains(property.Name)) continue;
+                var value1 = property.GetValue(param1);
+                var value2 = property.GetValue(param2);
+
+                if (!Equals(value1, value2))
+                {
+                    differences.Add($"GroupName: {param1.GroupName}, {property.Name}: Server: {value1}, Machine: {value2}");
                 }
             }
-            return result.ToString();
+
+            return differences.Count > 0 ? string.Join("\n", differences) : string.Empty;
         }
     }
 }
