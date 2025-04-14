@@ -39,15 +39,12 @@ namespace EAP.Client.Forms
             textBox_machinerecipe = new UITextBox();
             label2 = new UILabel();
             label_updatetime_aoi = new UILabel();
-            label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
             checkBox_checkrecipe = new UICheckBox();
-            label_ProcessState = new UILabel();
             textBox_projectname = new UITextBox();
             label5 = new UILabel();
             button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
-            uiButton_ScanToDownloadRecipe = new UIButton();
             notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
             SuspendLayout();
@@ -132,29 +129,15 @@ namespace EAP.Client.Forms
             label_updatetime_aoi.AutoSize = true;
             label_updatetime_aoi.Font = new Font("宋体", 12F);
             label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
+            label_updatetime_aoi.Location = new Point(202, 32);
             label_updatetime_aoi.Name = "label_updatetime_aoi";
             label_updatetime_aoi.Size = new Size(103, 16);
             label_updatetime_aoi.TabIndex = 2;
             label_updatetime_aoi.Text = "Update Time:";
             // 
-            // label_conn_status
-            // 
-            label_conn_status.AutoSize = true;
-            label_conn_status.BackColor = Color.Gray;
-            label_conn_status.Font = new Font("Microsoft YaHei UI", 15F);
-            label_conn_status.ForeColor = Color.White;
-            label_conn_status.Location = new Point(21, 32);
-            label_conn_status.Name = "label_conn_status";
-            label_conn_status.Size = new Size(120, 27);
-            label_conn_status.TabIndex = 3;
-            label_conn_status.Text = "Connecting";
-            // 
             // groupBox_1
             // 
             groupBox_1.Controls.Add(checkBox_checkrecipe);
-            groupBox_1.Controls.Add(label_ProcessState);
-            groupBox_1.Controls.Add(label_conn_status);
             groupBox_1.Controls.Add(textBox_panelid);
             groupBox_1.Controls.Add(textBox_projectname);
             groupBox_1.Controls.Add(textBox_modelname);
@@ -182,26 +165,13 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe.Checked = true;
             checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 15F);
             checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
-            checkBox_checkrecipe.Location = new Point(21, 265);
+            checkBox_checkrecipe.Location = new Point(15, 267);
             checkBox_checkrecipe.MinimumSize = new Size(1, 1);
             checkBox_checkrecipe.Name = "checkBox_checkrecipe";
-            checkBox_checkrecipe.Size = new Size(250, 32);
+            checkBox_checkrecipe.Size = new Size(178, 32);
             checkBox_checkrecipe.TabIndex = 4;
-            checkBox_checkrecipe.Text = "MP模式（检查Recipe）";
+            checkBox_checkrecipe.Text = "自动检查Recipe";
             checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
-            // 
-            // label_ProcessState
-            // 
-            label_ProcessState.AutoSize = true;
-            label_ProcessState.BackColor = Color.Gray;
-            label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F);
-            label_ProcessState.ForeColor = Color.White;
-            label_ProcessState.Location = new Point(178, 32);
-            label_ProcessState.Name = "label_ProcessState";
-            label_ProcessState.Size = new Size(103, 27);
-            label_ProcessState.TabIndex = 3;
-            label_ProcessState.Text = "Unknown";
-            label_ProcessState.Visible = false;
             // 
             // textBox_projectname
             // 
@@ -231,7 +201,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
+            button_CompareRecipe.Location = new Point(494, 53);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -255,18 +225,6 @@ namespace EAP.Client.Forms
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
-            // uiButton_ScanToDownloadRecipe
-            // 
-            uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
-            uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
-            uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
-            uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
-            uiButton_ScanToDownloadRecipe.TabIndex = 5;
-            uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
-            uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
-            // 
             // notifyIcon
             // 
             notifyIcon.Icon = (Icon)resources.GetObject("notifyIcon.Icon");
@@ -278,7 +236,6 @@ namespace EAP.Client.Forms
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
-            Controls.Add(uiButton_ScanToDownloadRecipe);
             Controls.Add(richTextBox1);
             Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
@@ -306,18 +263,15 @@ namespace EAP.Client.Forms
         private UILabel label3;
         private UILabel label4;
         private UILabel label_updatetime_aoi;
-        private UILabel label_conn_status;
         private UIButton button1;
         private UIButton button_getModelName;
         private UIGroupBox groupBox1;
         private UIGroupBox groupBox_1;
-        private UILabel label_ProcessState;
         private UICheckBox checkBox_checkrecipe;
         private UIRichTextBox richTextBox1;
         private UITextBox textBox_projectname;
         private UILabel label5;
         private UIButton button_CompareRecipe;
-        private UIButton uiButton_ScanToDownloadRecipe;
         private NotifyIcon notifyIcon;
     }
 }

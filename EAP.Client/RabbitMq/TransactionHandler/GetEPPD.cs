@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Secs4Net.Item;
+using Microsoft.Extensions.Configuration;
 
 namespace EAP.Client.RabbitMq
 {
@@ -16,11 +17,11 @@ namespace EAP.Client.RabbitMq
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         internal readonly RabbitMqService rabbitMq;
-        internal readonly ISecsGem secsGem;
-        public GetEPPD(RabbitMqService rabbitMq, ISecsGem secsGem) 
+        private readonly IConfiguration configuration;
+        public GetEPPD(RabbitMqService rabbitMq, IConfiguration configuration) 
         {
             this.rabbitMq = rabbitMq;
-            this.secsGem = secsGem;
+            this.configuration = configuration;
         }
 
         public  async Task HandleTransaction(RabbitMqTransaction trans)
@@ -28,15 +29,14 @@ namespace EAP.Client.RabbitMq
             var reptrans = trans.GetReplyTransaction();
             try
             {
-                var recipename = string.Empty;
-                SecsMessage s7f19 = new(7, 19, true)
-                {
-                };
-                var rep = await secsGem.SendAsync(s7f19);
                 List<string> EPPD = new List<string>();
-                foreach (var item in rep.SecsItem.Items)
+                var recipePath = configuration.GetSection("Custom")["MachineRecipePath"];
+                //找到当前路径下所有.rcp文件
+                var rcpFiles = Directory.GetFiles(recipePath, "*.rcp", SearchOption.TopDirectoryOnly);
+                foreach (var rcpFile in rcpFiles)
                 {
-                    EPPD.Add(item.GetString());
+                    var rcpName = Path.GetFileName(rcpFile);
+                    EPPD.Add(rcpName);
                 }
                 reptrans.Parameters.Add("Result", true);
                 reptrans.Parameters.Add("EPPD", EPPD);

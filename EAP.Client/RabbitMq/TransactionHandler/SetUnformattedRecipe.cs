@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Secs4Net.Item;
+using Microsoft.Extensions.Configuration;
+using System.IO.Compression;
 
 namespace EAP.Client.RabbitMq
 {
@@ -15,11 +17,11 @@ namespace EAP.Client.RabbitMq
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
         internal readonly RabbitMqService rabbitMq;
-        internal readonly ISecsGem secsGem;
-        public SetUnformattedRecipe(RabbitMqService rabbitMq, ISecsGem secsGem)
+        internal readonly IConfiguration configuration;
+        public SetUnformattedRecipe(RabbitMqService rabbitMq, IConfiguration configuration)
         {
             this.rabbitMq = rabbitMq;
-            this.secsGem = secsGem; 
+            this.configuration = configuration; 
         }
 
         public  async Task HandleTransaction(RabbitMqTransaction trans)
@@ -32,87 +34,17 @@ namespace EAP.Client.RabbitMq
                 byte[] recipebody = new byte[0];
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
                 if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) recipebody = Convert.FromBase64String(_body.ToString());
-                SecsMessage s7f1 = new(7, 1, true)
-                {
-                    SecsItem =
-                    L(
-                        A(recipename),
-                        U4((uint)recipebody.Length)
-                    )
-                };
-                var s7f2 = await secsGem.SendAsync(s7f1);
-                var s7f2ack = s7f2.SecsItem.FirstValue<byte>();
-                switch (s7f2ack)
-                {
-                    case 1:
-                        Message = "Load already";
-                        break;
-                    case 2:
-                        Message = "No space";
-                        break;
-                    case 3:
-                        Message = "Invalid PPID";
-                        break;
-                    case 4:
-                        Message = "Busy, try again";
-                        break;
-                    case 5:
-                        Message = "Denied";
-                        break;
-                    default:
-                        Message = "Other error";
-                        break;
-                }
-                if (s7f2ack == 0)
-                {
 
-                    SecsMessage s7f3 = new(7, 3, true)
-                    {
-                        SecsItem =
-                        L(
-                            A(recipename),
-                            B(recipebody)
-                        )
-                    };
-                    var s7f4 = await secsGem.SendAsync(s7f3);
-                    var s7f4ack = s7f4.SecsItem.FirstValue<byte>();
-                    switch (s7f4ack)
-                    {
-                        case 1:
-                            Message = "Denied";
-                            break;
-                        case 2:
-                            Message = "Length error";
-                            break;
-                        case 3:
-                            Message = "Reserved";
-                            break;
-                        case 4:
-                            Message = "PPID not found";
-                            break;
-                        case 5:
-                            Message = "Mode unsupported";
-                            break;
-                        default:
-                            Message = "Other error";
-                            break;
-                    }
-                    if (s7f4ack == 0)
-                    {
-                        reptrans.Parameters.Add("Result", true);
-                        reptrans.Parameters.Add("Message", $"Success");
-                    }
-                    else//PPI FAIL
-                    {
-                        reptrans.Parameters.Add("Result", false);
-                        reptrans.Parameters.Add("Message", $"Equipment PP Send Fail, Reason: {Message}");
-                    }
-                }
-                else
+                var recipePath = configuration.GetSection("Custom")["MachineRecipePath"];
+                var filePath = Path.Combine(recipePath, recipename);
+                if (System.IO.File.Exists(filePath))
                 {
-                    reptrans.Parameters.Add("Result", false);
-                    reptrans.Parameters.Add("Message", $"Equipment Inquire Fail, Reason: {Message}");
+                    System.IO.File.Delete(filePath);
                 }
+
+                DecompressFile(recipebody, filePath);
+                reptrans.Parameters.Add("Result", true);
+                reptrans.Parameters.Add("Message", $"Success");
             }
             catch (Exception ex)
             {
@@ -121,6 +53,26 @@ namespace EAP.Client.RabbitMq
                 dbgLog.Error(ex.Message, ex);
             }
             rabbitMq.Produce(trans.ReplyChannel, reptrans);
+
+        }
+        void DecompressFile(byte[] data, string outputFilePath)
+        {
+            using (MemoryStream memoryStream = new MemoryStream(data))
+            using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Read))
+            {
+                if (archive.Entries.Count != 1)
+                {
+                    // Handle error: The archive should contain exactly one entry for a single file
+                    throw new InvalidOperationException("Invalid archive format for a single file decompression.");
+                }
+                ZipArchiveEntry entry = archive.Entries[0];
+                using (Stream entryStream = entry.Open())
+                using (FileStream fileStream = System.IO.File.Create(outputFilePath))
+                {
+                    entryStream.CopyTo(fileStream);
+                }
+                System.IO.File.SetLastWriteTime(outputFilePath, entry.LastWriteTime.DateTime);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -23,14 +24,14 @@ namespace EAP.Client.Utils
 
             try
             {
-                var jsonBody = JsonSerializer.Serialize(body);
+                var jsonBody = JsonConvert.SerializeObject(body);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
                 using var response = await _httpClient.PostAsync(url, content, cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 var responseString = await response.Content.ReadAsStringAsync(cts.Token);
-                return JsonSerializer.Deserialize<T>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return JsonConvert.DeserializeObject<T>(responseString);
             }
             catch (TaskCanceledException)
             {

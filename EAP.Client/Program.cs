@@ -1,3 +1,4 @@
+using EAP.Client.File;
 using EAP.Client.Forms;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
@@ -63,7 +64,9 @@ namespace EAP.Client
                     //RabbitMqService
                     services.AddRabbitMq();
 
-                    services.AddHostedService<SecsWorker>();
+                    //services.AddHostedService<SecsWorker>();
+                    services.AddHostedService<FileSfisWorker>();
+
                     services.AddSingleton<MainForm>();
 
                 });
