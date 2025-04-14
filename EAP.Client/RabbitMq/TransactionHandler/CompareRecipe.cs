@@ -1,4 +1,5 @@
-﻿using EAP.Client.Secs;
+﻿using EAP.Client.Models;
+using EAP.Client.Secs;
 using log4net;
 using Newtonsoft.Json;
 using Secs4Net;
@@ -38,8 +39,40 @@ namespace EAP.Client.RabbitMq
                 if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) recipebody = Convert.FromBase64String(_body.ToString());
                 if (trans.Parameters.TryGetValue("RecipeParameters", out object _parameters)) recipeParameters = _parameters.ToString();
 
-                reptrans.Parameters.Add("Result", false);
-                reptrans.Parameters.Add("Message", $"recipe内容比对方法未实现");
+                var s1f3 = new SecsMessage(1, 3)
+                {
+                    SecsItem = L(
+      U4(10101)//Recipe Para,  
+  )
+                };
+
+                var s1f4 = secsGem.SendAsync(s1f3).Result;
+
+                var currentRecipeName = s1f4.SecsItem.Items[0][0].GetString();
+
+                if (currentRecipeName != recipename)
+                {
+                    reptrans.Parameters.Add("Result", false);
+                    reptrans.Parameters.Add("Message", $"Compare Recipe失败，当前程式是{currentRecipeName},请切换到{recipename}后重试");
+                    dbgLog.Error($"Compare Recipe失败，当前程式是{currentRecipeName},请切换到{recipename}后重试");
+                }
+                else
+                {
+                    List<SinictecSpiRecipeParameter> paras = new List<SinictecSpiRecipeParameter>();
+
+                    for (int grp = 1; grp < s1f4.SecsItem.Items[0].Count; grp++)
+                    {
+                        var groupStr = s1f4.SecsItem.Items[0][grp].GetString();
+                        var para = GetUnformattedRecipe.ParseParameter(groupStr);
+                        paras.Add(para);
+                    }
+
+                    //var machineParaStr = JsonConvert.SerializeObject(paras, Formatting.Indented);
+                    var compareResult = string.Empty;
+                    var serverparas = JsonConvert.DeserializeObject<List<SinictecSpiRecipeParameter>>(recipeParameters);
+
+
+                }
 
             }
             catch (Exception ex)
