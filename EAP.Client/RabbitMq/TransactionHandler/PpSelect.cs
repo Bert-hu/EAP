@@ -37,75 +37,86 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipeName = _rec?.ToString();
                 var controlStateVID = commonLibrary.GetGemSvid("ControlState");
                 var processStateVID = commonLibrary.GetGemSvid("ProcessState");
-
-                SecsMessage s1f3 = new(1, 3, true)
+                if (!ProcessStateChanged.NeedChangeRecipe)
                 {
-                    SecsItem = L(
-        U4((uint)controlStateVID.ID),
-        U4((uint)processStateVID.ID)
-        )
-                };
-                var s1f4 = await secsGem.SendAsync(s1f3);
-                var controlStateCode = s1f4.SecsItem[0].FirstValue<byte>();
-                var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
-
-                if (processStateCode == 1)//空闲状态，直接发切换指令
-                {
-                    traLog.Info($"Send PP-SELECT COMMAND '{recipeName}'");
-                    var s2f41 = new SecsMessage(2, 41)
+                    SecsMessage s1f3 = new(1, 3, true)
                     {
                         SecsItem = L(
-            A("PP-SELECT"),
-            L(
-                L(
-                      A("PPID"),
-                      A(recipeName)
-                    )
-                ))
+          U4((uint)controlStateVID.ID),
+          U4((uint)processStateVID.ID)
+          )
                     };
-                    await secsGem.SendAsync(s2f41);
+                    var s1f4 = await secsGem.SendAsync(s1f3);
+                    var controlStateCode = s1f4.SecsItem[0].FirstValue<byte>();
+                    var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
+                    ProcessStateChanged.NeedChangeRecipe = true;
 
-                }
-                else //非空闲状态，先发送Stop
-                {
-                    if (!ProcessStateChanged.OnPpSelectStatus)
+                    if (processStateCode != 4)//空闲状态，直接发切换指令
                     {
-                        traLog.Info($"Send STOP COMMAND.");
-                        var s2f41stop = new SecsMessage(2, 41)
+                        traLog.Info($"Send PP-SELECT COMMAND '{recipeName}'");
+                        var s2f41 = new SecsMessage(2, 41)
                         {
                             SecsItem = L(
-                              A("STOP"),
-                              L(
-
-                                  )
-                              )
+                A("PP-SELECT"),
+                L(
+                    L(
+                          A("PPID"),
+                          A(recipeName)
+                        )
+                    ))
                         };
-
-                        var s2f42stop = await secsGem.SendAsync(s2f41stop);
-                        if (s2f42stop.SecsItem.Items[0].FirstValue<byte>() != 0)
+                        await secsGem.SendAsync(s2f41);
+                        ProcessStateChanged.OnPpSelectStatus = true;
+                        ProcessStateChanged.ChangeRecipeName = recipeName;
+                        ProcessStateChanged.ChangeDateTime = DateTime.Now;
+                    }
+                    else //非空闲状态，先发送Stop
+                    {
+                        if (!ProcessStateChanged.OnPpSelectStatus)
                         {
-                            traLog.Info($"Machine reject stop command");
-                            reptrans.Parameters.Add("Result", false);
-                            reptrans.Parameters.Add("Message", "设备拒绝停止指令");
+                            traLog.Info($"Send STOP COMMAND.");
+                            var s2f41stop = new SecsMessage(2, 41)
+                            {
+                                SecsItem = L(
+                                  A("STOP"),
+                                  L(
 
-                        }
-                        else
-                        {
-                            ProcessStateChanged.NeedChangeRecipe = true;
-                            ProcessStateChanged.OnPpSelectStatus = true;
+                                      )
+                                  )
+                            };
+
+                            var s2f42stop = await secsGem.SendAsync(s2f41stop);
+                            if (s2f42stop.SecsItem.Items[0].FirstValue<byte>() != 0)
+                            {
+                                traLog.Info($"Machine reject stop command");
+                                reptrans.Parameters.Add("Result", false);
+                                reptrans.Parameters.Add("Message", "设备拒绝停止指令");
+
+                            }
+                            else
+                            {
+
+                            }
+                            ProcessStateChanged.OnPpSelectStatus = false;
                             ProcessStateChanged.ChangeRecipeName = recipeName;
                             ProcessStateChanged.ChangeDateTime = DateTime.Now;
                         }
+                        else
+                        {
+                            reptrans.Parameters.Add("Result", false);
+                            reptrans.Parameters.Add("Message", "设备正在切换，请等待完成后再试");
+                        }
                     }
-                    else
-                    {
-                        reptrans.Parameters.Add("Result", false);
-                        reptrans.Parameters.Add("Message", "设备正在切换，请等待完成后再试");
-                    }
+
+                    reptrans.Parameters.Add("Result", true);
+                    reptrans.Parameters.Add("Message", "发送指令成功！");
+                }
+                else
+                {
+                    reptrans.Parameters.Add("Result", false);
+                    reptrans.Parameters.Add("Message", "正在切换，请等待后重试！");
                 }
 
-                reptrans.Parameters.Add("Result", true);
-                reptrans.Parameters.Add("Message", "发送指令成功！");
             }
             catch (Exception ex)
             {

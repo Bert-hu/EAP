@@ -9,8 +9,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
     internal class BarcodeScanned : IEventHandler
     {
-        private static readonly log4net.ILog dbgLog = log4net.LogManager.GetLogger("dbgLog");
-        private static readonly log4net.ILog traLog = log4net.LogManager.GetLogger("traLog");
+        private static readonly log4net.ILog dbgLog = log4net.LogManager.GetLogger("Debug");
+        private static readonly log4net.ILog traLog = log4net.LogManager.GetLogger("Trace");
 
         private readonly ISecsGem secsGem;
         private readonly RabbitMqService rabbitMqService;

@@ -13,7 +13,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
     internal class ProcessStateChanged : IEventHandler
     {
-        private static readonly ILog traLog = log4net.LogManager.GetLogger("traLog");
+        private static readonly ILog traLog = log4net.LogManager.GetLogger("Trace");
         private readonly ISecsGem secsGem;
         private RabbitMqService rabbitMqService;
         private readonly IServiceProvider serviceProvider;
@@ -41,10 +41,10 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 handler.HandleTransaction(null);
             }
             int processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][0].FirstValue<byte>();
-            bool idlestate = processStateCode == 1;
+            bool idlestate = (processStateCode == 1 || processStateCode == 5);
             //bool recmoteControl = commonLibrary.CustomSettings["RemoteControl"]?.ToUpper() == "TRUE";
 
-            if (idlestate && NeedChangeRecipe)
+            if (idlestate && NeedChangeRecipe && !OnPpSelectStatus)
             {
                 if (!string.IsNullOrEmpty(ChangeRecipeName) && ChangeDateTime.AddMinutes(2) > DateTime.Now)//2分钟内的切换指令
                 {
@@ -68,15 +68,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         traLog.Error($"切换机种指令被拒绝, Code: {s2f42ppselect.SecsItem.Items[0].FirstValue<byte>()}");
                         return;
                     }
+                    OnPpSelectStatus = true;
                 }
-                else//大于2分钟的直接关闭切换，以免出错
-                {
-                    traLog.Warn($"有超时的切换机种任务：{NeedChangeRecipe}");
-                }
-                NeedChangeRecipe = false;
-                OnPpSelectStatus = false;
-                ChangeDateTime = DateTime.MinValue;
-                ChangeRecipeName = string.Empty;
             }
 
         }

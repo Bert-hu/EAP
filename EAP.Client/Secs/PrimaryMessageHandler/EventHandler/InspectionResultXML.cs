@@ -49,10 +49,12 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 else//大于3分钟的xml报告直接关闭切换，以免出错
                 {
                     traLog.Warn($"有超时的切换机种任务：{linkedRecipeName}");
+                    ProcessStateChanged.OnPpSelectStatus = false;
                     ProcessStateChanged.NeedChangeRecipe = false;
                     ProcessStateChanged.ChangeDateTime = DateTime.MinValue;
                     ProcessStateChanged.ChangeRecipeName = string.Empty;
                 }
+
             }
         }
 
