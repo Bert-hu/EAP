@@ -47,17 +47,15 @@ namespace EAP.Client.RabbitMq
                         string processState = "Unknown";
                         switch (controlStateCode)
                         {
-                            case 1:
-                            case 2:
-                            case 3:
+                            case 0:
                                 controlState = "Offline";
                                 break;
-                            case 4:
-                                controlState = "OnlineLocal";
-                                break;
-                            case 5:
+                            case 1:
                                 controlState = "OnlineRemote";
                                 break;
+                            case 2:
+                                controlState = "OnlineLocal";
+                                break;                              
                             default:
                                 controlState = "Unknown";
                                 break;
