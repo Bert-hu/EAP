@@ -16,9 +16,9 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         private readonly RabbitMqService rabbitMqService;
         private readonly CommonLibrary commonLibrary;
 
-        public static bool OnPpSelectStatus = false;
-        public static string OnPpSelectStatusRecipeName = string.Empty;
-        public static DateTime OnPpSelectStatusTime = DateTime.MinValue;
+        //public static bool OnPpSelectStatus { get; set; } = false;
+        //public static string OnPpSelectStatusRecipeName { get; set; } = string.Empty;
+        //public static DateTime OnPpSelectStatusTime { get; set; } = DateTime.MinValue;
 
         public BarcodeScanned(RabbitMqService rabbitMq, ISecsGem secsGem, IServiceProvider serviceProvider, CommonLibrary commonLibrary)
         {
@@ -81,7 +81,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                             {
                                 if (MainForm.Instance.ConfirmMessageBox($"Panelid: {panelsn},ModelName:{modelName},recipe 不匹配，是否切换到 {linkedRecipeName} ？"))
                                 {
-                                    if (!OnPpSelectStatus)//避免重复切换
+                                    if (!ProcessStateChanged.OnPpSelectStatus)//避免重复切换
                                     {
                                         traLog.Info($"Send STOP COMMAND '{linkedRecipeName}'");
                                         var s2f41stop = new SecsMessage(2, 41)
@@ -103,9 +103,9 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                                         }
                                         else
                                         {
-                                            OnPpSelectStatus = true;
-                                            OnPpSelectStatusRecipeName = linkedRecipeName;
-                                            OnPpSelectStatusTime = DateTime.Now;
+                                            ProcessStateChanged.OnPpSelectStatus = true;
+                                            ProcessStateChanged.ChangeRecipeName = linkedRecipeName;
+                                            ProcessStateChanged.ChangeDateTime = DateTime.Now;
                                         }
                                     }
                                 }

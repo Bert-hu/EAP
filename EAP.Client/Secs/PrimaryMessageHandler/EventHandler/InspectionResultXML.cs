@@ -23,8 +23,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             bool recmoteControl = commonLibrary.CustomSettings["RemoteControl"]?.ToUpper() == "TRUE";
             if (recmoteControl)
             {
-                var linkedRecipeName = BarcodeScanned.OnPpSelectStatusRecipeName;
-                if (BarcodeScanned.OnPpSelectStatus && BarcodeScanned.OnPpSelectStatusTime.AddMinutes(2) > DateTime.Now)//2分钟内的收到xml报告,发送停止到报告生成一般在一分钟左右
+                var linkedRecipeName = ProcessStateChanged.ChangeRecipeName;
+                if (ProcessStateChanged.NeedChangeRecipe && ProcessStateChanged.ChangeDateTime.AddMinutes(2) > DateTime.Now)//2分钟内的收到xml报告,发送停止到报告生成一般在一分钟左右
                 {
                     traLog.Info($"Send PP-SELECT COMMAND '{linkedRecipeName}'");
                     var s2f41ppselect = new SecsMessage(2, 41)
@@ -49,9 +49,9 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 else//大于3分钟的xml报告直接关闭切换，以免出错
                 {
                     traLog.Warn($"有超时的切换机种任务：{linkedRecipeName}");
-                    BarcodeScanned.OnPpSelectStatus = false;
-                    BarcodeScanned.OnPpSelectStatusTime = DateTime.MinValue;
-                    BarcodeScanned.OnPpSelectStatusRecipeName = string.Empty;
+                    ProcessStateChanged.NeedChangeRecipe = false;
+                    ProcessStateChanged.ChangeDateTime = DateTime.MinValue;
+                    ProcessStateChanged.ChangeRecipeName = string.Empty;
                 }
             }
         }
