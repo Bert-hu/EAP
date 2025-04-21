@@ -74,8 +74,18 @@ namespace EAP.Client.File
                         var sfisPort = int.Parse(configuration.GetSection("Custom")["SfisPort"]);
 
                         var files = Directory.GetFiles(machinePath, "*.json", SearchOption.TopDirectoryOnly);
-                        if (files.Length > 0)
+                        FileInfo[] fileInfos = new FileInfo[files.Length];
+                        for (int i = 0; i < files.Length; i++)
                         {
+                            fileInfos[i] = new FileInfo(files[i]);
+                        }
+                        //只处理2分钟内的文件
+                        fileInfos = fileInfos.Where(f => (DateTime.Now - f.LastWriteTime).TotalMinutes < 2).ToArray();
+                        //if (fileInfos.Length > 0)
+                            if (files.Length > 0)
+                        {
+
+
                             var processedFolder = Path.Combine(machinePath, "Processed");
                             if (!Directory.Exists(processedFolder)) Directory.CreateDirectory(processedFolder);
                             var file = files.OrderBy(f => System.IO.File.GetLastWriteTime(f)).First();

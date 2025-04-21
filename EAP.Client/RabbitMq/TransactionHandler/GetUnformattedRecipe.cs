@@ -4,6 +4,7 @@ using Secs4Net;
 using Secs4Net.Sml;
 using EAP.Client.Secs;
 using static Secs4Net.Item;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace EAP.Client.RabbitMq
 {
@@ -37,9 +38,26 @@ namespace EAP.Client.RabbitMq
                 var data = rep.SecsItem[1].GetMemory<byte>().ToArray();
 
                 var strbody = Convert.ToBase64String(data);
+
+                var guid = Guid.NewGuid().ToString();//
+                var machineRecipeFile = guid + "\\Machine\\" + recipename + ".zip";
+                Directory.CreateDirectory(Path.GetDirectoryName(machineRecipeFile));
+                using (FileStream fs = new FileStream(machineRecipeFile, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(data, 0, data.Length);
+                }
+
+                var fastzip = new FastZip();
+                var machinePath = Path.GetDirectoryName(machineRecipeFile);
+                fastzip.ExtractZip(machineRecipeFile, machinePath, null);
+                var machineJsonFile = Directory.GetFiles(machinePath, "*.json", SearchOption.AllDirectories).FirstOrDefault();
+                var machineRecipeText = System.IO.File.ReadAllText(machineJsonFile);
+
+
                 reptrans.Parameters.Add("Result", true);
                 reptrans.Parameters.Add("RecipeName", reprecipename);
                 reptrans.Parameters.Add("RecipeBody", strbody);
+                reptrans.Parameters.Add("RecipeParameters", machineRecipeText);
             }
             catch (Exception ex)
             {
