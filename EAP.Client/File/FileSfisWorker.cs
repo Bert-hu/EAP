@@ -6,6 +6,7 @@ using EAP.Client.Utils;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Sunny.UI;
 using System.Net;
 
@@ -215,7 +216,14 @@ namespace EAP.Client.File
                                             traceability.RecipeName = recipeName;
                                             traceability.InputTime = DateTime.Now;
                                             traceability.RecipePara = GetUnformattedRecipe.lastReadRecipePara; //调用RabbitMq CompareRecipe后这里一定不为空
-                                                                                                               
+                                            var EquipmentId = configuration.GetSection("Custom")["EquipmentId"];
+                                            var traceFile = $"{EquipmentId}\\{DateTime.Today.ToString("yyyyMMdd")}\\{panelId}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+                                            var traceFilePath = Path.GetDirectoryName(traceFile);
+                                            if (!Directory.Exists(traceFilePath))
+                                            {
+                                                Directory.CreateDirectory(traceFilePath);
+                                            }
+                                            System.IO.File.WriteAllText(traceFile, JsonConvert.SerializeObject(traceability,Formatting.Indented));
                                         }
 
                                     }
@@ -226,7 +234,7 @@ namespace EAP.Client.File
                                         MainForm.Instance.ShowErrorDialog2(errmsg);
 
                                         //把文件移动到当前路径Error文件夹
-                                        var errorFile = Path.Combine(errorFolder, Path.GetFileName(file)+ "_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+                                        var errorFile = Path.Combine(errorFolder, Path.GetFileName(file) + "_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
                                         System.IO.File.Move(file, errorFile);
                                     }
                                 }
