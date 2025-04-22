@@ -266,7 +266,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        public bool isAutoCheckRecipe = true;
+        public bool isAutoCheckRecipe { get; set; } = true;
         private void checkBox_checkrecipe_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_checkrecipe.Checked == false)
@@ -301,7 +301,7 @@ namespace EAP.Client.Forms
             {
                 currentRecipeName = Path.GetFileName(currentRecipeFileName);
             }
-           UpdateMachineRecipe(currentRecipeName);
+            UpdateMachineRecipe(currentRecipeName);
             var res = RmsFunction.CompareRecipeBody(_rabbitMq, _configuration, this.textBox_machinerecipe.Text);
 
             if (res.Result)

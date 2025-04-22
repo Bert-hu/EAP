@@ -107,7 +107,6 @@ namespace EAP.Client.RabbitMq
             }
         }
 
-
         public static RecipePara? GetRecipePara(string recipeName, string recipeText)
         {
 
