@@ -6,7 +6,7 @@ using Secs4Net;
 using static Secs4Net.Item;
 
 namespace EAP.Client.Secs
-{ 
+{
     internal static class SecsInitialization
     {
         private static ISecsGem _secsGem;
@@ -25,29 +25,36 @@ namespace EAP.Client.Secs
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                     var token = cancellationTokenSource.Token;
                     await Task.Delay(1000);
-                   // var s1f13 = commonLibrary.GetSecsMessageByName("S1F13");
-                   var s1f13 = new SecsMessage(1, 13, true)
-                   {
-                       SecsItem = L()
-                    };  
+                    // var s1f13 = commonLibrary.GetSecsMessageByName("S1F13");
+                    var s1f13 = new SecsMessage(1, 13, true)
+                    {
+                        SecsItem = L()
+                    };
                     var rep = await _secsGem.SendAsync(s1f13, token);
                     if (rep.F == 14)
                     {
                         await Task.Delay(1000);
 
-                        if (_commonLibrary.SecsConfigs.EnableDynamicEvent)
+                        var s1f17 = new SecsMessage(1, 17, true)
                         {
-                            if (await DisableEvent(token))
-                                if (await UnlinkEventReport(token))
-                                    if (await UndefineReport(token))
-                                        if (await DefineReport(token))
-                                            if (await LinkEventReport(token))
-                                                await EnableEvent(token);
-                        }
-                        if (_commonLibrary.SecsConfigs.EnableAllAlarm)
+                     
+                        };
+                        var s1f18 = await _secsGem.SendAsync(s1f17, token);
                         {
-                            if (await DisableAlarm(token))
-                                await EnableAlarm(token);
+                            if (_commonLibrary.SecsConfigs.EnableDynamicEvent)
+                            {
+                                if (await DisableEvent(token))
+                                    if (await UnlinkEventReport(token))
+                                        if (await UndefineReport(token))
+                                            if (await DefineReport(token))
+                                                if (await LinkEventReport(token))
+                                                    await EnableEvent(token);
+                            }
+                            if (_commonLibrary.SecsConfigs.EnableAllAlarm)
+                            {
+                                if (await DisableAlarm(token))
+                                    await EnableAlarm(token);
+                            }
                         }
                     }
                     traceLog.Warn("Initialization completed!");

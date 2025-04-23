@@ -27,19 +27,31 @@ namespace EAP.Client.RabbitMq
                 var recipename = string.Empty;
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
 
-                SecsMessage s7f5 = new(7, 5, true)
+                var reqindex = recipename.Split('_')[0];
+                SecsMessage s7f25 = new(7, 25, true)
                 {
-                    SecsItem = A(recipename)
+                    SecsItem = A(reqindex)
                 };
-                var rep = await secsGem.SendAsync(s7f5);
-                rep.Name = null;
-                var reprecipename = rep.SecsItem[0].GetString();
-                var data = rep.SecsItem[1].GetMemory<byte>().ToArray();
+                var s7f26 = await secsGem.SendAsync(s7f25);
+                s7f26.Name = null;
+                var reprecipename = s7f26.SecsItem[0].GetString();
 
-                var strbody = Convert.ToBase64String(data);
-                reptrans.Parameters.Add("Result", true);
-                reptrans.Parameters.Add("RecipeName", reprecipename);
-                reptrans.Parameters.Add("RecipeBody", strbody);
+                if (s7f26.F == 26 && s7f26.SecsItem != null)
+                {
+                    var data = s7f26.ToSml();
+                    //var strbody = Convert.ToBase64String(data);
+                    reptrans.Parameters.Add("Result", true);
+                    reptrans.Parameters.Add("RecipeName", reprecipename);
+                    reptrans.Parameters.Add("RecipeBody", data);
+                    reptrans.Parameters.Add("RecipeParameters", data);
+                }
+                else
+                {
+                    reptrans.Parameters.Add("Result", false);
+                    reptrans.Parameters.Add("RecipeName", reprecipename);
+                    reptrans.Parameters.Add("Message", "Machine does not support formatted recipe!");
+                }
+
             }
             catch (Exception ex)
             {

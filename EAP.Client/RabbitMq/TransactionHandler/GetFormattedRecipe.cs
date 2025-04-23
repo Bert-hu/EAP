@@ -25,9 +25,11 @@ namespace EAP.Client.RabbitMq
             {
                 var recipename = string.Empty;
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
+
+                var reqindex = recipename.Split('_')[0];
                 SecsMessage s7f25 = new(7, 25, true)
                 {
-                    SecsItem = A(recipename)
+                    SecsItem = A(reqindex)
                 };
                 var s7f26 = await secsGem.SendAsync(s7f25);
                 s7f26.Name = null;

@@ -2,16 +2,16 @@
   "Secs": {
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
-    "EnableDynamicEvent": true,
+    "EnableDynamicEvent": false,
     "EnableAllEvent": false,
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 1005
+        "ID": 12
       },
       {
         "Name": "ProcessState",
-        "ID": 1009
+        "ID": 15
       }
 
     ],
@@ -33,11 +33,8 @@
     "ProcessStateCodes": {
       "0": "Idle",
       "1": "Idle",
-      "2": "Idle",
-      "3": "Idle",
-      "4": "Run",
-      "5": "Idle",
-      "6": "Run"
+      "2": "Run",
+      "4": "Idle"
     }
   },
   "Others": {
