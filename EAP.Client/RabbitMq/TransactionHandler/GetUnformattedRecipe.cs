@@ -38,7 +38,8 @@ namespace EAP.Client.RabbitMq
 
                 if (s7f26.F == 26 && s7f26.SecsItem != null)
                 {
-                    var data = s7f26.ToSml();
+                    byte[] bytedata = new byte[];
+                    var data = s7f26.SecsItem.EncodeTo();
                     //var strbody = Convert.ToBase64String(data);
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("RecipeName", reprecipename);
