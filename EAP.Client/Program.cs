@@ -50,17 +50,18 @@ namespace EAP.Client
 
 
             var host = Host.CreateDefaultBuilder(args).UseWindowsService()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.SetBasePath(AppContext.BaseDirectory)
+                          .AddJsonFile("Machine.json", optional: true, reloadOnChange: true);
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton<ILog>(sp => LogManager.GetLogger(typeof(Program)));
-
                     //Secs
                     services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
-                    services.AddSingleton<CommonLibrary>();
 
                     //RabbitMqService
                     services.AddRabbitMq();
-
 
                     services.AddHostedService<SecsWorker>();
                     services.AddSingleton<MainForm>();

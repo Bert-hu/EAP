@@ -30,6 +30,7 @@ namespace EAP.Client.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             textBox_panelid = new UITextBox();
             label_1 = new UILabel();
@@ -47,6 +48,7 @@ namespace EAP.Client.Forms
             button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
             uiButton_ScanToDownloadRecipe = new UIButton();
+            notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -265,6 +267,13 @@ namespace EAP.Client.Forms
             uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
+            // notifyIcon
+            // 
+            notifyIcon.Icon = (Icon)resources.GetObject("notifyIcon.Icon");
+            notifyIcon.Text = "EAP.Client";
+            notifyIcon.Visible = true;
+            notifyIcon.MouseClick += notifyIcon_MouseClick;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -280,6 +289,7 @@ namespace EAP.Client.Forms
             ZoomScaleRect = new Rectangle(15, 15, 614, 638);
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
+            SizeChanged += MainForm_SizeChanged;
             groupBox_1.ResumeLayout(false);
             groupBox_1.PerformLayout();
             ResumeLayout(false);
@@ -308,5 +318,6 @@ namespace EAP.Client.Forms
         private UILabel label5;
         private UIButton button_CompareRecipe;
         private UIButton uiButton_ScanToDownloadRecipe;
+        private NotifyIcon notifyIcon;
     }
 }

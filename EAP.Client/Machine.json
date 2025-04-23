@@ -1,0 +1,46 @@
+{
+  "Secs": {
+    "HeartBeatInterval": 0,
+    "EnableAllAlarm": true,
+    "EnableDynamicEvent": true,
+    "EnableAllEvent": false,
+    "SVIDList": [
+      {
+        "Name": "ControlState",
+        "ID": 1005
+      },
+      {
+        "Name": "ProcessState",
+        "ID": 1009
+      }
+
+    ],
+    "ReportList": [
+      //{
+      //  "ID": 100,
+      //  "SvidNames": [ "ControlState", "ProcessState" ]
+      //},
+
+    ],
+    "CEIDList": [
+      {
+        "Name": "ProcessStateChanged",
+        "ID": 10150,
+        "ReportIds": []
+      }
+
+    ],
+    "ProcessStateCodes": {
+      "0": "Idle",
+      "1": "Idle",
+      "2": "Idle",
+      "3": "Idle",
+      "4": "Run",
+      "5": "Idle",
+      "6": "Run"
+    }
+  },
+  "Others": {
+
+  }
+}
