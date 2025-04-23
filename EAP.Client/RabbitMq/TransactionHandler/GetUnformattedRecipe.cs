@@ -40,13 +40,13 @@ namespace EAP.Client.RabbitMq
                 if (s7f26.F == 26 && s7f26.SecsItem != null)
                 {
 
-                    var recipeString = s7f26.ToSml();
-                    var data = s7f26.SecsItem.GetMemory<byte>().ToArray();
-                    //var strbody = Convert.ToBase64String(data);
+                    var recipeSmlString = s7f26.ToSml();
+                    byte[] bytes = System.Text.Encoding.UTF8.GetBytes(recipeSmlString);
+                    string base64String = Convert.ToBase64String(bytes);
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("RecipeName", reprecipename);
-                    reptrans.Parameters.Add("RecipeBody", data);
-                    reptrans.Parameters.Add("RecipeParameters", recipeString);
+                    reptrans.Parameters.Add("RecipeBody", base64String);
+                    reptrans.Parameters.Add("RecipeParameters", recipeSmlString);
                 }
                 else
                 {

@@ -32,11 +32,15 @@ namespace EAP.Client.RabbitMq
             {
                 var Message = string.Empty;
                 var recipename = string.Empty;
-                string smlbody = string.Empty;
+                string base64String = string.Empty;
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
-                if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) smlbody = _body.ToString();
+                if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) base64String = _body.ToString();
 
-                var message = commonLibrary.StringToSecsMessage(smlbody);
+                byte[] decodedBytes = Convert.FromBase64String(base64String);
+                // 将字节数组转换回字符串
+                string smlString = System.Text.Encoding.UTF8.GetString(decodedBytes);
+
+                var message = commonLibrary.StringToSecsMessage(smlString);
                 var newmsg = new SecsMessage(7, 23)
                 {
                     SecsItem = message.SecsItem
