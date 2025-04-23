@@ -4,6 +4,7 @@ using Secs4Net;
 using Secs4Net.Sml;
 using EAP.Client.Secs;
 using static Secs4Net.Item;
+using CommunityToolkit.HighPerformance;
 
 namespace EAP.Client.RabbitMq
 {
@@ -34,17 +35,18 @@ namespace EAP.Client.RabbitMq
                 };
                 var s7f26 = await secsGem.SendAsync(s7f25);
                 s7f26.Name = null;
-                var reprecipename = s7f26.SecsItem[0].GetString();
+                var reprecipename = s7f26.SecsItem[0].GetString()+"_"+ s7f26.SecsItem[1].GetString();
 
                 if (s7f26.F == 26 && s7f26.SecsItem != null)
                 {
-                    byte[] bytedata = new byte[];
-                    var data = s7f26.SecsItem.EncodeTo();
+
+                    var recipeString = s7f26.ToSml();
+                    var data = s7f26.SecsItem.GetMemory<byte>().ToArray();
                     //var strbody = Convert.ToBase64String(data);
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("RecipeName", reprecipename);
                     reptrans.Parameters.Add("RecipeBody", data);
-                    reptrans.Parameters.Add("RecipeParameters", data);
+                    reptrans.Parameters.Add("RecipeParameters", recipeString);
                 }
                 else
                 {

@@ -36,8 +36,8 @@ namespace EAP.Client.RabbitMq
                         SecsMessage s1f3 = new(1, 3, true)
                         {
                             SecsItem = L(
-                                U1((byte)controlStateVID.ID),
-                                U1((byte)processStateVID.ID)
+                                U4((byte)controlStateVID.ID),
+                                U4((byte)processStateVID.ID)
                                 )
                         };
                         var s1f4 = await secsGem.SendAsync(s1f3);
