@@ -460,17 +460,19 @@ namespace EAP.Client.Forms
                 {
                     var s1f3 = new SecsMessage(1, 3)
                     {
-                        SecsItem = L(U2(1013), U2(1106))
+                        SecsItem = L(U2(650), U2(651))
                     };
                     var s1f4 = _secsGem.SendAsync(s1f3).Result;
                     var recipeName = s1f4.SecsItem.Items[0].GetString();
+                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
+                    var fullRecipeName = recipeNum + "_" + recipeName;
 
                     string comparemsg = string.Empty;
-                    if (!string.IsNullOrEmpty(recipeName))
+                    if (!string.IsNullOrEmpty(fullRecipeName))
                     {
                         this.Invoke(() =>
                         {
-                            this.textBox_machinerecipe.Text = recipeName;
+                            this.textBox_machinerecipe.Text = fullRecipeName;
                         });
                         string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
 
@@ -481,7 +483,7 @@ namespace EAP.Client.Forms
                             Parameters = new Dictionary<string, object>()
                                         {
                                             {"EquipmentId",equipmentId},
-                                            {"RecipeName",recipeName},
+                                            {"RecipeName",fullRecipeName},
                                         },
                         };
                         var repTrans = _rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);

@@ -35,7 +35,7 @@ namespace EAP.Client.RabbitMq
                 };
                 var s7f26 = await secsGem.SendAsync(s7f25);
                 s7f26.Name = null;
-                var reprecipename = s7f26.SecsItem[0].GetString()+"_"+ s7f26.SecsItem[1].GetString();
+                //var reprecipename = s7f26.SecsItem[0].GetString()+"_"+ s7f26.SecsItem[1].GetString();
 
                 if (s7f26.F == 26 && s7f26.SecsItem != null)
                 {
@@ -44,14 +44,14 @@ namespace EAP.Client.RabbitMq
                     byte[] bytes = System.Text.Encoding.UTF8.GetBytes(recipeSmlString);
                     string base64String = Convert.ToBase64String(bytes);
                     reptrans.Parameters.Add("Result", true);
-                    reptrans.Parameters.Add("RecipeName", reprecipename);
+                    reptrans.Parameters.Add("RecipeName", recipename);
                     reptrans.Parameters.Add("RecipeBody", base64String);
                     reptrans.Parameters.Add("RecipeParameters", recipeSmlString);
                 }
                 else
                 {
                     reptrans.Parameters.Add("Result", false);
-                    reptrans.Parameters.Add("RecipeName", reprecipename);
+                    reptrans.Parameters.Add("RecipeName", recipename);
                     reptrans.Parameters.Add("Message", "Machine does not support formatted recipe!");
                 }
 

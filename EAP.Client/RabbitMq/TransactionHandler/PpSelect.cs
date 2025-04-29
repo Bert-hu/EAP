@@ -29,14 +29,32 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 var recipeName = string.Empty;
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipeName = _rec?.ToString();
+
+                var s1f3 = new SecsMessage(1, 3)
+                {
+                    SecsItem = L(
+                        U4(239)
+                        )
+                };
+                var s1f4 = await secsGem.SendAsync(s1f3);
+                var plc_status = s1f4.SecsItem[0].FirstValue<ushort>();
+                if (plc_status == 1)
+                {
+                    reptrans.Parameters.Add("Result", false);
+                    reptrans.Parameters.Add("Message", "PLC Status is on Manual Mode");
+                    return;
+                }
+
+                var reqindex = recipeName.Split('_')[0];
+
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(
-                        A("PP-SELECT"),
+                        A("PPSELECT"),
                         L(
                             L(
                                   A("PPID"),
-                                  A(recipeName)
+                                  A(reqindex)
                                 )
                             ))
                 };
