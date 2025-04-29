@@ -47,6 +47,7 @@ namespace EAP.Client.Sfis
                             byte[] buffer = new byte[102400];
                             int bytesRead = stream.Read(buffer, 0, buffer.Length);
                             string requestStr = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                            requestStr = requestStr + ",GROUP_RECORD=???";//包装机额外查询最后一站信息
                             BaymaxTrans baymaxTrans = GetBaymaxTrans(baymaxIp, bayMaxPort, requestStr).Result;
                             OnBaymaxTransCompleted?.Invoke(this, baymaxTrans);
 

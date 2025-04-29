@@ -271,6 +271,10 @@ namespace EAP.Client.Forms
             {
                 var stepid = machineRequest.Split(',')[2];
                 var panelsn = machineRequest.Split(',')[1];
+
+
+
+
                 return baymaxResponse;
 
             }
@@ -323,10 +327,10 @@ namespace EAP.Client.Forms
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.Hide();
-            }
+            //if (this.WindowState == FormWindowState.Minimized)
+            //{
+            //    this.Hide();
+            //}
         }
 
         public bool machineLocked { get; set; } = false;
