@@ -11,6 +11,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
     internal class ProcessStateChanged : IEventHandler
     {
+        private readonly ILog dbgLog = LogManager.GetLogger("Debug");
+
         private readonly ISecsGem secsGem;
         private RabbitMqService rabbitMqService;
         private readonly IServiceProvider serviceProvider;
@@ -24,14 +26,37 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         }
 
 
-        public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
+        public async Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
         {
-            using (var scope = this.serviceProvider.CreateScope())
+            try
             {
-                var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                handler.HandleTransaction(null);
+
+                using (var scope = this.serviceProvider.CreateScope())
+                {
+                    var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+                    handler.HandleTransaction(null);
+                }
+
+                if (MainForm.Instance.machineLocked)
+                {
+                    var processState = wrapper.PrimaryMessage.SecsItem[2][0][1][0].FirstValue<byte>();
+                    if (processState == 3)
+                    {
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(
+                          A("STOP"),
+                          L()
+                    )
+                        };
+                        await secsGem.SendAsync(s2f41);
+                    }
+                }
             }
-            return Task.CompletedTask;
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex.ToString());
+            }
         }
     }
 }

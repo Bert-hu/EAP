@@ -32,86 +32,41 @@ namespace EAP.Client.Forms
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            textBox_panelid = new UITextBox();
-            label_1 = new UILabel();
-            label1 = new UILabel();
-            textBox_modelname = new UITextBox();
             textBox_machinerecipe = new UITextBox();
             label2 = new UILabel();
-            label_updatetime_aoi = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
-            checkBox_checkrecipe = new UICheckBox();
+            uiLedLabel_ohMax = new UILedLabel();
+            uiLedLabel_oh = new UILedLabel();
+            uiLedLabel_mMax = new UILedLabel();
+            uiLedLabel_icosMax = new UILedLabel();
+            uiLedLabel_m = new UILedLabel();
+            uiLedLabel_icos = new UILedLabel();
             label_ProcessState = new UILabel();
-            textBox_projectname = new UITextBox();
-            label5 = new UILabel();
-            button_CompareRecipe = new UIButton();
+            uiLabel3 = new UILabel();
+            uiLabel2 = new UILabel();
+            uiLabel1 = new UILabel();
             richTextBox1 = new UIRichTextBox();
-            uiButton_ScanToDownloadRecipe = new UIButton();
             notifyIcon = new NotifyIcon(components);
+            uiCheckBox_isLocked = new UICheckBox();
+            uiRichTextBox_lockMessage = new UIRichTextBox();
+            uiButton_modifySetting = new UIButton();
+            uiLabel4 = new UILabel();
+            uiLabel5 = new UILabel();
             groupBox_1.SuspendLayout();
             SuspendLayout();
-            // 
-            // textBox_panelid
-            // 
-            textBox_panelid.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_panelid.Location = new Point(202, 119);
-            textBox_panelid.Margin = new Padding(4, 5, 4, 5);
-            textBox_panelid.MinimumSize = new Size(1, 16);
-            textBox_panelid.Name = "textBox_panelid";
-            textBox_panelid.Padding = new Padding(5);
-            textBox_panelid.ShowText = false;
-            textBox_panelid.Size = new Size(256, 33);
-            textBox_panelid.TabIndex = 0;
-            textBox_panelid.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_panelid.Watermark = "";
-            // 
-            // label_1
-            // 
-            label_1.AutoSize = true;
-            label_1.Font = new Font("Microsoft YaHei UI", 15F);
-            label_1.ForeColor = Color.FromArgb(48, 48, 48);
-            label_1.Location = new Point(15, 122);
-            label_1.Name = "label_1";
-            label_1.Size = new Size(90, 27);
-            label_1.TabIndex = 1;
-            label_1.Text = "Panel ID";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Microsoft YaHei UI", 15F);
-            label1.ForeColor = Color.FromArgb(48, 48, 48);
-            label1.Location = new Point(15, 170);
-            label1.Name = "label1";
-            label1.Size = new Size(137, 27);
-            label1.TabIndex = 1;
-            label1.Text = "Model Name";
-            // 
-            // textBox_modelname
-            // 
-            textBox_modelname.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_modelname.Location = new Point(202, 167);
-            textBox_modelname.Margin = new Padding(4, 5, 4, 5);
-            textBox_modelname.MinimumSize = new Size(1, 16);
-            textBox_modelname.Name = "textBox_modelname";
-            textBox_modelname.Padding = new Padding(5);
-            textBox_modelname.ShowText = false;
-            textBox_modelname.Size = new Size(256, 33);
-            textBox_modelname.TabIndex = 0;
-            textBox_modelname.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_modelname.Watermark = "";
             // 
             // textBox_machinerecipe
             // 
             textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_machinerecipe.Location = new Point(202, 69);
+            textBox_machinerecipe.Location = new Point(131, 66);
             textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
             textBox_machinerecipe.MinimumSize = new Size(1, 16);
             textBox_machinerecipe.Name = "textBox_machinerecipe";
             textBox_machinerecipe.Padding = new Padding(5);
+            textBox_machinerecipe.ReadOnly = true;
             textBox_machinerecipe.ShowText = false;
-            textBox_machinerecipe.Size = new Size(256, 33);
+            textBox_machinerecipe.Size = new Size(282, 33);
             textBox_machinerecipe.TabIndex = 0;
             textBox_machinerecipe.TextAlignment = ContentAlignment.MiddleLeft;
             textBox_machinerecipe.Watermark = "";
@@ -123,20 +78,9 @@ namespace EAP.Client.Forms
             label2.ForeColor = Color.FromArgb(48, 48, 48);
             label2.Location = new Point(15, 72);
             label2.Name = "label2";
-            label2.Size = new Size(162, 27);
+            label2.Size = new Size(92, 27);
             label2.TabIndex = 1;
-            label2.Text = "Machine Recipe";
-            // 
-            // label_updatetime_aoi
-            // 
-            label_updatetime_aoi.AutoSize = true;
-            label_updatetime_aoi.Font = new Font("宋体", 12F);
-            label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
-            label_updatetime_aoi.Name = "label_updatetime_aoi";
-            label_updatetime_aoi.Size = new Size(103, 16);
-            label_updatetime_aoi.TabIndex = 2;
-            label_updatetime_aoi.Text = "Update Time:";
+            label2.Text = "设备程式";
             // 
             // label_conn_status
             // 
@@ -152,43 +96,95 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
-            groupBox_1.Controls.Add(checkBox_checkrecipe);
+            groupBox_1.Controls.Add(uiLedLabel_ohMax);
+            groupBox_1.Controls.Add(uiLedLabel_oh);
+            groupBox_1.Controls.Add(uiLedLabel_mMax);
+            groupBox_1.Controls.Add(uiLedLabel_icosMax);
+            groupBox_1.Controls.Add(uiLedLabel_m);
+            groupBox_1.Controls.Add(uiLedLabel_icos);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
-            groupBox_1.Controls.Add(textBox_panelid);
-            groupBox_1.Controls.Add(textBox_projectname);
-            groupBox_1.Controls.Add(textBox_modelname);
-            groupBox_1.Controls.Add(label_updatetime_aoi);
             groupBox_1.Controls.Add(textBox_machinerecipe);
+            groupBox_1.Controls.Add(uiLabel3);
+            groupBox_1.Controls.Add(uiLabel2);
+            groupBox_1.Controls.Add(uiLabel5);
+            groupBox_1.Controls.Add(uiLabel4);
+            groupBox_1.Controls.Add(uiLabel1);
             groupBox_1.Controls.Add(label2);
-            groupBox_1.Controls.Add(label_1);
-            groupBox_1.Controls.Add(label5);
-            groupBox_1.Controls.Add(label1);
             groupBox_1.Font = new Font("宋体", 12F);
             groupBox_1.Location = new Point(12, 40);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(471, 302);
+            groupBox_1.Size = new Size(438, 302);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
             // 
-            // checkBox_checkrecipe
+            // uiLedLabel_ohMax
             // 
-            checkBox_checkrecipe.AutoSize = true;
-            checkBox_checkrecipe.Checked = true;
-            checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 15F);
-            checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
-            checkBox_checkrecipe.Location = new Point(21, 265);
-            checkBox_checkrecipe.MinimumSize = new Size(1, 1);
-            checkBox_checkrecipe.Name = "checkBox_checkrecipe";
-            checkBox_checkrecipe.Size = new Size(250, 32);
-            checkBox_checkrecipe.TabIndex = 4;
-            checkBox_checkrecipe.Text = "MP模式（检查Recipe）";
-            checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
+            uiLedLabel_ohMax.Font = new Font("宋体", 1F);
+            uiLedLabel_ohMax.ForeColor = Color.FromArgb(255, 128, 128);
+            uiLedLabel_ohMax.Location = new Point(131, 241);
+            uiLedLabel_ohMax.MinimumSize = new Size(1, 1);
+            uiLedLabel_ohMax.Name = "uiLedLabel_ohMax";
+            uiLedLabel_ohMax.Size = new Size(113, 35);
+            uiLedLabel_ohMax.TabIndex = 6;
+            uiLedLabel_ohMax.Text = "0";
+            // 
+            // uiLedLabel_oh
+            // 
+            uiLedLabel_oh.Font = new Font("宋体", 1F);
+            uiLedLabel_oh.Location = new Point(265, 241);
+            uiLedLabel_oh.MinimumSize = new Size(1, 1);
+            uiLedLabel_oh.Name = "uiLedLabel_oh";
+            uiLedLabel_oh.Size = new Size(113, 35);
+            uiLedLabel_oh.TabIndex = 6;
+            uiLedLabel_oh.Text = "0";
+            // 
+            // uiLedLabel_mMax
+            // 
+            uiLedLabel_mMax.Font = new Font("宋体", 1F);
+            uiLedLabel_mMax.ForeColor = Color.FromArgb(255, 128, 128);
+            uiLedLabel_mMax.Location = new Point(131, 199);
+            uiLedLabel_mMax.MinimumSize = new Size(1, 1);
+            uiLedLabel_mMax.Name = "uiLedLabel_mMax";
+            uiLedLabel_mMax.Size = new Size(113, 35);
+            uiLedLabel_mMax.TabIndex = 6;
+            uiLedLabel_mMax.Text = "0";
+            // 
+            // uiLedLabel_icosMax
+            // 
+            uiLedLabel_icosMax.Font = new Font("宋体", 1F);
+            uiLedLabel_icosMax.ForeColor = Color.FromArgb(255, 128, 128);
+            uiLedLabel_icosMax.Location = new Point(131, 157);
+            uiLedLabel_icosMax.MinimumSize = new Size(1, 1);
+            uiLedLabel_icosMax.Name = "uiLedLabel_icosMax";
+            uiLedLabel_icosMax.Size = new Size(113, 35);
+            uiLedLabel_icosMax.TabIndex = 6;
+            uiLedLabel_icosMax.Text = "0";
+            // 
+            // uiLedLabel_m
+            // 
+            uiLedLabel_m.Font = new Font("宋体", 1F);
+            uiLedLabel_m.Location = new Point(265, 199);
+            uiLedLabel_m.MinimumSize = new Size(1, 1);
+            uiLedLabel_m.Name = "uiLedLabel_m";
+            uiLedLabel_m.Size = new Size(113, 35);
+            uiLedLabel_m.TabIndex = 6;
+            uiLedLabel_m.Text = "0";
+            // 
+            // uiLedLabel_icos
+            // 
+            uiLedLabel_icos.Font = new Font("宋体", 1F);
+            uiLedLabel_icos.Location = new Point(265, 157);
+            uiLedLabel_icos.MinimumSize = new Size(1, 1);
+            uiLedLabel_icos.Name = "uiLedLabel_icos";
+            uiLedLabel_icos.Size = new Size(113, 35);
+            uiLedLabel_icos.TabIndex = 6;
+            uiLedLabel_icos.Text = "0";
             // 
             // label_ProcessState
             // 
@@ -201,71 +197,54 @@ namespace EAP.Client.Forms
             label_ProcessState.Size = new Size(103, 27);
             label_ProcessState.TabIndex = 3;
             label_ProcessState.Text = "Unknown";
-            label_ProcessState.Visible = false;
             // 
-            // textBox_projectname
+            // uiLabel3
             // 
-            textBox_projectname.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_projectname.Location = new Point(202, 219);
-            textBox_projectname.Margin = new Padding(4, 5, 4, 5);
-            textBox_projectname.MinimumSize = new Size(1, 16);
-            textBox_projectname.Name = "textBox_projectname";
-            textBox_projectname.Padding = new Padding(5);
-            textBox_projectname.ShowText = false;
-            textBox_projectname.Size = new Size(256, 33);
-            textBox_projectname.TabIndex = 0;
-            textBox_projectname.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_projectname.Watermark = "";
+            uiLabel3.AutoSize = true;
+            uiLabel3.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel3.Location = new Point(15, 249);
+            uiLabel3.Name = "uiLabel3";
+            uiLabel3.Size = new Size(91, 27);
+            uiLabel3.TabIndex = 1;
+            uiLabel3.Text = "MIX-OH";
             // 
-            // label5
+            // uiLabel2
             // 
-            label5.AutoSize = true;
-            label5.Font = new Font("Microsoft YaHei UI", 15F);
-            label5.ForeColor = Color.FromArgb(48, 48, 48);
-            label5.Location = new Point(15, 222);
-            label5.Name = "label5";
-            label5.Size = new Size(141, 27);
-            label5.TabIndex = 1;
-            label5.Text = "Project Name";
+            uiLabel2.AutoSize = true;
+            uiLabel2.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel2.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel2.Location = new Point(15, 203);
+            uiLabel2.Name = "uiLabel2";
+            uiLabel2.Size = new Size(80, 27);
+            uiLabel2.TabIndex = 1;
+            uiLabel2.Text = "MIX-M";
             // 
-            // button_CompareRecipe
+            // uiLabel1
             // 
-            button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
-            button_CompareRecipe.MinimumSize = new Size(1, 1);
-            button_CompareRecipe.Name = "button_CompareRecipe";
-            button_CompareRecipe.Size = new Size(108, 33);
-            button_CompareRecipe.TabIndex = 5;
-            button_CompareRecipe.Text = "比较参数";
-            button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            button_CompareRecipe.Click += button_CompareRecipe_Click;
+            uiLabel1.AutoSize = true;
+            uiLabel1.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel1.Location = new Point(15, 157);
+            uiLabel1.Name = "uiLabel1";
+            uiLabel1.Size = new Size(107, 27);
+            uiLabel1.TabIndex = 1;
+            uiLabel1.Text = "MIX-ICOS";
             // 
             // richTextBox1
             // 
             richTextBox1.FillColor = Color.White;
             richTextBox1.Font = new Font("宋体", 10F);
-            richTextBox1.Location = new Point(14, 368);
+            richTextBox1.Location = new Point(14, 415);
             richTextBox1.Margin = new Padding(4, 5, 4, 5);
             richTextBox1.MinimumSize = new Size(1, 1);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.Padding = new Padding(2);
             richTextBox1.ReadOnly = true;
             richTextBox1.ShowText = false;
-            richTextBox1.Size = new Size(588, 223);
+            richTextBox1.Size = new Size(588, 176);
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
-            // 
-            // uiButton_ScanToDownloadRecipe
-            // 
-            uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
-            uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
-            uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
-            uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
-            uiButton_ScanToDownloadRecipe.TabIndex = 5;
-            uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
-            uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // notifyIcon
             // 
@@ -274,13 +253,76 @@ namespace EAP.Client.Forms
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
             // 
+            // uiCheckBox_isLocked
+            // 
+            uiCheckBox_isLocked.AutoSize = true;
+            uiCheckBox_isLocked.Font = new Font("Microsoft YaHei UI", 15F);
+            uiCheckBox_isLocked.ForeColor = Color.FromArgb(48, 48, 48);
+            uiCheckBox_isLocked.Location = new Point(14, 361);
+            uiCheckBox_isLocked.MinimumSize = new Size(1, 1);
+            uiCheckBox_isLocked.Name = "uiCheckBox_isLocked";
+            uiCheckBox_isLocked.Size = new Size(75, 32);
+            uiCheckBox_isLocked.TabIndex = 4;
+            uiCheckBox_isLocked.Text = "锁定";
+            uiCheckBox_isLocked.CheckedChanged += uiCheckBox_isLocked_CheckedChanged;
+            // 
+            // uiRichTextBox_lockMessage
+            // 
+            uiRichTextBox_lockMessage.FillColor = Color.White;
+            uiRichTextBox_lockMessage.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiRichTextBox_lockMessage.Location = new Point(96, 352);
+            uiRichTextBox_lockMessage.Margin = new Padding(4, 5, 4, 5);
+            uiRichTextBox_lockMessage.MinimumSize = new Size(1, 1);
+            uiRichTextBox_lockMessage.Name = "uiRichTextBox_lockMessage";
+            uiRichTextBox_lockMessage.Padding = new Padding(2);
+            uiRichTextBox_lockMessage.ReadOnly = true;
+            uiRichTextBox_lockMessage.ShowText = false;
+            uiRichTextBox_lockMessage.Size = new Size(502, 53);
+            uiRichTextBox_lockMessage.TabIndex = 9;
+            uiRichTextBox_lockMessage.TextAlignment = ContentAlignment.MiddleCenter;
+            // 
+            // uiButton_modifySetting
+            // 
+            uiButton_modifySetting.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_modifySetting.Location = new Point(480, 55);
+            uiButton_modifySetting.MinimumSize = new Size(1, 1);
+            uiButton_modifySetting.Name = "uiButton_modifySetting";
+            uiButton_modifySetting.Size = new Size(118, 35);
+            uiButton_modifySetting.TabIndex = 10;
+            uiButton_modifySetting.Text = "修改设定";
+            uiButton_modifySetting.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_modifySetting.Click += uiButton_modifySetting_Click;
+            // 
+            // uiLabel4
+            // 
+            uiLabel4.AutoSize = true;
+            uiLabel4.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel4.Location = new Point(151, 115);
+            uiLabel4.Name = "uiLabel4";
+            uiLabel4.Size = new Size(72, 27);
+            uiLabel4.TabIndex = 1;
+            uiLabel4.Text = "设定值";
+            // 
+            // uiLabel5
+            // 
+            uiLabel5.AutoSize = true;
+            uiLabel5.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel5.Location = new Point(284, 115);
+            uiLabel5.Name = "uiLabel5";
+            uiLabel5.Size = new Size(72, 27);
+            uiLabel5.TabIndex = 1;
+            uiLabel5.Text = "当前值";
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
-            Controls.Add(uiButton_ScanToDownloadRecipe);
+            Controls.Add(uiButton_modifySetting);
+            Controls.Add(uiRichTextBox_lockMessage);
+            Controls.Add(uiCheckBox_isLocked);
             Controls.Add(richTextBox1);
-            Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -293,31 +335,35 @@ namespace EAP.Client.Forms
             groupBox_1.ResumeLayout(false);
             groupBox_1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-
-        private UITextBox textBox_panelid;
-        private UILabel label_1;
-        private UILabel label1;
-        private UITextBox textBox_modelname;
         private UITextBox textBox_machinerecipe;
         private UILabel label2;
         private UILabel label3;
         private UILabel label4;
-        private UILabel label_updatetime_aoi;
         private UILabel label_conn_status;
         private UIButton button1;
         private UIButton button_getModelName;
         private UIGroupBox groupBox1;
         private UIGroupBox groupBox_1;
         private UILabel label_ProcessState;
-        private UICheckBox checkBox_checkrecipe;
         private UIRichTextBox richTextBox1;
-        private UITextBox textBox_projectname;
-        private UILabel label5;
-        private UIButton button_CompareRecipe;
-        private UIButton uiButton_ScanToDownloadRecipe;
         private NotifyIcon notifyIcon;
+        private UICheckBox uiCheckBox_isLocked;
+        private UIRichTextBox uiRichTextBox_lockMessage;
+        private UILabel uiLabel3;
+        private UILabel uiLabel2;
+        private UILabel uiLabel1;
+        private UILedLabel uiLedLabel_ohMax;
+        private UILedLabel uiLedLabel_oh;
+        private UILedLabel uiLedLabel_mMax;
+        private UILedLabel uiLedLabel_icosMax;
+        private UILedLabel uiLedLabel_m;
+        private UILedLabel uiLedLabel_icos;
+        private UIButton uiButton_modifySetting;
+        private UILabel uiLabel5;
+        private UILabel uiLabel4;
     }
 }

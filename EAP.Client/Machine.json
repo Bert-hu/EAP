@@ -7,37 +7,94 @@
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 1005
+        "ID": 28
       },
       {
         "Name": "ProcessState",
-        "ID": 1009
+        "ID": 38
+      },
+      {
+        "Name": "Time",
+        "ID": 40
+      },
+      {
+        "Name": "ReelQuantity",
+        "ID": 210
+      },
+      {
+        "Name": "TnRLeaderLength",
+        "ID": 211
+      },
+      {
+        "Name": "TnRTrailerLength",
+        "ID": 212
+      },
+      {
+        "Name": "PackageName",
+        "ID": 206
+      },
+      {
+        "Name": "SealTemp",
+        "ID": 213
+      },
+      {
+        "Name": "SealPres",
+        "ID": 214
+      },
+      {
+        "Name": "CarrierTapeID",
+        "ID": 218
+      },
+      {
+        "Name": "CoverTapeID",
+        "ID": 219
       }
-
     ],
     "ReportList": [
-      //{
-      //  "ID": 100,
-      //  "SvidNames": [ "ControlState", "ProcessState" ]
-      //},
-
+      {
+        "ID": 100,
+        "SvidNames": [ "ProcessState" ]
+      },
+      {
+        "ID": 101,
+        "SvidNames": [ "Time", "ReelQuantity", "TnRLeaderLength", "TnRTrailerLength" ]
+      },
+      {
+        "ID": 200,
+        "SvidNames": [ "PackageName", "SealTemp", "SealPres", "CarrierTapeID", "CoverTapeID" ]
+      }
     ],
     "CEIDList": [
       {
-        "Name": "ProcessStateChanged",
-        "ID": 10150,
+        "Name": "ControlStateChanged",
+        "ID": 9,
         "ReportIds": []
+      },
+      {
+        "Name": "ProcessStateChanged",
+        "ID": 11,
+        "ReportIds": []
+      },
+      {
+        "Name": "ParameterChangeEvent",
+        "ID": 620,
+        "ReportIds": [ 101 ]
+      },
+      {
+        "Name": "RecipeChangeEvent",
+        "ID": 193,
+        "ReportIds": [ 200 ]
       }
-
     ],
     "ProcessStateCodes": {
       "0": "Idle",
       "1": "Idle",
       "2": "Idle",
-      "3": "Idle",
-      "4": "Run",
+      "3": "Run",
+      "4": "Idle",
       "5": "Idle",
-      "6": "Run"
+      "6": "Idle",
+      "7": "Alarm"
     }
   },
   "Others": {
