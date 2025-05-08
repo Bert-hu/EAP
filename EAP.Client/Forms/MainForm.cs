@@ -311,6 +311,8 @@ namespace EAP.Client.Forms
                                 ohCount++;
                             }
                             break;
+                        default:
+                            break;
                     }
                     return baymaxResponse;
                 }
