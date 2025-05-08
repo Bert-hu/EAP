@@ -52,7 +52,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                     var value = GetItemValue(type, s1f4.SecsItem[i]);
                     para.Add(vidList[i].ToString(), new { Type = type, Value = value });
                 }
-
+                reptrans.Parameters = para;
             }
             catch (Exception ex)
             {
