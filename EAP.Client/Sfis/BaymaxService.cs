@@ -37,11 +37,11 @@ namespace EAP.Client.Sfis
                         {
 
                             var remoteIp = ((IPEndPoint)machineClient.Client.RemoteEndPoint).Address.ToString();
-                            if (!accectIps.Contains(remoteIp))
-                            {
-                                machineClient.Close();
-                                return;
-                            }
+                            //if (!accectIps.Contains(remoteIp))
+                            //{
+                            //    machineClient.Close();
+                            //    return;
+                            //}
                             NetworkStream stream = machineClient.GetStream();
 
                             byte[] buffer = new byte[102400];
