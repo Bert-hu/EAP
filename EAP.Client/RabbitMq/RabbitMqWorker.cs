@@ -66,7 +66,14 @@ namespace EAP.Client.RabbitMq
             };
             Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
             var queue = _configuration.GetSection("RabbitMQ")["QueueName"];
-            _rabbitMqService.channel.QueueDeclareAsync(queue, true, false, true, arguments);
+            try
+            {
+                _rabbitMqService.channel.QueueDeclareAsync(queue, true, false, true, arguments);
+            }
+            catch (Exception)
+            {
+                dbgLog.Warn($"Declare Queue fail： {queue}");
+            }
             _rabbitMqService.channel.BasicConsumeAsync(queue: queue, autoAck: true, consumer: consumer);
             return Task.CompletedTask;
         }

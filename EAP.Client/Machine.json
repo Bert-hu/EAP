@@ -73,7 +73,7 @@
       {
         "Name": "ProcessStateChanged",
         "ID": 11,
-        "ReportIds": []
+        "ReportIds": [ 200 ]
       },
       {
         "Name": "ParameterChangeEvent",

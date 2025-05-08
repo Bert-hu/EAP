@@ -30,6 +30,10 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         {
             try
             {
+                var packageName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
+
+                MainForm.Instance.UpdateMachineRecipe(packageName);
+
 
                 using (var scope = this.serviceProvider.CreateScope())
                 {

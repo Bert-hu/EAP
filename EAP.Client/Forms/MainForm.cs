@@ -156,11 +156,12 @@ namespace EAP.Client.Forms
                     backcolor = Color.Green;
                     break;
             }
+            var equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
             this.Invoke(new Action(() =>
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
+                this.Text = equipmentId + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
                 notifyIcon.Text = _commonLibrary.CustomSettings["EquipmentType"] + " " + _commonLibrary.CustomSettings["EquipmentId"];
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
@@ -189,6 +190,23 @@ namespace EAP.Client.Forms
                 AutoUpdater.Start(updateUrl);
             };
             timer.Start();
+
+            DispatcherTimer locktimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };//定时去检测更新根据自己业务需求
+            locktimer.Tick += delegate
+            {
+
+                var trans = new RabbitMqTransaction()
+                {
+                    TransactionName = "GetAllConfiguration",
+                    EquipmentID = equipmentId,
+                    NeedReply = true,
+                    ReplyChannel = $"EAP.SecsClient.{equipmentId}",
+                };
+                var repTrans = _rabbitMq.ProduceWaitReply("EAP.Services", trans);
+
+            };
+            locktimer.Start();
+
         }
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
@@ -437,9 +455,10 @@ namespace EAP.Client.Forms
         {
             if (control.InvokeRequired)
             {
-                control.Invoke(new Action(() => {
+                control.Invoke(new Action(() =>
+                {
                     control.Text = value.ToString();
-                    uiLedLabel_total.Text = (_icosCount+ _mCount + _ohCount).ToString();
+                    uiLedLabel_total.Text = (_icosCount + _mCount + _ohCount).ToString();
                     uiLedLabel_totalMax.Text = (_icosMaxCount + _mMaxCount + _ohMaxCount).ToString();
                 }));
             }
