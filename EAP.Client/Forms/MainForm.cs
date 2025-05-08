@@ -208,9 +208,9 @@ namespace EAP.Client.Forms
                     var message = string.Empty;
                     if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
 
-                    var isheld = false;
-                    if (trans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = (bool)_isheld;
-                    MainForm.Instance.UpdateMachineLock(isheld, message);
+                    string isheld = string.Empty;
+                    if (trans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = _isheld?.ToString();
+                    MainForm.Instance.UpdateMachineLock(isheld.ToUpper() == "TRUE", message);
                 }
                 catch (Exception ex)
                 {
