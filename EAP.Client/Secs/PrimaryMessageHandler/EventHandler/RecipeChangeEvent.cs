@@ -53,7 +53,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 };
                 var faiUrl = configuration.GetSection("Custom")["FaiUrl"];
 
-                await HttpClientHelper.HttpPostRequestAsync<string>(faiUrl, data);
+                var result = await HttpClientHelper.HttpPostRequestAsync<string>(faiUrl, data);
+                traLog.Info($"FAI 触发结果：{result}");
 
                 MainForm.Instance.UpdateMachineRecipe(packageName);
             }
