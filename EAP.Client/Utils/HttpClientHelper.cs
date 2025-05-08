@@ -32,15 +32,16 @@ namespace EAP.Client.Utils
                 var responseString = await response.Content.ReadAsStringAsync(cts.Token);
                 return JsonSerializer.Deserialize<T>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-            catch (TaskCanceledException)
-            {
-                Console.WriteLine("Request timed out.");
-                return default(T);
-            }
+            //catch (TaskCanceledException)
+            //{
+            //    Console.WriteLine("Request timed out.");
+            //    return default(T);
+            //}
             catch (Exception ex)
             {
-                Console.WriteLine($"Request failed: {ex.Message}");
-                return default(T);
+                //Console.WriteLine($"Request failed: {ex.Message}");
+                //return default(T);
+                throw ex;
             }
         }
 
