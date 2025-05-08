@@ -43,18 +43,14 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                 if (MainForm.Instance.machineLocked)
                 {
-                    var processState = wrapper.PrimaryMessage.SecsItem[2][0][1][0].FirstValue<byte>();
-                    if (processState == 3)
+                    var s2f41 = new SecsMessage(2, 41)
                     {
-                        var s2f41 = new SecsMessage(2, 41)
-                        {
-                            SecsItem = L(
-                          A("STOP"),
-                          L()
-                    )
-                        };
-                        await secsGem.SendAsync(s2f41);
-                    }
+                        SecsItem = L(
+                        A("STOP"),
+                        L()
+                  )
+                    };
+                    await secsGem.SendAsync(s2f41);
                 }
             }
             catch (Exception ex)

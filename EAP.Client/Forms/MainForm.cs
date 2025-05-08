@@ -209,8 +209,20 @@ namespace EAP.Client.Forms
                     if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
 
                     string isheld = string.Empty;
-                    if (trans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = _isheld?.ToString();
+                    if (repTrans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = _isheld?.ToString();
                     MainForm.Instance.UpdateMachineLock(isheld.ToUpper() == "TRUE", message);
+
+                    if (MainForm.Instance.machineLocked)
+                    {
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(
+                         A("STOP"),
+                         L()
+                   )
+                        };
+                        _secsGem.SendAsync(s2f41);
+                    }
                 }
                 catch (Exception ex)
                 {
