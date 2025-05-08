@@ -68,7 +68,7 @@ namespace EAP.Client.RabbitMq
             var queue = _configuration.GetSection("RabbitMQ")["QueueName"];
             try
             {
-                _rabbitMqService.channel.QueueDeclareAsync(queue, true, false, true, arguments);
+                _rabbitMqService.channel.QueueDeclareAsync(queue, false, false, true, arguments);
             }
             catch (Exception)
             {
