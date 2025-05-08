@@ -15,14 +15,14 @@ using EAP.Client.Forms;
 
 namespace EAP.Client.RabbitMq.TransactionHandler
 {
-    class LockMachine : ITransactionHandler
+    class GetAllConfiguration : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         internal readonly RabbitMqService rabbitMq;
         internal readonly ISecsGem secsGem;
 
-        public LockMachine(RabbitMqService rabbitMq, ISecsGem secsGem)
+        public GetAllConfiguration(RabbitMqService rabbitMq, ISecsGem secsGem)
         {
             this.rabbitMq = rabbitMq;
             this.secsGem = secsGem;
@@ -34,14 +34,18 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 var message = string.Empty;
                 if (trans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
-                var s10f3 = new SecsMessage(10, 3)
+                if (!string.IsNullOrEmpty(message))
                 {
-                    SecsItem = L(
-                              B(0),
-                              A(message)
-                        )
-                };
-                await secsGem.SendAsync(s10f3);
+                    var s10f3 = new SecsMessage(10, 3)
+                    {
+                        SecsItem = L(
+                  B(0),
+                  A(message)
+            )
+                    };
+                    await secsGem.SendAsync(s10f3);
+                }
+
 
                 var isheld = false;
                 if (trans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = (bool)_isheld;

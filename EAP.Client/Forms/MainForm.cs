@@ -195,15 +195,27 @@ namespace EAP.Client.Forms
             locktimer.Tick += delegate
             {
 
-                var trans = new RabbitMqTransaction()
+                try
                 {
-                    TransactionName = "GetAllConfiguration",
-                    EquipmentID = equipmentId,
-                    NeedReply = true,
-                    ReplyChannel = $"EAP.SecsClient.{equipmentId}",
-                };
-                var repTrans = _rabbitMq.ProduceWaitReply("EAP.Services", trans);
+                    var trans = new RabbitMqTransaction()
+                    {
+                        TransactionName = "GetAllConfiguration",
+                        EquipmentID = equipmentId,
+                        NeedReply = true,
+                        ReplyChannel = $"EAP.SecsClient.{equipmentId}",
+                    };
+                    var repTrans = _rabbitMq.ProduceWaitReply("EAP.Services", trans);
+                    var message = string.Empty;
+                    if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
 
+                    var isheld = false;
+                    if (trans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = (bool)_isheld;
+                    MainForm.Instance.UpdateMachineLock(isheld, message);
+                }
+                catch (Exception ex)
+                {
+                    dbgLog.Error(ex.ToString());
+                }
             };
             locktimer.Start();
 
@@ -425,7 +437,10 @@ namespace EAP.Client.Forms
             this.Invoke(new Action(() =>
             {
                 uiCheckBox_isLocked.Checked = locked;
-                uiRichTextBox_lockMessage.Text = message;
+                if(!string.IsNullOrEmpty(message))
+                {
+                    uiRichTextBox_lockMessage.Text = message;
+                }
             }));
 
         }
