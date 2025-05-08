@@ -5,6 +5,7 @@ using EAP.Client.Utils;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Secs4Net;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
@@ -53,8 +54,10 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 };
                 var faiUrl = configuration.GetSection("Custom")["FaiUrl"];
 
+                var jsonBody = System.Text.Json.JsonSerializer.Serialize(data);
+
                 var result = await HttpClientHelper.HttpPostRequestAsync<string>(faiUrl, data);
-                traLog.Info($"FAI 触发结果：{result}");
+                traLog.Info($"FAI 触发结果：{faiUrl},{jsonBody},{result}");
 
                 MainForm.Instance.UpdateMachineRecipe(packageName);
             }
