@@ -1,4 +1,5 @@
-﻿using EAP.Client.RabbitMq;
+﻿using EAP.Client.Forms;
+using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
 using EAP.Client.Utils;
 using log4net;
@@ -53,6 +54,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 var faiUrl = configuration.GetSection("Custom")["FaiUrl"];
 
                 await HttpClientHelper.HttpPostRequestAsync<string>(faiUrl, data);
+
+                MainForm.Instance.UpdateMachineRecipe(packageName);
             }
             catch (Exception ex)
             {

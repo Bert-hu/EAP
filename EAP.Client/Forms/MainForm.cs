@@ -272,11 +272,52 @@ namespace EAP.Client.Forms
                 var stepid = machineRequest.Split(',')[2];
                 var panelsn = machineRequest.Split(',')[1];
 
+                if (stepid == "1" && baymaxResponse.ToUpper().StartsWith("OK"))
+                {
+                    Dictionary<string, string> sfisParameters = baymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                                 .Where(keyValueArray => keyValueArray.Length == 2)
+                                 .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                    var groupRecord = sfisParameters["GROUP_RECORD"].Trim();
 
-
-
-                return baymaxResponse;
-
+                    switch (groupRecord)
+                    {
+                        case "MIX-ICOS":
+                            if (icosCount >= icosMaxCount)
+                            {
+                                return $"FAIL1,MIX-ICOS ≥ {icosMaxCount}";
+                            }
+                            else
+                            {
+                                icosCount++;
+                            }
+                            break;
+                        case "MIX-M":
+                            if (mCount >= mMaxCount)
+                            {
+                                return $"FAIL1,MIX-M ≥ {mMaxCount}";
+                            }
+                            else
+                            {
+                                mCount++;
+                            }
+                            break;
+                        case "MIX-OH":
+                            if (ohCount >= ohMaxCount)
+                            {
+                                return $"FAIL1,MIX-OH ≥ {ohMaxCount}";
+                            }
+                            else
+                            {
+                                ohCount++;
+                            }
+                            break;
+                    }
+                    return baymaxResponse;
+                }
+                else
+                {
+                    return baymaxResponse;
+                }
             }
             catch (Exception ex)
             {
@@ -394,11 +435,17 @@ namespace EAP.Client.Forms
         {
             if (control.InvokeRequired)
             {
-                control.Invoke(new Action(() => control.Text = value.ToString()));
+                control.Invoke(new Action(() => {
+                    control.Text = value.ToString();
+                    uiLedLabel_total.Text = (_icosCount+ _mCount + _ohCount).ToString();
+                    uiLedLabel_totalMax.Text = (_icosMaxCount + _mMaxCount + _ohMaxCount).ToString();
+                }));
             }
             else
             {
                 control.Text = value.ToString();
+                uiLedLabel_total.Text = (_icosCount + _mCount + _ohCount).ToString();
+                uiLedLabel_totalMax.Text = (_icosMaxCount + _mMaxCount + _ohMaxCount).ToString();
             }
         }
 

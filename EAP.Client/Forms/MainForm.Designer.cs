@@ -45,14 +45,17 @@ namespace EAP.Client.Forms
             label_ProcessState = new UILabel();
             uiLabel3 = new UILabel();
             uiLabel2 = new UILabel();
+            uiLabel5 = new UILabel();
+            uiLabel4 = new UILabel();
             uiLabel1 = new UILabel();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
             uiCheckBox_isLocked = new UICheckBox();
             uiRichTextBox_lockMessage = new UIRichTextBox();
             uiButton_modifySetting = new UIButton();
-            uiLabel4 = new UILabel();
-            uiLabel5 = new UILabel();
+            uiLabel6 = new UILabel();
+            uiLedLabel_total = new UILedLabel();
+            uiLedLabel_totalMax = new UILedLabel();
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -96,6 +99,8 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiLedLabel_totalMax);
+            groupBox_1.Controls.Add(uiLedLabel_total);
             groupBox_1.Controls.Add(uiLedLabel_ohMax);
             groupBox_1.Controls.Add(uiLedLabel_oh);
             groupBox_1.Controls.Add(uiLedLabel_mMax);
@@ -104,6 +109,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(uiLedLabel_icos);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
+            groupBox_1.Controls.Add(uiLabel6);
             groupBox_1.Controls.Add(textBox_machinerecipe);
             groupBox_1.Controls.Add(uiLabel3);
             groupBox_1.Controls.Add(uiLabel2);
@@ -127,7 +133,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_ohMax.Font = new Font("宋体", 1F);
             uiLedLabel_ohMax.ForeColor = Color.FromArgb(255, 128, 128);
-            uiLedLabel_ohMax.Location = new Point(131, 241);
+            uiLedLabel_ohMax.Location = new Point(131, 220);
             uiLedLabel_ohMax.MinimumSize = new Size(1, 1);
             uiLedLabel_ohMax.Name = "uiLedLabel_ohMax";
             uiLedLabel_ohMax.Size = new Size(113, 35);
@@ -137,7 +143,7 @@ namespace EAP.Client.Forms
             // uiLedLabel_oh
             // 
             uiLedLabel_oh.Font = new Font("宋体", 1F);
-            uiLedLabel_oh.Location = new Point(265, 241);
+            uiLedLabel_oh.Location = new Point(265, 220);
             uiLedLabel_oh.MinimumSize = new Size(1, 1);
             uiLedLabel_oh.Name = "uiLedLabel_oh";
             uiLedLabel_oh.Size = new Size(113, 35);
@@ -148,7 +154,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_mMax.Font = new Font("宋体", 1F);
             uiLedLabel_mMax.ForeColor = Color.FromArgb(255, 128, 128);
-            uiLedLabel_mMax.Location = new Point(131, 199);
+            uiLedLabel_mMax.Location = new Point(131, 178);
             uiLedLabel_mMax.MinimumSize = new Size(1, 1);
             uiLedLabel_mMax.Name = "uiLedLabel_mMax";
             uiLedLabel_mMax.Size = new Size(113, 35);
@@ -159,7 +165,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_icosMax.Font = new Font("宋体", 1F);
             uiLedLabel_icosMax.ForeColor = Color.FromArgb(255, 128, 128);
-            uiLedLabel_icosMax.Location = new Point(131, 157);
+            uiLedLabel_icosMax.Location = new Point(131, 136);
             uiLedLabel_icosMax.MinimumSize = new Size(1, 1);
             uiLedLabel_icosMax.Name = "uiLedLabel_icosMax";
             uiLedLabel_icosMax.Size = new Size(113, 35);
@@ -169,7 +175,7 @@ namespace EAP.Client.Forms
             // uiLedLabel_m
             // 
             uiLedLabel_m.Font = new Font("宋体", 1F);
-            uiLedLabel_m.Location = new Point(265, 199);
+            uiLedLabel_m.Location = new Point(265, 178);
             uiLedLabel_m.MinimumSize = new Size(1, 1);
             uiLedLabel_m.Name = "uiLedLabel_m";
             uiLedLabel_m.Size = new Size(113, 35);
@@ -179,7 +185,7 @@ namespace EAP.Client.Forms
             // uiLedLabel_icos
             // 
             uiLedLabel_icos.Font = new Font("宋体", 1F);
-            uiLedLabel_icos.Location = new Point(265, 157);
+            uiLedLabel_icos.Location = new Point(265, 136);
             uiLedLabel_icos.MinimumSize = new Size(1, 1);
             uiLedLabel_icos.Name = "uiLedLabel_icos";
             uiLedLabel_icos.Size = new Size(113, 35);
@@ -203,7 +209,7 @@ namespace EAP.Client.Forms
             uiLabel3.AutoSize = true;
             uiLabel3.Font = new Font("Microsoft YaHei UI", 15F);
             uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel3.Location = new Point(15, 249);
+            uiLabel3.Location = new Point(15, 220);
             uiLabel3.Name = "uiLabel3";
             uiLabel3.Size = new Size(91, 27);
             uiLabel3.TabIndex = 1;
@@ -214,18 +220,40 @@ namespace EAP.Client.Forms
             uiLabel2.AutoSize = true;
             uiLabel2.Font = new Font("Microsoft YaHei UI", 15F);
             uiLabel2.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel2.Location = new Point(15, 203);
+            uiLabel2.Location = new Point(15, 178);
             uiLabel2.Name = "uiLabel2";
             uiLabel2.Size = new Size(80, 27);
             uiLabel2.TabIndex = 1;
             uiLabel2.Text = "MIX-M";
+            // 
+            // uiLabel5
+            // 
+            uiLabel5.AutoSize = true;
+            uiLabel5.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel5.Location = new Point(284, 105);
+            uiLabel5.Name = "uiLabel5";
+            uiLabel5.Size = new Size(72, 27);
+            uiLabel5.TabIndex = 1;
+            uiLabel5.Text = "当前值";
+            // 
+            // uiLabel4
+            // 
+            uiLabel4.AutoSize = true;
+            uiLabel4.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel4.Location = new Point(151, 105);
+            uiLabel4.Name = "uiLabel4";
+            uiLabel4.Size = new Size(72, 27);
+            uiLabel4.TabIndex = 1;
+            uiLabel4.Text = "设定值";
             // 
             // uiLabel1
             // 
             uiLabel1.AutoSize = true;
             uiLabel1.Font = new Font("Microsoft YaHei UI", 15F);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel1.Location = new Point(15, 157);
+            uiLabel1.Location = new Point(15, 136);
             uiLabel1.Name = "uiLabel1";
             uiLabel1.Size = new Size(107, 27);
             uiLabel1.TabIndex = 1;
@@ -293,27 +321,37 @@ namespace EAP.Client.Forms
             uiButton_modifySetting.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_modifySetting.Click += uiButton_modifySetting_Click;
             // 
-            // uiLabel4
+            // uiLabel6
             // 
-            uiLabel4.AutoSize = true;
-            uiLabel4.Font = new Font("Microsoft YaHei UI", 15F);
-            uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel4.Location = new Point(151, 115);
-            uiLabel4.Name = "uiLabel4";
-            uiLabel4.Size = new Size(72, 27);
-            uiLabel4.TabIndex = 1;
-            uiLabel4.Text = "设定值";
+            uiLabel6.AutoSize = true;
+            uiLabel6.Font = new Font("Microsoft YaHei UI", 15F);
+            uiLabel6.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel6.Location = new Point(15, 261);
+            uiLabel6.Name = "uiLabel6";
+            uiLabel6.Size = new Size(52, 27);
+            uiLabel6.TabIndex = 1;
+            uiLabel6.Text = "总计";
             // 
-            // uiLabel5
+            // uiLedLabel_total
             // 
-            uiLabel5.AutoSize = true;
-            uiLabel5.Font = new Font("Microsoft YaHei UI", 15F);
-            uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel5.Location = new Point(284, 115);
-            uiLabel5.Name = "uiLabel5";
-            uiLabel5.Size = new Size(72, 27);
-            uiLabel5.TabIndex = 1;
-            uiLabel5.Text = "当前值";
+            uiLedLabel_total.Font = new Font("宋体", 1F);
+            uiLedLabel_total.Location = new Point(265, 261);
+            uiLedLabel_total.MinimumSize = new Size(1, 1);
+            uiLedLabel_total.Name = "uiLedLabel_total";
+            uiLedLabel_total.Size = new Size(113, 35);
+            uiLedLabel_total.TabIndex = 6;
+            uiLedLabel_total.Text = "0";
+            // 
+            // uiLedLabel_totalMax
+            // 
+            uiLedLabel_totalMax.Font = new Font("宋体", 1F);
+            uiLedLabel_totalMax.ForeColor = Color.FromArgb(255, 128, 128);
+            uiLedLabel_totalMax.Location = new Point(131, 261);
+            uiLedLabel_totalMax.MinimumSize = new Size(1, 1);
+            uiLedLabel_totalMax.Name = "uiLedLabel_totalMax";
+            uiLedLabel_totalMax.Size = new Size(113, 35);
+            uiLedLabel_totalMax.TabIndex = 6;
+            uiLedLabel_totalMax.Text = "0";
             // 
             // MainForm
             // 
@@ -365,5 +403,8 @@ namespace EAP.Client.Forms
         private UIButton uiButton_modifySetting;
         private UILabel uiLabel5;
         private UILabel uiLabel4;
+        private UILedLabel uiLedLabel_totalMax;
+        private UILedLabel uiLedLabel_total;
+        private UILabel uiLabel6;
     }
 }
