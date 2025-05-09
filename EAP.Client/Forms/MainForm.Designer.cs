@@ -32,8 +32,6 @@ namespace EAP.Client.Forms
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            textBox_panelid = new UITextBox();
-            label_1 = new UILabel();
             label1 = new UILabel();
             textBox_modelname = new UITextBox();
             textBox_machinerecipe = new UITextBox();
@@ -47,42 +45,16 @@ namespace EAP.Client.Forms
             label5 = new UILabel();
             button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
-            uiButton_ScanToDownloadRecipe = new UIButton();
             notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
             SuspendLayout();
-            // 
-            // textBox_panelid
-            // 
-            textBox_panelid.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_panelid.Location = new Point(202, 119);
-            textBox_panelid.Margin = new Padding(4, 5, 4, 5);
-            textBox_panelid.MinimumSize = new Size(1, 16);
-            textBox_panelid.Name = "textBox_panelid";
-            textBox_panelid.Padding = new Padding(5);
-            textBox_panelid.ShowText = false;
-            textBox_panelid.Size = new Size(256, 33);
-            textBox_panelid.TabIndex = 0;
-            textBox_panelid.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_panelid.Watermark = "";
-            // 
-            // label_1
-            // 
-            label_1.AutoSize = true;
-            label_1.Font = new Font("Microsoft YaHei UI", 15F);
-            label_1.ForeColor = Color.FromArgb(48, 48, 48);
-            label_1.Location = new Point(15, 122);
-            label_1.Name = "label_1";
-            label_1.Size = new Size(90, 27);
-            label_1.TabIndex = 1;
-            label_1.Text = "Panel ID";
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Microsoft YaHei UI", 15F);
             label1.ForeColor = Color.FromArgb(48, 48, 48);
-            label1.Location = new Point(15, 170);
+            label1.Location = new Point(15, 117);
             label1.Name = "label1";
             label1.Size = new Size(137, 27);
             label1.TabIndex = 1;
@@ -91,7 +63,7 @@ namespace EAP.Client.Forms
             // textBox_modelname
             // 
             textBox_modelname.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_modelname.Location = new Point(202, 167);
+            textBox_modelname.Location = new Point(202, 114);
             textBox_modelname.Margin = new Padding(4, 5, 4, 5);
             textBox_modelname.MinimumSize = new Size(1, 16);
             textBox_modelname.Name = "textBox_modelname";
@@ -132,7 +104,7 @@ namespace EAP.Client.Forms
             label_updatetime_aoi.AutoSize = true;
             label_updatetime_aoi.Font = new Font("宋体", 12F);
             label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
+            label_updatetime_aoi.Location = new Point(21, 212);
             label_updatetime_aoi.Name = "label_updatetime_aoi";
             label_updatetime_aoi.Size = new Size(103, 16);
             label_updatetime_aoi.TabIndex = 2;
@@ -155,13 +127,11 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(checkBox_checkrecipe);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
-            groupBox_1.Controls.Add(textBox_panelid);
             groupBox_1.Controls.Add(textBox_projectname);
             groupBox_1.Controls.Add(textBox_modelname);
             groupBox_1.Controls.Add(label_updatetime_aoi);
             groupBox_1.Controls.Add(textBox_machinerecipe);
             groupBox_1.Controls.Add(label2);
-            groupBox_1.Controls.Add(label_1);
             groupBox_1.Controls.Add(label5);
             groupBox_1.Controls.Add(label1);
             groupBox_1.Font = new Font("宋体", 12F);
@@ -206,7 +176,7 @@ namespace EAP.Client.Forms
             // textBox_projectname
             // 
             textBox_projectname.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_projectname.Location = new Point(202, 219);
+            textBox_projectname.Location = new Point(202, 166);
             textBox_projectname.Margin = new Padding(4, 5, 4, 5);
             textBox_projectname.MinimumSize = new Size(1, 16);
             textBox_projectname.Name = "textBox_projectname";
@@ -222,7 +192,7 @@ namespace EAP.Client.Forms
             label5.AutoSize = true;
             label5.Font = new Font("Microsoft YaHei UI", 15F);
             label5.ForeColor = Color.FromArgb(48, 48, 48);
-            label5.Location = new Point(15, 222);
+            label5.Location = new Point(15, 169);
             label5.Name = "label5";
             label5.Size = new Size(141, 27);
             label5.TabIndex = 1;
@@ -231,7 +201,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
+            button_CompareRecipe.Location = new Point(490, 57);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -255,18 +225,6 @@ namespace EAP.Client.Forms
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
-            // uiButton_ScanToDownloadRecipe
-            // 
-            uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
-            uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
-            uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
-            uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
-            uiButton_ScanToDownloadRecipe.TabIndex = 5;
-            uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
-            uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
-            // 
             // notifyIcon
             // 
             notifyIcon.Icon = (Icon)resources.GetObject("notifyIcon.Icon");
@@ -278,7 +236,6 @@ namespace EAP.Client.Forms
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
-            Controls.Add(uiButton_ScanToDownloadRecipe);
             Controls.Add(richTextBox1);
             Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
@@ -296,9 +253,6 @@ namespace EAP.Client.Forms
         }
 
         #endregion
-
-        private UITextBox textBox_panelid;
-        private UILabel label_1;
         private UILabel label1;
         private UITextBox textBox_modelname;
         private UITextBox textBox_machinerecipe;
@@ -317,7 +271,6 @@ namespace EAP.Client.Forms
         private UITextBox textBox_projectname;
         private UILabel label5;
         private UIButton button_CompareRecipe;
-        private UIButton uiButton_ScanToDownloadRecipe;
         private NotifyIcon notifyIcon;
     }
 }
