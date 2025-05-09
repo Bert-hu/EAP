@@ -422,26 +422,26 @@ namespace EAP.Client.Forms
         public string lockMessage { get; set; } = string.Empty;
         private void uiCheckBox_isLocked_CheckedChanged(object sender, EventArgs e)
         {
-            if (uiCheckBox_isLocked.Checked == false)
-            {
-                PasswordForm form = new PasswordForm();
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    if (form.Value == _commonLibrary.CustomSettings["Password"])
-                    {
-                        uiCheckBox_isLocked.Checked = false;
-                    }
-                    else
-                    {
-                        UIMessageBox.ShowError("密码错误");
-                        uiCheckBox_isLocked.Checked = true;
-                    }
-                }
-                else
-                {
-                    uiCheckBox_isLocked.Checked = true;
-                }
-            }
+            //if (uiCheckBox_isLocked.Checked == false)
+            //{
+            //    PasswordForm form = new PasswordForm();
+            //    if (form.ShowDialog() == DialogResult.OK)
+            //    {
+            //        if (form.Value == _commonLibrary.CustomSettings["Password"])
+            //        {
+            //            uiCheckBox_isLocked.Checked = false;
+            //        }
+            //        else
+            //        {
+            //            UIMessageBox.ShowError("密码错误");
+            //            uiCheckBox_isLocked.Checked = true;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        uiCheckBox_isLocked.Checked = true;
+            //    }
+            //}
             machineLocked = uiCheckBox_isLocked.Checked;
         }
         public void UpdateMachineLock(bool locked, string message)
