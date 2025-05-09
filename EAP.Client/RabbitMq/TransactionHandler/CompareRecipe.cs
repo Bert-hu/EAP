@@ -180,7 +180,7 @@ namespace EAP.Client.RabbitMq
                 var machineBody = await secsGem.SendAsync(s7f25);
 
 
-
+                CompareSputterFormattedRecipe(serverBody, machineBody);
 
 
                 reptrans.Parameters.Add("Result", false);
@@ -196,6 +196,21 @@ namespace EAP.Client.RabbitMq
             rabbitMq.Produce(trans.ReplyChannel, reptrans);
         }
 
+        Dictionary<int, string> configIndexName = new Dictionary<int, string>()
+        {
+            { 4, "M3_M5_1"},
+            { 5, "M3_M5_2"},
+            { 6, "M3_M5_3"},
+            { 7, "M5_M7_1"},
+            { 8, "M5_M7_2"},
+            { 9, "M5_M7_3"},
+            { 10, "M7_M9_1"},
+            { 11, "M7_M9_2"},
+            { 12, "M7_M9_3"},
+            { 13, "M9_M11_1"},
+            { 14, "M9_M11_2"},
+            { 15, "M9_M11_3"},
+        };
 
         public string CompareSputterFormattedRecipe(SecsMessage serverBody, SecsMessage machineBody)
         {
@@ -203,6 +218,45 @@ namespace EAP.Client.RabbitMq
             try
             {
 
+                var serverRecipeIndex = serverBody.SecsItem[0].GetString();
+                var machineRecipeIndex = machineBody.SecsItem[0].GetString();
+                if (serverRecipeIndex != machineRecipeIndex)
+                {
+                    return ($"serverRecipeIndex:{serverRecipeIndex} != machineRecipeIndex:{machineRecipeIndex}");
+                }
+                else
+                {
+                    foreach (var config in configIndexName)
+                    {
+                        var configName = config.Value;
+                        var serverConfig = serverBody.SecsItem[config.Key].Items;
+                        var machineConfig = machineBody.SecsItem[config.Key].Items;
+                        var serverConfigCount = serverConfig.Count();
+                        var machineConfigCount = machineConfig.Count();
+                        if (serverConfigCount == 0 && machineConfigCount > 0)
+                        {
+                            result.AppendLine($"{configName}设备有Recipe内容，服务器无Recipe内容。");
+                        }
+                        else if (serverConfigCount > 0 && machineConfigCount == 0)
+                        {
+                            result.AppendLine($"{configName}服务器有Recipe内容，设备无Recipe内容。");
+                        }
+                        else if (serverConfigCount == 0 && machineConfigCount == 0)
+                        {
+                            //正常情况
+                        }
+                        else
+                        {
+                            for (int i = 0; i < serverConfigCount; i++)
+                            {
+                                var itemType = serverConfig[i].GetType();
+                            }
+                        }
+
+
+
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -211,5 +265,55 @@ namespace EAP.Client.RabbitMq
             }
             return result.ToString();
         }
+
+        private string GetItemValue(SecsFormat format, Item? item)
+        {
+            string value = string.Empty;
+            switch (format)
+            {
+                case SecsFormat.ASCII:
+                    value = item.GetString();
+                    break;
+                case SecsFormat.I1:
+                    value = item.FirstValue<sbyte>().ToString();
+                    break;
+                case SecsFormat.I2:
+                    value = item.FirstValue<short>().ToString();
+                    break;
+                case SecsFormat.I4:
+                    value = item.FirstValue<int>().ToString();
+                    break;
+                case SecsFormat.I8:
+                    value = item.FirstValue<long>().ToString();
+                    break;
+                case SecsFormat.U1:
+                    value = item.FirstValue<byte>().ToString();
+                    break;
+                case SecsFormat.U2:
+                    value = item.FirstValue<ushort>().ToString();
+                    break;
+                case SecsFormat.U4:
+                    value = item.FirstValue<uint>().ToString();
+                    break;
+                case SecsFormat.U8:
+                    value = item.FirstValue<ulong>().ToString();
+                    break;
+                case SecsFormat.F4:
+                    value = item.FirstValue<float>().ToString();
+                    break;
+                case SecsFormat.F8:
+                    value = item.FirstValue<double>().ToString();
+                    break;
+                case SecsFormat.Boolean:
+                    value = item.FirstValue<bool>().ToString();
+                    break;
+                default:
+                    value = string.Empty;
+                    break;
+            }
+            return value;
+
+        }
+
     }
 }
