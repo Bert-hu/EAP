@@ -56,6 +56,7 @@ namespace EAP.Client.Forms
             uiCheckBox_isLocked = new UICheckBox();
             uiRichTextBox_lockMessage = new UIRichTextBox();
             uiButton_modifySetting = new UIButton();
+            uiButton_clearCount = new UIButton();
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -354,10 +355,23 @@ namespace EAP.Client.Forms
             uiButton_modifySetting.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_modifySetting.Click += uiButton_modifySetting_Click;
             // 
+            // uiButton_clearCount
+            // 
+            uiButton_clearCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_clearCount.Location = new Point(480, 104);
+            uiButton_clearCount.MinimumSize = new Size(1, 1);
+            uiButton_clearCount.Name = "uiButton_clearCount";
+            uiButton_clearCount.Size = new Size(118, 35);
+            uiButton_clearCount.TabIndex = 11;
+            uiButton_clearCount.Text = "计数清零";
+            uiButton_clearCount.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_clearCount.Click += uiButton_clearCount_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
+            Controls.Add(uiButton_clearCount);
             Controls.Add(uiButton_modifySetting);
             Controls.Add(uiRichTextBox_lockMessage);
             Controls.Add(uiCheckBox_isLocked);
@@ -407,5 +421,6 @@ namespace EAP.Client.Forms
         private UILedLabel uiLedLabel_totalMax;
         private UILedLabel uiLedLabel_total;
         private UILabel uiLabel6;
+        private UIButton uiButton_clearCount;
     }
 }
