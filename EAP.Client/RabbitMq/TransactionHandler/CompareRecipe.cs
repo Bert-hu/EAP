@@ -26,7 +26,7 @@ namespace EAP.Client.RabbitMq
 
         }
 
-        List<string> result = new List<string>
+        List<string> ItemDic = new List<string>
         {
             "DeGAS_TIME_6001",
             "Degas Inner Temp_6002",
@@ -180,11 +180,11 @@ namespace EAP.Client.RabbitMq
                 var machineBody = await secsGem.SendAsync(s7f25);
 
 
-                CompareSputterFormattedRecipe(serverBody, machineBody);
+                var compareResult = CompareSputterFormattedRecipe(serverBody, machineBody);
 
 
-                reptrans.Parameters.Add("Result", false);
-                reptrans.Parameters.Add("Message", $"recipe内容比对方法未实现");
+                reptrans.Parameters.Add("Result", string.IsNullOrEmpty(compareResult));
+                reptrans.Parameters.Add("Message", compareResult);
 
             }
             catch (Exception ex)
@@ -249,12 +249,14 @@ namespace EAP.Client.RabbitMq
                         {
                             for (int i = 0; i < serverConfigCount; i++)
                             {
-                                var itemType = serverConfig[i].GetType();
+                                var serverItemValue = GetItemValue(serverConfig[i].Format, serverConfig[i]);
+                                var machineItemValue = GetItemValue(machineConfig[i].Format, machineConfig[i]);
+                                if (serverItemValue != machineItemValue)
+                                {
+                                    result.AppendLine($"{configName} {ItemDic[i]}不一致，服务器：{serverItemValue}，设备：{machineItemValue}");
+                                }
                             }
                         }
-
-
-
                     }
                 }
             }
