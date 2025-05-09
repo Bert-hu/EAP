@@ -84,6 +84,16 @@
         "Name": "RecipeChangeEvent",
         "ID": 193,
         "ReportIds": [ 200 ]
+      },
+      {
+        "Name": "ReelCompletedEvent",
+        "ID": 262,
+        "ReportIds": []
+      },
+      {
+        "Name": "ReelCompletedEvent",
+        "ID": 265,
+        "ReportIds": []
       }
     ],
     "ProcessStateCodes": {

@@ -244,7 +244,6 @@ namespace EAP.Client.Forms
                             UIMessageBox.ShowAsk2(
                                 $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
 
-
                     // Uncomment the following line if you want to show standard update dialog instead.
                     //AutoUpdater.ShowUpdateForm(args);
 
@@ -449,7 +448,7 @@ namespace EAP.Client.Forms
             this.Invoke(new Action(() =>
             {
                 uiCheckBox_isLocked.Checked = locked;
-                if(!string.IsNullOrEmpty(message))
+                if (!string.IsNullOrEmpty(message))
                 {
                     uiRichTextBox_lockMessage.Text = message;
                 }
@@ -509,5 +508,22 @@ namespace EAP.Client.Forms
         public int mMaxCount { get { return _mMaxCount; } set { _mMaxCount = value; UpdateControlValue(uiLedLabel_mMax, value); } }
         private int _ohMaxCount;
         public int ohMaxCount { get { return _ohMaxCount; } set { _ohMaxCount = value; UpdateControlValue(uiLedLabel_ohMax, value); } }
+
+        private void uiButton_clearCount_Click(object sender, EventArgs e)
+        {
+            var confirm = UIMessageBox.ShowAsk("是否清零?");
+            if (confirm)
+            {
+                ClearCount();
+            }
+        }
+
+        public void ClearCount()
+        {
+            traLog.Info($"上次计数值为MIX-ICOS:{_icosCount},MIX-M:{_mCount},MIX-OH:{_ohCount},计数清零");
+            icosCount = 0;
+            mCount = 0;
+            ohCount = 0;
+        }
     }
 }
