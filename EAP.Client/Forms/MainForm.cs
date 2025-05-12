@@ -14,6 +14,7 @@ using System.Net;
 using System.Reflection;
 using System.Windows.Threading;
 using static Secs4Net.Item;
+using EAP.Client.Models;
 
 namespace EAP.Client.Forms
 {
@@ -27,6 +28,7 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
+        ConfigManager<CathodeConfig> manager = new ConfigManager<CathodeConfig>();
 
         public static MainForm Instance
         {
@@ -44,6 +46,28 @@ namespace EAP.Client.Forms
         //    InitializeComponent();
         //}
 
+        bool _isAdmin;
+        bool isAdmin
+        {
+            get { return _isAdmin; }
+            set
+            {
+                _isAdmin = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLabel_admin.Text = value ? "管理员" : "普通用户";
+                    uiLabel_admin.BackColor = value ? System.Drawing.Color.Green : Color.Transparent;
+                    if (value)
+                    {
+                        uiButton_login.Text = "登出";
+                    }
+                    else
+                    {
+                        uiButton_login.Text = "登录";
+                    }
+                }));
+            }
+        }
 
         public MainForm(IConfiguration configuration, ISecsConnection secsConnection, CommonLibrary commonLibrary, ISecsGem secsGem, RabbitMq.RabbitMqService rabbitMq)
         {
@@ -196,6 +220,11 @@ namespace EAP.Client.Forms
                 AutoUpdater.Start(updateUrl);
             };
             timer.Start();
+
+            var config = manager.LoadConfig();
+            uiDataGridView_Material.DataSource = config.CathodeSettings;
+            uiDataGridView_Material.Refresh();
+
         }
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
@@ -414,6 +443,74 @@ namespace EAP.Client.Forms
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.Hide();
+            }
+        }
+
+        private void uiButton_add_Click(object sender, EventArgs e)
+        {
+
+            if (isAdmin)
+            {
+
+                SputterCathodeSettingForm form = new SputterCathodeSettingForm();
+                DialogResult dr = form.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    //TODO SFIS Step3
+                    if (true)
+                    {
+                        try
+                        {
+                            var config = manager.LoadConfig();
+
+                            if (config.CathodeSettings.Any(it => it.Seq == form.cathodeSetting.Seq))
+                            {
+                                this.ShowWarningDialog("Seq已存在");
+                            }
+                            else
+                            {
+                                config.CathodeSettings.Add(form.cathodeSetting);
+                                manager.SaveConfig(config);
+                                uiDataGridView_Material.DataSource = config.CathodeSettings;
+                                uiDataGridView_Material.Refresh();
+                                traLog.Info($"添加成功{form.cathodeSetting.Seq},{form.cathodeSetting.CathodeId}");
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            this.ShowErrorDialog(ex.Message);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                this.ShowErrorDialog("无权限");
+            }
+        }
+
+        private void uiButton_login_Click(object sender, EventArgs e)
+        {
+            if (!isAdmin)
+            {
+                PasswordForm form = new PasswordForm();
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    if (form.Value == _commonLibrary.CustomSettings["Password"])
+                    {
+                        isAdmin = true;
+                    }
+                    else
+                    {
+                        UIMessageBox.ShowError("密码错误");
+                    }
+                }
+            }
+            else
+            {
+                isAdmin = false;
             }
         }
     }
