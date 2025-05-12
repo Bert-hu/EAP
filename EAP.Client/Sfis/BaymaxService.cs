@@ -25,6 +25,8 @@ namespace EAP.Client.Sfis
             //中转Baymax服务
             TcpListener listener = new TcpListener(IPAddress.Any, listenPort);
             listener.Start();
+
+
             Task task = new Task(() =>
             {
                 while (true)
@@ -32,36 +34,38 @@ namespace EAP.Client.Sfis
                     TcpClient machineClient = listener.AcceptTcpClient();
                     try
                     {
-                        CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                        Task clientTask = Task.Run(() =>
+                        using (machineClient)
                         {
+                            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                            Task clientTask = Task.Run(async () =>
+                            {
+                                var remoteIp = ((IPEndPoint)machineClient.Client.RemoteEndPoint).Address.ToString();
+                                //if (!accectIps.Contains(remoteIp))
+                                //{
+                                //    machineClient.Close();
+                                //    return;
+                                //}
+                                NetworkStream stream = machineClient.GetStream();
 
-                            var remoteIp = ((IPEndPoint)machineClient.Client.RemoteEndPoint).Address.ToString();
-                            //if (!accectIps.Contains(remoteIp))
-                            //{
-                            //    machineClient.Close();
-                            //    return;
-                            //}
-                            NetworkStream stream = machineClient.GetStream();
+                                byte[] buffer = new byte[102400];
+                                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                                string requestStr = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                                requestStr = requestStr + ",GROUP_RECORD=???";//包装机额外查询最后一站信息
+                                BaymaxTrans baymaxTrans = GetBaymaxTrans(baymaxIp, bayMaxPort, requestStr).Result;
+                                OnBaymaxTransCompleted?.Invoke(this, baymaxTrans);
 
-                            byte[] buffer = new byte[102400];
-                            int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                            string requestStr = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                            requestStr = requestStr + ",GROUP_RECORD=???";//包装机额外查询最后一站信息
-                            BaymaxTrans baymaxTrans = GetBaymaxTrans(baymaxIp, bayMaxPort, requestStr).Result;
-                            OnBaymaxTransCompleted?.Invoke(this, baymaxTrans);
+                                if (handle != null && baymaxTrans.Result)
+                                    baymaxTrans.BaymaxResponse = handle(this, requestStr, baymaxTrans.BaymaxResponse);
+                                byte[] response = Encoding.UTF8.GetBytes(baymaxTrans.BaymaxResponse);
+                                await stream.WriteAsync(response, 0, response.Length);
+                                traLog.Info($"Send to Machine: {baymaxTrans.BaymaxResponse}");
+                                //Thread.Sleep(500);//SEMES时间要长点
 
-                            if (handle != null && baymaxTrans.Result)
-                                baymaxTrans.BaymaxResponse = handle(this, requestStr, baymaxTrans.BaymaxResponse);
-                            byte[] response = Encoding.UTF8.GetBytes(baymaxTrans.BaymaxResponse);
-                            stream.Write(response, 0, response.Length);
-                            traLog.Info($"Send to Machine: {baymaxTrans.BaymaxResponse}");
-                            Thread.Sleep(500);//SEMES时间要长点
+                                //machineClient.Close();
+                            }, cts.Token);
 
-                            machineClient.Close();
-                        }, cts.Token);
-
-                        clientTask.Wait(cts.Token);
+                            clientTask.Wait(cts.Token);
+                        }                            
                     }
                     catch (OperationCanceledException)
                     {
@@ -82,33 +86,73 @@ namespace EAP.Client.Sfis
             task.Start();
         }
 
-        public async Task<BaymaxTrans> GetBaymaxTrans(string baymaxIp, int bayMaxPort, string request)
+        public async Task<BaymaxTrans> GetBaymaxTrans(string baymaxIp, int bayMaxPort, string request, CancellationToken cancellationToken = default)
         {
-            BaymaxTrans baymaxTrans = new BaymaxTrans();
-            baymaxTrans.MachineRequest = request;
+            var baymaxTrans = new BaymaxTrans
+            {
+                MachineRequest = request
+            };
+
+            using var baymaxClient = new TcpClient();
             try
             {
-                TcpClient baymaxClient = new TcpClient(baymaxIp, bayMaxPort);
-                NetworkStream baymaxStream = baymaxClient.GetStream();
-                byte[] baymaxBuffer = new byte[102400];
-                Task<int> readTask = baymaxStream.ReadAsync(baymaxBuffer, 0, baymaxBuffer.Length); // 先异步读取，避免因设备速度太慢导致数据丢失
-                byte[] baymaxRequest = Encoding.UTF8.GetBytes(request);
-                await baymaxStream.WriteAsync(baymaxRequest, 0, baymaxRequest.Length);
-                await baymaxStream.FlushAsync();
+                // 设置连接超时
+                var connectTask = baymaxClient.ConnectAsync(baymaxIp, bayMaxPort);
+                if (await Task.WhenAny(connectTask, Task.Delay(5000, cancellationToken)) != connectTask)
+                {
+                    throw new TimeoutException("连接SFIS服务器超时");
+                }
+
+                using var baymaxStream = baymaxClient.GetStream();
+                baymaxStream.ReadTimeout = 5000; // 读取超时设置为5秒
+                baymaxStream.WriteTimeout = 5000; // 写入超时设置为5秒
+
+                // 准备请求数据
+                var baymaxRequest = Encoding.UTF8.GetBytes(request);
+
+                // 保持原有逻辑：先启动读取操作
+                var responseBuffer = new byte[102400];
+                var readTask = baymaxStream.ReadAsync(responseBuffer, 0, responseBuffer.Length, cancellationToken);
+
+                // 发送请求
+                await baymaxStream.WriteAsync(baymaxRequest, 0, baymaxRequest.Length, cancellationToken);
+                await baymaxStream.FlushAsync(cancellationToken);
                 traLog.Info($"Send to SFIS: {request}");
-                int baymaxBytesRead = await readTask;
-                baymaxTrans.BaymaxResponse = Encoding.UTF8.GetString(baymaxBuffer, 0, baymaxBytesRead);
-                Thread.Sleep(10);
-                baymaxStream.Flush();
-                baymaxClient.Close();
+
+                // 等待读取完成
+                var bytesRead = await readTask;
+
+                // 直接使用UTF8编码转换
+                baymaxTrans.BaymaxResponse = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
                 baymaxTrans.Result = true;
+
                 traLog.Info($"Receive from SFIS: {baymaxTrans.BaymaxResponse}");
             }
-            catch (Exception)
+            catch (OperationCanceledException)
             {
                 baymaxTrans.Result = false;
-                baymaxTrans.BaymaxResponse = "Fail,SFIS Baymax connection fail";
+                baymaxTrans.BaymaxResponse = "Fail,SFIS操作被取消";
+                traLog.Warn("SFIS操作被取消");
             }
+            catch (SocketException ex)
+            {
+                baymaxTrans.Result = false;
+                baymaxTrans.BaymaxResponse = $"Fail,SFIS网络错误: {ex.SocketErrorCode}";
+                traLog.Error($"SFIS网络错误: {ex.SocketErrorCode}");
+            }
+            catch (TimeoutException ex)
+            {
+                baymaxTrans.Result = false;
+                baymaxTrans.BaymaxResponse = "Fail,SFIS连接超时";
+                traLog.Error("SFIS连接超时");
+            }
+            catch (Exception ex)
+            {
+                baymaxTrans.Result = false;
+                baymaxTrans.BaymaxResponse = "Fail,SFIS未知错误";
+                traLog.Error($"SFIS未知错误: {ex.Message}");
+            }
+
             return baymaxTrans;
         }
     }
