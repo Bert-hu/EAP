@@ -28,7 +28,7 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
-        private ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
+        //private ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
         public static MainForm Instance
         {
             get
@@ -54,7 +54,6 @@ namespace EAP.Client.Forms
             _secsGem = secsGem;
             _rabbitMq = rabbitMq;
             instance = this;
-            configManager.LoadConfig();
             InitializeComponent();
 
             _secsConnection.ConnectionChanged += _secsConnection_ConnectionChanged;
@@ -96,6 +95,7 @@ namespace EAP.Client.Forms
                 if (this.textBox_packageName.Text != packageName)
                 {
                     this.textBox_packageName.Text = packageName;
+                    ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
                     var config = configManager.LoadConfig();
 
                     if (config.Settings.ContainsKey(packageName))
@@ -488,6 +488,8 @@ namespace EAP.Client.Forms
                     MixPackageSettingForm settingForm = new MixPackageSettingForm(textBox_packageName.Text);
                     if (settingForm.ShowDialog() == DialogResult.OK)
                     {
+                        ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
+
                         var config = configManager.LoadConfig();
 
                         if (config.Settings.ContainsKey(textBox_packageName.Text))
