@@ -43,10 +43,10 @@ namespace EAP.Client.Secs
                 traLog.Error(ex.Message, ex);
             }
 
-            //Secs config
+            //Secs configManager
             try
             {
-                traLog.Info("Start to get secs config");
+                traLog.Info("Start to get secs configManager");
                 SecsConfigs = configuration.GetSection("Secs").Get<SecsConfigs>();
 
                 Svids = SecsConfigs.SVIDList.ToDictionary(it => it.ID, it => new GemSvid { ID = it.ID, Name = it.Name });

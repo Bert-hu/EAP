@@ -1,4 +1,5 @@
 ﻿using AutoUpdaterDotNET;
+using EAP.Client.Models;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
 using EAP.Client.Sfis;
@@ -27,7 +28,7 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
-
+        private ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
         public static MainForm Instance
         {
             get
@@ -53,6 +54,7 @@ namespace EAP.Client.Forms
             _secsGem = secsGem;
             _rabbitMq = rabbitMq;
             instance = this;
+            configManager.LoadConfig();
             InitializeComponent();
 
             _secsConnection.ConnectionChanged += _secsConnection_ConnectionChanged;
@@ -87,11 +89,31 @@ namespace EAP.Client.Forms
                 label_conn_status.BackColor = backcolor;
             }));
         }
-        public void UpdateMachineRecipe(string recipename)
+        public void UpdatePackageName(string packageName)
         {
             this.Invoke(new Action(() =>
             {
-                this.textBox_machinerecipe.Text = recipename;
+                if (this.textBox_packageName.Text != packageName)
+                {
+                    this.textBox_packageName.Text = packageName;
+                    var config = configManager.LoadConfig();
+
+                    if (config.Settings.ContainsKey(packageName))
+                    {
+                        icosMaxCount = config.Settings[packageName].IcosCount;
+                        mMaxCount = config.Settings[packageName].MCount;
+                        ohMaxCount = config.Settings[packageName].OhCount;
+                    }
+                    else
+                    {
+                        icosMaxCount = 0;
+                        mMaxCount = 0;
+                        ohMaxCount = 0;
+                        UIMessageBox.ShowError2($"未找到{packageName}的配置");
+                    }
+                }
+
+
             }));
         }
 
@@ -463,12 +485,24 @@ namespace EAP.Client.Forms
             {
                 if (form.Value == _commonLibrary.CustomSettings["Password"])
                 {
-                    MixPackageSettingForm settingForm = new MixPackageSettingForm(icosMaxCount, mMaxCount, ohMaxCount);
+                    MixPackageSettingForm settingForm = new MixPackageSettingForm(textBox_packageName.Text);
                     if (settingForm.ShowDialog() == DialogResult.OK)
                     {
-                        icosMaxCount = settingForm.icosCount;
-                        mMaxCount = settingForm.mCount;
-                        ohMaxCount = settingForm.ohCount;
+                        var config = configManager.LoadConfig();
+
+                        if (config.Settings.ContainsKey(textBox_packageName.Text))
+                        {
+                            icosMaxCount = config.Settings[textBox_packageName.Text].IcosCount;
+                            mMaxCount = config.Settings[textBox_packageName.Text].MCount;
+                            ohMaxCount = config.Settings[textBox_packageName.Text].OhCount;
+                        }
+                        else
+                        {
+                            icosMaxCount = 0;
+                            mMaxCount = 0;
+                            ohMaxCount = 0;
+                            UIMessageBox.ShowError2($"未找到{textBox_packageName.Text}的配置");
+                        }
                     }
                 }
                 else
@@ -525,5 +559,16 @@ namespace EAP.Client.Forms
             mCount = 0;
             ohCount = 0;
         }
+
+        private void uiButton_loadSetting_Click(object sender, EventArgs e)
+        {
+            var confirm = UIMessageBox.ShowAsk("是否加载当前程式?");
+            if (confirm)
+            {
+           
+            }
+        }
+
+
     }
 }

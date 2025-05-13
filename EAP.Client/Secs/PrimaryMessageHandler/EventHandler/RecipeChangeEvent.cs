@@ -60,7 +60,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 var result = await HttpClientHelper.HttpPostRequestAsync<object>(faiUrl, data);
                 traLog.Info($"FAI 触发结果：{faiUrl},{jsonBody},{result.ToString()}");
 
-                MainForm.Instance.UpdateMachineRecipe(packageName);
+                MainForm.Instance.UpdatePackageName(packageName);
             }
             catch (Exception ex)
             {

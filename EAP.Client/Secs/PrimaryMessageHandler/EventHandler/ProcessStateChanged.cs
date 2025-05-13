@@ -32,7 +32,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             {
                 var packageName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
 
-                MainForm.Instance.UpdateMachineRecipe(packageName);
+                MainForm.Instance.UpdatePackageName(packageName);
 
 
                 using (var scope = this.serviceProvider.CreateScope())

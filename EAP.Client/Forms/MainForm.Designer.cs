@@ -32,13 +32,14 @@ namespace EAP.Client.Forms
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            textBox_machinerecipe = new UITextBox();
+            textBox_packageName = new UITextBox();
             label2 = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
             uiLedLabel_totalMax = new UILedLabel();
             uiButton_clearCount = new UIButton();
             uiLedLabel_total = new UILedLabel();
+            uiButton_loadSetting = new UIButton();
             uiButton_modifySetting = new UIButton();
             uiLedLabel_ohMax = new UILedLabel();
             uiLedLabel_oh = new UILedLabel();
@@ -66,20 +67,20 @@ namespace EAP.Client.Forms
             tabPage2.SuspendLayout();
             SuspendLayout();
             // 
-            // textBox_machinerecipe
+            // textBox_packageName
             // 
-            textBox_machinerecipe.Font = new Font("宋体", 9.75F);
-            textBox_machinerecipe.Location = new Point(91, 65);
-            textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
-            textBox_machinerecipe.MinimumSize = new Size(1, 16);
-            textBox_machinerecipe.Name = "textBox_machinerecipe";
-            textBox_machinerecipe.Padding = new Padding(5);
-            textBox_machinerecipe.ReadOnly = true;
-            textBox_machinerecipe.ShowText = false;
-            textBox_machinerecipe.Size = new Size(147, 21);
-            textBox_machinerecipe.TabIndex = 0;
-            textBox_machinerecipe.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_machinerecipe.Watermark = "";
+            textBox_packageName.Font = new Font("宋体", 9.75F);
+            textBox_packageName.Location = new Point(91, 65);
+            textBox_packageName.Margin = new Padding(4, 5, 4, 5);
+            textBox_packageName.MinimumSize = new Size(1, 16);
+            textBox_packageName.Name = "textBox_packageName";
+            textBox_packageName.Padding = new Padding(5);
+            textBox_packageName.ReadOnly = true;
+            textBox_packageName.ShowText = false;
+            textBox_packageName.Size = new Size(147, 21);
+            textBox_packageName.TabIndex = 0;
+            textBox_packageName.TextAlignment = ContentAlignment.MiddleLeft;
+            textBox_packageName.Watermark = "";
             // 
             // label2
             // 
@@ -109,6 +110,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(uiLedLabel_totalMax);
             groupBox_1.Controls.Add(uiButton_clearCount);
             groupBox_1.Controls.Add(uiLedLabel_total);
+            groupBox_1.Controls.Add(uiButton_loadSetting);
             groupBox_1.Controls.Add(uiButton_modifySetting);
             groupBox_1.Controls.Add(uiLedLabel_ohMax);
             groupBox_1.Controls.Add(uiLedLabel_oh);
@@ -119,7 +121,7 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
             groupBox_1.Controls.Add(uiLabel6);
-            groupBox_1.Controls.Add(textBox_machinerecipe);
+            groupBox_1.Controls.Add(textBox_packageName);
             groupBox_1.Controls.Add(uiLabel3);
             groupBox_1.Controls.Add(uiLabel2);
             groupBox_1.Controls.Add(uiLabel5);
@@ -153,7 +155,7 @@ namespace EAP.Client.Forms
             // uiButton_clearCount
             // 
             uiButton_clearCount.Font = new Font("宋体", 10F);
-            uiButton_clearCount.Location = new Point(302, 72);
+            uiButton_clearCount.Location = new Point(303, 99);
             uiButton_clearCount.MinimumSize = new Size(1, 1);
             uiButton_clearCount.Name = "uiButton_clearCount";
             uiButton_clearCount.Size = new Size(82, 24);
@@ -173,10 +175,22 @@ namespace EAP.Client.Forms
             uiLedLabel_total.TabIndex = 6;
             uiLedLabel_total.Text = "0";
             // 
+            // uiButton_loadSetting
+            // 
+            uiButton_loadSetting.Font = new Font("宋体", 10F);
+            uiButton_loadSetting.Location = new Point(303, 35);
+            uiButton_loadSetting.MinimumSize = new Size(1, 1);
+            uiButton_loadSetting.Name = "uiButton_loadSetting";
+            uiButton_loadSetting.Size = new Size(82, 24);
+            uiButton_loadSetting.TabIndex = 10;
+            uiButton_loadSetting.Text = "加载设定";
+            uiButton_loadSetting.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_loadSetting.Click += uiButton_loadSetting_Click;
+            // 
             // uiButton_modifySetting
             // 
             uiButton_modifySetting.Font = new Font("宋体", 10F);
-            uiButton_modifySetting.Location = new Point(302, 35);
+            uiButton_modifySetting.Location = new Point(303, 68);
             uiButton_modifySetting.MinimumSize = new Size(1, 1);
             uiButton_modifySetting.Name = "uiButton_modifySetting";
             uiButton_modifySetting.Size = new Size(82, 24);
@@ -449,7 +463,7 @@ namespace EAP.Client.Forms
         }
 
         #endregion
-        private UITextBox textBox_machinerecipe;
+        private UITextBox textBox_packageName;
         private UILabel label2;
         private UILabel label3;
         private UILabel label4;
@@ -482,5 +496,6 @@ namespace EAP.Client.Forms
         private UITabControl uiTabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
+        private UIButton uiButton_loadSetting;
     }
 }

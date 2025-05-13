@@ -45,7 +45,7 @@ namespace EAP.Client
                 return;
             }
 
-            string configFilePath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
+            string configFilePath = Path.Combine(AppContext.BaseDirectory, "log4net.configManager");
             XmlConfigurator.Configure(new FileInfo(configFilePath));
 
 
