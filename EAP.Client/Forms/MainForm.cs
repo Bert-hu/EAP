@@ -530,20 +530,20 @@ namespace EAP.Client.Forms
                     if (!snInfos.Any(it => it.CarrierId == CarrierId))
                     {
                         //TODO Get Model Name
-                        var getLotGrpInfo = $"EQXXXXXX01,{lotno},7,Admin,JORDAN,,OK,LOT_GRP_INFO_V2=???";
+                        var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
                         var trans = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo).Result;
                         if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
                             traLog.Info(trans.BaymaxResponse);
-                            var equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
-                            Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                            Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                                       .Where(keyValueArray => keyValueArray.Length == 2)
                                       .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
                             //string modelName = sfisParameters["SN_MODEL_NAME_INFO"];//第一种
-                            string projectName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[0];
-                            string productName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[1];
-                            string modelName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[2];
-                            string GroupName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[3];
+                            string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                            string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+                            string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+
+
 
 
                         }
