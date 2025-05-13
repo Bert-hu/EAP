@@ -55,7 +55,7 @@ namespace EAP.Client.Sfis
                             byte[] response = Encoding.UTF8.GetBytes(baymaxTrans.BaymaxResponse);
                             stream.Write(response, 0, response.Length);
                             traLog.Info($"Send to Machine: {baymaxTrans.BaymaxResponse}");
-                            Thread.Sleep(500);//SEMES时间要长点
+                            Thread.Sleep(100);//SEMES时间要长点
 
                             machineClient.Close();
                         }, cts.Token);

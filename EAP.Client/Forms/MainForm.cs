@@ -118,14 +118,6 @@ namespace EAP.Client.Forms
                 this.textBox_machinerecipe.Text = recipename;
             }));
         }
-        public void UpdateAoiPanelAndModelname(string panelid, string modelname)
-        {
-            this.Invoke(new Action(() =>
-            {
-                this.textBox_modelname.Text = modelname;
-                this.label_updatetime_aoi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
-            }));
-        }
 
         public void UpdateState(string state)
         {
@@ -511,6 +503,37 @@ namespace EAP.Client.Forms
             else
             {
                 isAdmin = false;
+            }
+        }
+
+        private void uiButton_ScanSn_Click(object sender, EventArgs e)
+        {
+            ScanBarcodeForm form = new ScanBarcodeForm();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                var sn = form.Value;
+                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+                var baymaxIp = _configuration.GetSection("Custom")["BaymaxIp"];
+                var baymaxPort = int.Parse(_configuration.GetSection("Custom")["BaymaxPort"] ?? "21347");
+                var empNo = uiTextBox_empNo.Text;
+                var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
+                BaymaxService baymaxService = new BaymaxService();
+                var step7Res = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req).Result;
+                if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
+                {
+                    //TODO Get Model Name
+                    //TODO Check Recipe Name
+                    //TODO Check Recipe Body
+                    //TODO Unlock Machine
+                    //TODO Lock Machine
+                }
+                else
+                { 
+                
+                }
+
+      
+
             }
         }
     }
