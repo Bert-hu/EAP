@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Windows.Threading;
 using static Secs4Net.Item;
 using EAP.Client.Models;
+using System.Threading.Tasks;
 
 namespace EAP.Client.Forms
 {
@@ -508,7 +509,7 @@ namespace EAP.Client.Forms
 
         List<SnInfo> snInfos = new List<SnInfo>();
 
-        private void uiButton_ScanSn_Click(object sender, EventArgs e)
+        private async Task uiButton_ScanSn_Click(object sender, EventArgs e)
         {
             ScanBarcodeForm form = new ScanBarcodeForm();
             if (form.ShowDialog() == DialogResult.OK)
@@ -538,7 +539,7 @@ namespace EAP.Client.Forms
                             Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                                       .Where(keyValueArray => keyValueArray.Length == 2)
                                       .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                           // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                            // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
                             string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
                             //string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
 
@@ -546,6 +547,8 @@ namespace EAP.Client.Forms
                             {
                                 SecsItem = L(U4(42))
                             };
+                            var s1f4 = await _secsGem.SendAsync(s1f3);
+                            var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
 
 
                             var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
@@ -558,11 +561,24 @@ namespace EAP.Client.Forms
                             var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
                             if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
                             {
+                                if (machineRecipeName == getRecipeNameRes.RecipeName)
+                                {
 
+                                }
+                                else
+                                {
+                                    var message = $"设备当前Recipe {machineRecipeName}与{projectName}绑定的Recipe {getRecipeNameRes.RecipeName}不匹配";
+                                    traLog.Error(message);
+                                    UIMessageBox.ShowError2(message);
+
+                                    SetInputStatus(false);
+                                }
                             }
                             else
                             {
                                 var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
+                                traLog.Error(message);
+                                UIMessageBox.ShowError2(message);
                             }
                         }
 
@@ -586,6 +602,19 @@ namespace EAP.Client.Forms
                     traLog.Error(message);
                     UIMessageBox.ShowError2(message);
                 }
+            }
+        }
+
+        private void SetInputStatus(bool enable)
+        {
+            var rcmd = string.Empty;
+            if (enable)
+            {
+                rcmd = "CHB1_ALLOW";
+            }
+            else
+            {
+                rcmd = "CHB1_REJECT";
             }
         }
 
