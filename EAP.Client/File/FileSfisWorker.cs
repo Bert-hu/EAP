@@ -492,11 +492,18 @@ namespace EAP.Client.File
                     if (currentRecipeName == recipeName)
                     {
                         var compareBodyRes = RmsFunction.CompareRecipeBody(rabbitMqService, configuration, recipeName);
-                        traLog.Info(compareBodyRes.Message);
+          
                         if (compareBodyRes.Result)
                         {
+                            traLog.Info(compareBodyRes.Message);
                             MoveFileToMachineFolder(config.MachinePath, file);
                             GenerateTraceFile(config, panelId, recipeName, modelName, projectName);
+                        }
+                        else
+                        {
+                            var errmsg = $"设备Recipe内容不匹配，SN:{panelId},RecipeName:{recipeName},MachineRecipeName:{currentRecipeName},{compareBodyRes.Message}";
+                            traLog.Error(errmsg);
+                            MoveFileToErrorFolder(errorFolder, file);
                         }
                     }
                     else
