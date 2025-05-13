@@ -506,6 +506,8 @@ namespace EAP.Client.Forms
             }
         }
 
+        List<SnInfo> snInfos = new List<SnInfo>();
+
         private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
             ScanBarcodeForm form = new ScanBarcodeForm();
@@ -521,20 +523,37 @@ namespace EAP.Client.Forms
                 var step7Res = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req).Result;
                 if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
                 {
-                    //TODO Get Model Name
-                    //TODO Check Recipe Name
-                    //TODO Check Recipe Body
-                    //TODO Unlock Machine
-                    //TODO Lock Machine
+                    Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+             .Where(keyValueArray => keyValueArray.Length == 2)
+             .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                    var CarrierId = sfisParameters["CARRIER_ID"].Trim();
+                    if (!snInfos.Any(it => it.CarrierId == CarrierId))
+                    {
+                        //TODO Get Model Name
+                        //TODO Check Recipe Name
+                        //TODO Check Recipe Body
+                        //TODO Unlock Machine
+                        //TODO Lock Machine
+                    }
+                    else
+                    {
+                        var message = $"Carrier ID已存在：{CarrierId}";
+                        traLog.Error(message);
+                        UIMessageBox.ShowError2(message);
+                    }               
                 }
                 else
-                { 
-                
+                {
+                    var message = $"获取Carrier ID失败：{step7Res.BaymaxResponse}";
+                    traLog.Error(message);
+                    UIMessageBox.ShowError2(message);
                 }
-
-      
-
             }
+        }
+
+        private void uiGroupBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
