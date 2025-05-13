@@ -538,14 +538,32 @@ namespace EAP.Client.Forms
                             Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                                       .Where(keyValueArray => keyValueArray.Length == 2)
                                       .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                            //string modelName = sfisParameters["SN_MODEL_NAME_INFO"];//第一种
-                            string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                           // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
                             string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-                            string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+                            //string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+
+                            var s1f3 = new SecsMessage(1, 3)
+                            {
+                                SecsItem = L(U4(42))
+                            };
 
 
+                            var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+                            var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
+                            var getRecipeNameReq = new
+                            {
+                                EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
+                                RecipeNameAlias = projectName
+                            };
+                            var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
+                            if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
+                            {
 
-
+                            }
+                            else
+                            {
+                                var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
+                            }
                         }
 
 
@@ -560,7 +578,7 @@ namespace EAP.Client.Forms
                         var message = $"Carrier ID已存在：{CarrierId}";
                         traLog.Error(message);
                         UIMessageBox.ShowError2(message);
-                    }               
+                    }
                 }
                 else
                 {
