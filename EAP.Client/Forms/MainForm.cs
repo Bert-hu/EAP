@@ -294,6 +294,13 @@ namespace EAP.Client.Forms
             public string EquipmentTypeId { get; set; }
             public string RecipeName { get; set; }
         }
+
+        public class CompareRecipeBodyResponse
+        {
+            public bool Result { get; set; } = false;
+            public string Message { get; set; }
+
+        }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //确认后关闭
@@ -563,7 +570,26 @@ namespace EAP.Client.Forms
                             {
                                 if (machineRecipeName == getRecipeNameRes.RecipeName)
                                 {
+                                    var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
+                                    var compareRecipeBodyReeq = new
+                                    {
+                                        EquipmentId = equipmentId,
+                                        RecipeName = getRecipeNameRes.RecipeName
+                                    };
+                                    var compareRecipeBodyRes = HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq).Result;
+                                    if (compareRecipeBodyRes != null && compareRecipeBodyRes.Result)
+                                    {
 
+                                        //TODO Check Recipe Body
+
+                                    }
+                                    else
+                                    {
+                                        var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
+                                        traLog.Error(message);
+                                        UIMessageBox.ShowError2(message);
+                                        SetInputStatus(false);
+                                    }
                                 }
                                 else
                                 {
@@ -584,10 +610,8 @@ namespace EAP.Client.Forms
 
 
 
-                        //TODO Check Recipe Name
-                        //TODO Check Recipe Body
-                        //TODO Unlock Machine
-                        //TODO Lock Machine
+
+
                     }
                     else
                     {
