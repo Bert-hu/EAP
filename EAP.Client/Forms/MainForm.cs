@@ -516,7 +516,7 @@ namespace EAP.Client.Forms
 
         List<SnInfo> snInfos = new List<SnInfo>();
 
-        private async Task uiButton_ScanSn_Click(object sender, EventArgs e)
+        private void  uiButton_ScanSn_Click(object sender, EventArgs e)
         {
             ScanBarcodeForm form = new ScanBarcodeForm();
             if (form.ShowDialog() == DialogResult.OK)
@@ -554,7 +554,7 @@ namespace EAP.Client.Forms
                             {
                                 SecsItem = L(U4(42))
                             };
-                            var s1f4 = await _secsGem.SendAsync(s1f3);
+                            var s1f4 =  _secsGem.SendAsync(s1f3).Result;
                             var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
 
 
