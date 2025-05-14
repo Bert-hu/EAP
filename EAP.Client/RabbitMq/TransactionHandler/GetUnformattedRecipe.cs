@@ -117,7 +117,7 @@ namespace EAP.Client.RabbitMq
                 string[] lines = recipeText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 //文本行数，换算成index需要-1
-                var preheatTimeLineIndex = 1485;
+                var preheatTimeLineIndex = 1685;
                 var nozzleTempLineIndex = 1506;
                 var preheatTempLineIndex = 1706;
                 var heatTempLineIndex = 1753;
