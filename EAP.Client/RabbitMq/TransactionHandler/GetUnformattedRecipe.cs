@@ -116,19 +116,35 @@ namespace EAP.Client.RabbitMq
                 // 将内容按换行符分割成行
                 string[] lines = recipeText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                //文本行数，换算成index需要-1
-                var preheatTimeLineIndex = 1686;
-                var nozzleTempLineIndex = 1506;
-                var preheatTempLineIndex = 1706;
-                var heatTempLineIndex = 1753;
+                var heater1FileNameIndex = 8;
+                var heater2FileNameIndex = 9;
+
+                var heater1FileName = lines[heater1FileNameIndex - 1].Split('=')[1].Trim();
+                var heater2FileName = lines[heater2FileNameIndex - 1].Split('=')[1].Trim();
+
+                var heater1ContentIndex = Array.FindIndex(lines, line => line.StartsWith(heater1FileName));
+                var heater2ContentIndex = Array.FindIndex(lines, line => line.StartsWith(heater2FileName));
+
+                ////文本行数，换算成index需要-1
+                //var preheatTimeLineIndex = 1685;  //heater2Filename 下第4行
+                //var nozzleTempLineIndex = 1506; //heater1Filename 下第25行
+                //var preheatTempLineIndex = 1706;//heater2Filename 下第25行
+                //var heatTempLineIndex = 1753;//heater2Filename 下第72行
+
+                var preheatTimeLineIndex = heater2ContentIndex + 4;//heater2Filename 下第4行
+                var nozzleTempLineIndex = heater1ContentIndex + 25;//heater1Filename 下第25行
+                var preheatTempLineIndex = heater2ContentIndex + 25;//heater2Filename 下第25行
+                var heatTempLineIndex = heater2ContentIndex + 72;//heater2Filename 下第72行
+
+
                 // 解析 Preheat Time
-                ParseAndSetValue(lines, preheatTimeLineIndex - 1, "Preheat Time", value => para.PreheatTime = value, recipeName);
+                ParseAndSetValue(lines, preheatTimeLineIndex, "Preheat Time", value => para.PreheatTime = value, recipeName);
                 // 解析 Nozzle Temp
-                ParseAndSetValue(lines, nozzleTempLineIndex - 1, "Set Point", value => para.NozzleTemp = value, recipeName);
+                ParseAndSetValue(lines, nozzleTempLineIndex, "Set Point", value => para.NozzleTemp = value, recipeName);
                 // 解析 Preheat Temp
-                ParseAndSetValue(lines, preheatTempLineIndex - 1, "Set Point", value => para.PreheatTemp = value, recipeName);
+                ParseAndSetValue(lines, preheatTempLineIndex, "Set Point", value => para.PreheatTemp = value, recipeName);
                 // 解析 Heat Temp
-                ParseAndSetValue(lines, heatTempLineIndex - 1, "Set Point", value => para.HeatTemp = value, recipeName);
+                ParseAndSetValue(lines, heatTempLineIndex, "Set Point", value => para.HeatTemp = value, recipeName);
 
                 int glueStartLine = 240;
                 int guleEndLine = 262;
