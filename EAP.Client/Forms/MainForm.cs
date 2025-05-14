@@ -16,6 +16,8 @@ using System.Windows.Threading;
 using static Secs4Net.Item;
 using EAP.Client.Models;
 using System.Threading.Tasks;
+using System.Windows.Ink;
+using Newtonsoft.Json.Linq;
 
 namespace EAP.Client.Forms
 {
@@ -65,6 +67,29 @@ namespace EAP.Client.Forms
                     else
                     {
                         uiButton_login.Text = "登录";
+                    }
+                }));
+            }
+        }
+
+        bool _allowInput = false;
+        public bool allowInput
+        {
+            get { return _allowInput; }
+            set
+            {
+                _allowInput = value;
+                this.Invoke(new Action(() =>
+                {
+                    if (_allowInput)
+                    {
+                        uiLabel_inputStatus.Text = "允许入料";
+                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
+                    }
+                    else
+                    {
+                        uiLabel_inputStatus.Text = "禁止入料";
+                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
                     }
                 }));
             }
@@ -516,130 +541,137 @@ namespace EAP.Client.Forms
 
         List<SnInfo> snInfos = new List<SnInfo>();
 
-        private void  uiButton_ScanSn_Click(object sender, EventArgs e)
+        private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
-            ScanBarcodeForm form = new ScanBarcodeForm();
-            if (form.ShowDialog() == DialogResult.OK)
+            Task.Run(() =>
             {
-                var sn = form.Value;
-                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-                var baymaxIp = _configuration.GetSection("Custom")["BaymaxIp"];
-                var baymaxPort = int.Parse(_configuration.GetSection("Custom")["BaymaxPort"] ?? "21347");
-                var empNo = uiTextBox_empNo.Text;
-                var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
-                BaymaxService baymaxService = new BaymaxService();
-                var step7Res = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req).Result;
-                if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
+                this.Invoke(new Action(() =>
                 {
-                    Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-             .Where(keyValueArray => keyValueArray.Length == 2)
-             .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                    var CarrierId = sfisParameters["CARRIER_ID"].Trim();
-                    if (!snInfos.Any(it => it.CarrierId == CarrierId))
+                    ScanBarcodeForm form = new ScanBarcodeForm();
+                    if (form.ShowDialog() == DialogResult.OK)
                     {
-                        //TODO Get Model Name
-                        var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
-                        var trans = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo).Result;
-                        if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+                        var sn = form.Value;
+                        var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+                        var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
+                        var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+                        var empNo = uiTextBox_empNo.Text;
+                        var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
+                        BaymaxService baymaxService = new BaymaxService();
+                        var step7Res = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req).Result;
+                        if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
-                            traLog.Info(trans.BaymaxResponse);
-                            Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                                      .Where(keyValueArray => keyValueArray.Length == 2)
-                                      .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                            // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
-                            string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-                            //string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
-
-                            var s1f3 = new SecsMessage(1, 3)
+                            Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                     .Where(keyValueArray => keyValueArray.Length == 2)
+                     .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                            var CarrierId = sfisParameters["CARRIER_ID"].Trim();
+                            if (!snInfos.Any(it => it.CarrierId == CarrierId))
                             {
-                                SecsItem = L(U4(42))
-                            };
-                            var s1f4 =  _secsGem.SendAsync(s1f3).Result;
-                            var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
-
-
-                            var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
-                            var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
-                            var getRecipeNameReq = new
-                            {
-                                EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
-                                RecipeNameAlias = projectName
-                            };
-                            var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
-                            if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
-                            {
-                                if (machineRecipeName == getRecipeNameRes.RecipeName)
+                                //TODO Get Model Name
+                                var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
+                                var trans = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo).Result;
+                                if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                                 {
-                                    var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
-                                    var compareRecipeBodyReeq = new
+                                    traLog.Info(trans.BaymaxResponse);
+                                    Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                                              .Where(keyValueArray => keyValueArray.Length == 2)
+                                              .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                                    // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                                    string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+                                    //string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+
+                                    var s1f3 = new SecsMessage(1, 3)
                                     {
-                                        EquipmentId = equipmentId,
-                                        RecipeName = getRecipeNameRes.RecipeName
+                                        SecsItem = L(U4(42))
                                     };
-                                    var compareRecipeBodyRes = HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq).Result;
-                                    if (compareRecipeBodyRes != null && compareRecipeBodyRes.Result)
+                                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
+                                    var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
+
+
+                                    var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+                                    var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
+                                    var getRecipeNameReq = new
                                     {
+                                        EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
+                                        RecipeNameAlias = projectName
+                                    };
+                                    var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
+                                    if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
+                                    {
+                                        if (machineRecipeName == getRecipeNameRes.RecipeName.Split("_")[1])
+                                        {
+                                            var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
+                                            var compareRecipeBodyReeq = new
+                                            {
+                                                EquipmentId = equipmentId,
+                                                RecipeName = getRecipeNameRes.RecipeName
+                                            };
+                                            var compareRecipeBodyRes = HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq).Result;
+                                            if (compareRecipeBodyRes != null && compareRecipeBodyRes.Result)
+                                            {
 
-                                        //TODO Check Recipe Body
+                                                //TODO Check Recipe Body
 
+                                            }
+                                            else
+                                            {
+                                                var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
+                                                traLog.Error(message);
+                                                UIMessageBox.ShowError2(message);
+                                                SetInputStatus(false);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var message = $"设备当前Recipe {machineRecipeName}与{projectName}绑定的Recipe {getRecipeNameRes.RecipeName}不匹配";
+                                            traLog.Error(message);
+                                            UIMessageBox.ShowError2(message);
+
+                                            SetInputStatus(false);
+                                        }
                                     }
                                     else
                                     {
-                                        var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
+                                        var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
                                         traLog.Error(message);
                                         UIMessageBox.ShowError2(message);
-                                        SetInputStatus(false);
                                     }
                                 }
-                                else
-                                {
-                                    var message = $"设备当前Recipe {machineRecipeName}与{projectName}绑定的Recipe {getRecipeNameRes.RecipeName}不匹配";
-                                    traLog.Error(message);
-                                    UIMessageBox.ShowError2(message);
 
-                                    SetInputStatus(false);
-                                }
+
+
+
+
                             }
                             else
                             {
-                                var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
+                                var message = $"Carrier ID已存在：{CarrierId}";
                                 traLog.Error(message);
                                 UIMessageBox.ShowError2(message);
                             }
                         }
-
-
-
-
-
+                        else
+                        {
+                            var message = $"获取Carrier ID失败：{step7Res.BaymaxResponse}";
+                            traLog.Error(message);
+                            UIMessageBox.ShowError2(message);
+                        }
                     }
-                    else
-                    {
-                        var message = $"Carrier ID已存在：{CarrierId}";
-                        traLog.Error(message);
-                        UIMessageBox.ShowError2(message);
-                    }
-                }
-                else
-                {
-                    var message = $"获取Carrier ID失败：{step7Res.BaymaxResponse}";
-                    traLog.Error(message);
-                    UIMessageBox.ShowError2(message);
-                }
-            }
+                }));
+            });
         }
 
         private void SetInputStatus(bool enable)
         {
-            var rcmd = string.Empty;
-            if (enable)
-            {
-                rcmd = "CHB1_ALLOW";
-            }
-            else
-            {
-                rcmd = "CHB1_REJECT";
-            }
+            //var rcmd = string.Empty;
+            //if (enable)
+            //{
+            //    rcmd = "CHB1_ALLOW";
+            //}
+            //else
+            //{
+            //    rcmd = "CHB1_REJECT";
+            //}
+            allowInput = enable;
         }
 
         private void uiGroupBox1_Click(object sender, EventArgs e)
