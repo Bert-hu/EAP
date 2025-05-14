@@ -545,8 +545,9 @@ namespace EAP.Client.Forms
         {
             Task.Run(async() =>
             {
-                this.Invoke(new Action(() =>
+                try
                 {
+
                     ScanBarcodeForm form = new ScanBarcodeForm();
                     if (form.ShowDialog() == DialogResult.OK)
                     {
@@ -557,7 +558,7 @@ namespace EAP.Client.Forms
                         var empNo = uiTextBox_empNo.Text;
                         var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
                         BaymaxService baymaxService = new BaymaxService();
-                        var step7Res = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req).Result;
+                        var step7Res = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req);
                         if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
                             Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
@@ -656,7 +657,12 @@ namespace EAP.Client.Forms
                             UIMessageBox.ShowError2(message);
                         }
                     }
-                }));
+
+                }
+                catch (Exception ex)
+                {
+                    var message = $""
+                }
             });
         }
 
