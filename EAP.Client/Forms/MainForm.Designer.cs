@@ -449,6 +449,7 @@ namespace EAP.Client.Forms
             MaximizeBox = false;
             Name = "MainForm";
             Text = "EAP Client";
+            TopMost = true;
             ZoomScaleRect = new Rectangle(15, 15, 614, 638);
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;

@@ -92,27 +92,24 @@ namespace EAP.Client.Forms
         {
             this.Invoke(new Action(() =>
             {
-                if (this.textBox_packageName.Text != packageName)
+
+                this.textBox_packageName.Text = packageName;
+                ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
+                var config = configManager.LoadConfig();
+
+                if (config.Settings.ContainsKey(packageName))
                 {
-                    this.textBox_packageName.Text = packageName;
-                    ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
-                    var config = configManager.LoadConfig();
-
-                    if (config.Settings.ContainsKey(packageName))
-                    {
-                        icosMaxCount = config.Settings[packageName].IcosCount;
-                        mMaxCount = config.Settings[packageName].MCount;
-                        ohMaxCount = config.Settings[packageName].OhCount;
-                    }
-                    else
-                    {
-                        icosMaxCount = 0;
-                        mMaxCount = 0;
-                        ohMaxCount = 0;
-                        UIMessageBox.ShowError2($"未找到{packageName}的配置");
-                    }
+                    icosMaxCount = config.Settings[packageName].IcosCount;
+                    mMaxCount = config.Settings[packageName].MCount;
+                    ohMaxCount = config.Settings[packageName].OhCount;
                 }
-
+                else
+                {
+                    icosMaxCount = 0;
+                    mMaxCount = 0;
+                    ohMaxCount = 0;
+                    UIMessageBox.ShowError2($"未找到{packageName}的配置");
+                }
 
             }));
         }
@@ -569,7 +566,6 @@ namespace EAP.Client.Forms
             {
                 try
                 {
-
                     var s1f3 = new SecsMessage(1, 3)
                     {
                         SecsItem = L(
@@ -586,7 +582,5 @@ namespace EAP.Client.Forms
                 }
             }
         }
-
-
     }
 }

@@ -30,7 +30,7 @@ namespace EAP.Client.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            textBox_icos = new UITextBox();
+            uiTextBox_icos = new UITextBox();
             button_confirm = new UIButton();
             uiTextBox_m = new UITextBox();
             uiTextBox_oh = new UITextBox();
@@ -38,22 +38,22 @@ namespace EAP.Client.Forms
             uiLabel2 = new UILabel();
             uiLabel1 = new UILabel();
             uiComboBox_packageName = new UIComboBox();
-            uiButton_add = new UIButton();
+            uiButton_save = new UIButton();
             SuspendLayout();
             // 
-            // textBox_icos
+            // uiTextBox_icos
             // 
-            textBox_icos.Font = new Font("Microsoft YaHei UI", 20F);
-            textBox_icos.Location = new Point(139, 131);
-            textBox_icos.Margin = new Padding(4, 5, 4, 5);
-            textBox_icos.MinimumSize = new Size(1, 16);
-            textBox_icos.Name = "textBox_icos";
-            textBox_icos.Padding = new Padding(5);
-            textBox_icos.ShowText = false;
-            textBox_icos.Size = new Size(361, 41);
-            textBox_icos.TabIndex = 0;
-            textBox_icos.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_icos.Watermark = "";
+            uiTextBox_icos.Font = new Font("Microsoft YaHei UI", 20F);
+            uiTextBox_icos.Location = new Point(139, 131);
+            uiTextBox_icos.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_icos.MinimumSize = new Size(1, 16);
+            uiTextBox_icos.Name = "uiTextBox_icos";
+            uiTextBox_icos.Padding = new Padding(5);
+            uiTextBox_icos.ShowText = false;
+            uiTextBox_icos.Size = new Size(361, 41);
+            uiTextBox_icos.TabIndex = 0;
+            uiTextBox_icos.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_icos.Watermark = "";
             // 
             // button_confirm
             // 
@@ -147,22 +147,23 @@ namespace EAP.Client.Forms
             uiComboBox_packageName.Watermark = "";
             uiComboBox_packageName.SelectedIndexChanged += uiComboBox_packageName_SelectedIndexChanged;
             // 
-            // uiButton_add
+            // uiButton_save
             // 
-            uiButton_add.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_add.Location = new Point(409, 63);
-            uiButton_add.MinimumSize = new Size(1, 1);
-            uiButton_add.Name = "uiButton_add";
-            uiButton_add.Size = new Size(91, 29);
-            uiButton_add.TabIndex = 6;
-            uiButton_add.Text = "新增";
-            uiButton_add.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_save.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_save.Location = new Point(265, 296);
+            uiButton_save.MinimumSize = new Size(1, 1);
+            uiButton_save.Name = "uiButton_save";
+            uiButton_save.Size = new Size(91, 29);
+            uiButton_save.TabIndex = 6;
+            uiButton_save.Text = "保存";
+            uiButton_save.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_save.Click += uiButton_save_Click;
             // 
             // MixPackageSettingForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(527, 349);
-            Controls.Add(uiButton_add);
+            Controls.Add(uiButton_save);
             Controls.Add(uiComboBox_packageName);
             Controls.Add(uiLabel3);
             Controls.Add(uiLabel2);
@@ -170,7 +171,7 @@ namespace EAP.Client.Forms
             Controls.Add(button_confirm);
             Controls.Add(uiTextBox_oh);
             Controls.Add(uiTextBox_m);
-            Controls.Add(textBox_icos);
+            Controls.Add(uiTextBox_icos);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "MixPackageSettingForm";
@@ -185,7 +186,7 @@ namespace EAP.Client.Forms
 
         #endregion
 
-        private UITextBox textBox_icos;
+        private UITextBox uiTextBox_icos;
         private UIButton button_confirm;
         private UITextBox uiTextBox_m;
         private UITextBox uiTextBox_oh;
@@ -193,6 +194,6 @@ namespace EAP.Client.Forms
         private UILabel uiLabel2;
         private UILabel uiLabel1;
         private UIComboBox uiComboBox_packageName;
-        private UIButton uiButton_add;
+        private UIButton uiButton_save;
     }
 }
