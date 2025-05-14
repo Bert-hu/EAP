@@ -543,7 +543,7 @@ namespace EAP.Client.Forms
 
         private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
-            Task.Run(() =>
+            Task.Run(async() =>
             {
                 this.Invoke(new Action(() =>
                 {
