@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 rem 设置排除列表，多个文件或文件夹用空格分隔
-set "exclude_list=appsettings.json exclude_temp.txt Logs"
+set "exclude_list=appsettings.json exclude_temp.txt Logs CacheData.json MixPackageSetting.json"
 
 rem 获取当前脚本的文件名
 set "script_name=%~nx0"

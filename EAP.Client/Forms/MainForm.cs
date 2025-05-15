@@ -28,7 +28,8 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
-        //private ConfigManager<MixPackageSetting> configManager = new ConfigManager<MixPackageSetting>();
+        private ConfigManager<CacheData> cacheFile = new ConfigManager<CacheData>();
+        private CacheData cacheData;
         public static MainForm Instance
         {
             get
@@ -157,6 +158,20 @@ namespace EAP.Client.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            cacheData = cacheFile.LoadConfig();
+            if (cacheData != null)
+            {
+                icosCount = cacheData.IcosCount;
+                mCount = cacheData.MCount;
+                ohCount = cacheData.OhCount;
+            }
+            else
+            {
+                icosCount = 0;
+                mCount = 0;
+                ohCount = 0;
+            }
+
             string showtext = "Connecting";
             var backcolor = Color.Gray;
             switch (_secsConnection?.State)
@@ -249,6 +264,7 @@ namespace EAP.Client.Forms
                 }
             };
             locktimer.Start();
+
 
         }
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
@@ -527,6 +543,10 @@ namespace EAP.Client.Forms
                 uiLedLabel_total.Text = (_icosCount + _mCount + _ohCount).ToString();
                 uiLedLabel_totalMax.Text = (_icosMaxCount + _mMaxCount + _ohMaxCount).ToString();
             }
+            cacheData.IcosCount = _icosCount;
+            cacheData.MCount = _mCount;
+            cacheData.OhCount = _ohCount;
+            cacheFile.SaveConfig(cacheData);
         }
 
         private int _icosCount;

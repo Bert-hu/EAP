@@ -6,7 +6,7 @@ using Secs4Net;
 using static Secs4Net.Item;
 
 namespace EAP.Client.Secs
-{ 
+{
     internal static class SecsInitialization
     {
         private static ISecsGem _secsGem;
@@ -25,11 +25,11 @@ namespace EAP.Client.Secs
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
                     var token = cancellationTokenSource.Token;
                     await Task.Delay(1000);
-                   // var s1f13 = commonLibrary.GetSecsMessageByName("S1F13");
-                   var s1f13 = new SecsMessage(1, 13, true)
-                   {
-                       SecsItem = L()
-                    };  
+                    // var s1f13 = commonLibrary.GetSecsMessageByName("S1F13");
+                    var s1f13 = new SecsMessage(1, 13, true)
+                    {
+                        SecsItem = L()
+                    };
                     var rep = await _secsGem.SendAsync(s1f13, token);
                     if (rep.F == 14)
                     {
@@ -49,6 +49,14 @@ namespace EAP.Client.Secs
                             if (await DisableAlarm(token))
                                 await EnableAlarm(token);
                         }
+                        var golocal = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(
+                                A("GOLOCAL"),
+                                L()
+                            )
+                        };
+                        await secsGem.SendAsync(golocal, token);
                     }
                     traceLog.Warn("Initialization completed!");
                 }
