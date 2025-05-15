@@ -543,7 +543,8 @@ namespace EAP.Client.Forms
 
         private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
-            Task.Run(async() =>
+            uiButton_ScanSn.Enabled = false;
+            Task.Run(async () =>
             {
                 try
                 {
@@ -572,13 +573,12 @@ namespace EAP.Client.Forms
                                 var trans = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo).Result;
                                 if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                                 {
-                                    traLog.Info(trans.BaymaxResponse);
                                     Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                                               .Where(keyValueArray => keyValueArray.Length == 2)
                                               .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                                    // string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
-                                    string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-                                    //string GroupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+                                    // string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                                    string projectName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+                                    //string GroupName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
 
                                     var s1f3 = new SecsMessage(1, 3)
                                     {
@@ -609,9 +609,17 @@ namespace EAP.Client.Forms
                                             var compareRecipeBodyRes = HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq).Result;
                                             if (compareRecipeBodyRes != null && compareRecipeBodyRes.Result)
                                             {
-
-                                                //TODO Check Recipe Body
-
+                                                snInfos.Add(new SnInfo
+                                                {
+                                                    SN = sn,
+                                                    CarrierId = CarrierId
+                                                });
+                                                SetInputStatus(true);
+                                                this.Invoke(() =>
+                                                {
+                                                    uiDataGridView_snInfo.DataSource = snInfos.ToList();
+                                                    uiDataGridView_snInfo.Refresh();
+                                                });
                                             }
                                             else
                                             {
@@ -661,7 +669,15 @@ namespace EAP.Client.Forms
                 }
                 catch (Exception ex)
                 {
-                    var message = $""
+                    traLog.Error(ex.ToString());
+                }
+                finally
+                {
+                    this.Invoke(() =>
+                    {
+                        uiButton_ScanSn.Enabled = true;
+
+                    });
                 }
             });
         }
@@ -684,5 +700,6 @@ namespace EAP.Client.Forms
         {
 
         }
+
     }
 }

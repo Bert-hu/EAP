@@ -180,7 +180,7 @@ namespace EAP.Client.RabbitMq
                 var machineBody = await secsGem.SendAsync(s7f25);
 
 
-                var compareResult = CompareSputterFormattedRecipe(serverBody, machineBody);
+                var compareResult = CompareSputterFormattedRecipe(serverBody, serverBody);
 
 
                 reptrans.Parameters.Add("Result", string.IsNullOrEmpty(compareResult));
@@ -222,7 +222,7 @@ namespace EAP.Client.RabbitMq
                 var machineRecipeIndex = machineBody.SecsItem[0].GetString();
                 if (serverRecipeIndex != machineRecipeIndex)
                 {
-                    return ($"serverRecipeIndex:{serverRecipeIndex} != machineRecipeIndex:{machineRecipeIndex}");
+                    return ($"服务器Recipe编号:{serverRecipeIndex} 与 设备Recipe编号:{machineRecipeIndex} 不同");
                 }
                 else
                 {
