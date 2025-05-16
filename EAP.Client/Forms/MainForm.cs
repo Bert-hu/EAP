@@ -31,7 +31,7 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
-        ConfigManager<CathodeConfig> manager = new ConfigManager<CathodeConfig>();
+        ConfigManager<SputtereConfig> manager = new ConfigManager<SputtereConfig>();
 
         public static MainForm Instance
         {
@@ -72,8 +72,15 @@ namespace EAP.Client.Forms
             }
         }
 
-        bool _allowInput = false;
-        public bool allowInput
+        public enum InputStatus
+        {
+            Wait = 0,
+            Allow = 1,
+            Reject = 2
+        }
+
+        InputStatus _allowInput = InputStatus.Wait;
+        public InputStatus AllowInput
         {
             get { return _allowInput; }
             set
@@ -81,15 +88,20 @@ namespace EAP.Client.Forms
                 _allowInput = value;
                 this.Invoke(new Action(() =>
                 {
-                    if (_allowInput)
+                    if (_allowInput == InputStatus.Allow)
                     {
                         uiLabel_inputStatus.Text = "允许入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
                     }
-                    else
+                    else if (_allowInput == InputStatus.Reject)
                     {
                         uiLabel_inputStatus.Text = "禁止入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
+                    }
+                    else if (_allowInput == InputStatus.Wait)
+                    {
+                        uiLabel_inputStatus.Text = "等待中";
+                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Orange;
                     }
                 }));
             }
@@ -242,7 +254,9 @@ namespace EAP.Client.Forms
             var config = manager.LoadConfig();
             uiDataGridView_Material.DataSource = config.CathodeSettings;
             uiDataGridView_Material.Refresh();
-
+            uiTextBox_empNo.Text = config.EmpNo;
+            uiTextBox_line.Text = config.Line;
+            uiTextBox_modelName.Text = config.ModelName;
         }
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
@@ -515,7 +529,43 @@ namespace EAP.Client.Forms
                 this.ShowErrorDialog("无权限");
             }
         }
+        private void uiButton_del_Click(object sender, EventArgs e)
+        {
+            if (isAdmin)
+            {
+                var selectRows = uiDataGridView_Material.SelectedRows;
+                if (selectRows.Count == 1)
+                {
+                    var selectRow = (CathodeSetting)selectRows[0].DataBoundItem;
 
+                    var confirm = this.ShowAskDialog("确定删除吗?");
+                    if (confirm)
+                    {
+                        var config = manager.LoadConfig();
+                        List<CathodeSetting> settings = config.CathodeSettings;
+                        try
+                        {
+                            settings = settings.Where(it => it.Seq != selectRow.Seq && it.CathodeId != selectRow.CathodeId).ToList();
+                            manager.SaveConfig(config);
+                            uiDataGridView_Material.DataSource = settings;
+                            uiDataGridView_Material.Refresh();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.ShowErrorDialog(ex.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    this.ShowWarningDialog("请选择一行");
+                }
+            }
+            else
+            {
+                this.ShowErrorDialog("无权限");
+            }
+        }
         private void uiButton_login_Click(object sender, EventArgs e)
         {
             if (!isAdmin)
@@ -539,7 +589,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        List<SnInfo> snInfos = new List<SnInfo>();
+        public List<SnInfo> snInfos = new List<SnInfo>();
 
         private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
@@ -576,7 +626,7 @@ namespace EAP.Client.Forms
                                     Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                                               .Where(keyValueArray => keyValueArray.Length == 2)
                                               .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                                    // string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                                    string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
                                     string projectName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
                                     //string GroupName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
 
@@ -614,11 +664,13 @@ namespace EAP.Client.Forms
                                                     SN = sn,
                                                     CarrierId = CarrierId
                                                 });
-                                                SetInputStatus(true);
+                                                SetInputStatus(InputStatus.Allow);
                                                 this.Invoke(() =>
                                                 {
                                                     uiDataGridView_snInfo.DataSource = snInfos.ToList();
                                                     uiDataGridView_snInfo.Refresh();
+
+                                                    uiTextBox_modelName.Text = modelName;
                                                 });
                                             }
                                             else
@@ -626,7 +678,7 @@ namespace EAP.Client.Forms
                                                 var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
                                                 traLog.Error(message);
                                                 UIMessageBox.ShowError2(message);
-                                                SetInputStatus(false);
+                                                SetInputStatus(InputStatus.Reject);
                                             }
                                         }
                                         else
@@ -635,7 +687,7 @@ namespace EAP.Client.Forms
                                             traLog.Error(message);
                                             UIMessageBox.ShowError2(message);
 
-                                            SetInputStatus(false);
+                                            SetInputStatus(InputStatus.Reject);
                                         }
                                     }
                                     else
@@ -682,18 +734,9 @@ namespace EAP.Client.Forms
             });
         }
 
-        private void SetInputStatus(bool enable)
+        private void SetInputStatus(InputStatus status)
         {
-            //var rcmd = string.Empty;
-            //if (enable)
-            //{
-            //    rcmd = "CHB1_ALLOW";
-            //}
-            //else
-            //{
-            //    rcmd = "CHB1_REJECT";
-            //}
-            allowInput = enable;
+            AllowInput = status;
         }
 
         private void uiGroupBox1_Click(object sender, EventArgs e)
@@ -701,5 +744,39 @@ namespace EAP.Client.Forms
 
         }
 
+        private void uiTextBox_empNo_TextChanged(object sender, EventArgs e)
+        {
+            var config = manager.LoadConfig();
+            config.EmpNo = uiTextBox_empNo.Text;
+            manager.SaveConfig(config);
+        }
+
+        private void uiTextBox_line_TextChanged(object sender, EventArgs e)
+        {
+            var config = manager.LoadConfig();
+            config.Line = uiTextBox_line.Text;
+            manager.SaveConfig(config);
+        }
+
+        private void uiTabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var config = manager.LoadConfig();
+            List<CathodeSetting> settings = config.CathodeSettings;
+            var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+            var empNo = uiTextBox_empNo.Text;
+            var line = uiTextBox_line.Text;
+            var modelName = uiTextBox_modelName.Text;
+            string cathodeStr = string.Join(" ", settings.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
+
+            var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},JQ01-3FAP-96,,OK,,,{cathodeStr},,,,,,{modelName}";
+
+        }
+
+        private void uiTextBox_modelName_TextChanged(object sender, EventArgs e)
+        {
+            var config = manager.LoadConfig();
+            config.ModelName = uiTextBox_modelName.Text;
+            manager.SaveConfig(config);
+        }
     }
 }

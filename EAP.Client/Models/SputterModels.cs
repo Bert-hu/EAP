@@ -11,8 +11,11 @@ namespace EAP.Client.Models
         public string SN { get; set; }
         public string CarrierId { get; set; }
     }
-    public class CathodeConfig
+    public class SputtereConfig
     {
+        public string EmpNo { get; set; } = string.Empty;
+        public string Line { get; set; } = string.Empty;
+        public string ModelName { get; set; } = string.Empty;
         public List<CathodeSetting> CathodeSettings { get; set; } = new List<CathodeSetting>();
     }
 

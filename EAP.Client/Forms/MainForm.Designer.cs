@@ -53,15 +53,17 @@ namespace EAP.Client.Forms
             snInfoBindingSource = new BindingSource(components);
             uiLabel_inputStatus = new UILabel();
             uiButton_ScanSn = new UIButton();
-            checkBox_checkrecipe = new UICheckBox();
-            uiTextBox1 = new UITextBox();
+            uiTextBox_trayId = new UITextBox();
+            uiTextBox_modelName = new UITextBox();
             uiLabel1 = new UILabel();
+            uiLabel4 = new UILabel();
+            checkBox_checkrecipe = new UICheckBox();
             label_ProcessState = new UILabel();
             button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
             uiGroupBox1 = new UIGroupBox();
-            uiButton_check = new UIButton();
+            uiButton_update = new UIButton();
             uiButton_del = new UIButton();
             uiButton_add = new UIButton();
             uiDataGridView_Material = new UIDataGridView();
@@ -72,6 +74,8 @@ namespace EAP.Client.Forms
             tabPage2 = new TabPage();
             uiLabel2 = new UILabel();
             uiTextBox_empNo = new UITextBox();
+            uiLabel3 = new UILabel();
+            uiTextBox_line = new UITextBox();
             groupBox_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_snInfo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).BeginInit();
@@ -85,7 +89,7 @@ namespace EAP.Client.Forms
             // textBox_machinerecipe
             // 
             textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            textBox_machinerecipe.Location = new Point(76, 29);
+            textBox_machinerecipe.Location = new Point(117, 29);
             textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
             textBox_machinerecipe.MinimumSize = new Size(1, 16);
             textBox_machinerecipe.Name = "textBox_machinerecipe";
@@ -125,10 +129,11 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(uiDataGridView_snInfo);
             groupBox_1.Controls.Add(uiLabel_inputStatus);
             groupBox_1.Controls.Add(uiButton_ScanSn);
-            groupBox_1.Controls.Add(checkBox_checkrecipe);
-            groupBox_1.Controls.Add(uiTextBox1);
+            groupBox_1.Controls.Add(uiTextBox_trayId);
+            groupBox_1.Controls.Add(uiTextBox_modelName);
             groupBox_1.Controls.Add(textBox_machinerecipe);
             groupBox_1.Controls.Add(uiLabel1);
+            groupBox_1.Controls.Add(uiLabel4);
             groupBox_1.Controls.Add(label2);
             groupBox_1.Font = new Font("宋体", 12F);
             groupBox_1.Location = new Point(8, 5);
@@ -147,6 +152,7 @@ namespace EAP.Client.Forms
             dataGridViewCellStyle1.BackColor = Color.FromArgb(235, 243, 255);
             uiDataGridView_snInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             uiDataGridView_snInfo.AutoGenerateColumns = false;
+            uiDataGridView_snInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             uiDataGridView_snInfo.BackgroundColor = Color.White;
             uiDataGridView_snInfo.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -172,7 +178,7 @@ namespace EAP.Client.Forms
             uiDataGridView_snInfo.EnableHeadersVisualStyles = false;
             uiDataGridView_snInfo.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiDataGridView_snInfo.GridColor = Color.FromArgb(80, 160, 255);
-            uiDataGridView_snInfo.Location = new Point(12, 78);
+            uiDataGridView_snInfo.Location = new Point(12, 115);
             uiDataGridView_snInfo.Name = "uiDataGridView_snInfo";
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = Color.FromArgb(235, 243, 255);
@@ -208,20 +214,20 @@ namespace EAP.Client.Forms
             // 
             // uiLabel_inputStatus
             // 
-            uiLabel_inputStatus.BackColor = Color.Red;
+            uiLabel_inputStatus.BackColor = Color.Orange;
             uiLabel_inputStatus.Font = new Font("黑体", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 134);
             uiLabel_inputStatus.ForeColor = Color.White;
-            uiLabel_inputStatus.Location = new Point(347, 246);
+            uiLabel_inputStatus.Location = new Point(347, 273);
             uiLabel_inputStatus.Name = "uiLabel_inputStatus";
-            uiLabel_inputStatus.Size = new Size(175, 46);
+            uiLabel_inputStatus.Size = new Size(175, 29);
             uiLabel_inputStatus.TabIndex = 7;
-            uiLabel_inputStatus.Text = "禁止入料";
+            uiLabel_inputStatus.Text = "等待中";
             uiLabel_inputStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // uiButton_ScanSn
             // 
             uiButton_ScanSn.Font = new Font("宋体", 10F);
-            uiButton_ScanSn.Location = new Point(317, 29);
+            uiButton_ScanSn.Location = new Point(386, 29);
             uiButton_ScanSn.MinimumSize = new Size(1, 1);
             uiButton_ScanSn.Name = "uiButton_ScanSn";
             uiButton_ScanSn.Size = new Size(96, 29);
@@ -230,44 +236,71 @@ namespace EAP.Client.Forms
             uiButton_ScanSn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_ScanSn.Click += uiButton_ScanSn_Click;
             // 
-            // checkBox_checkrecipe
+            // uiTextBox_trayId
             // 
-            checkBox_checkrecipe.AutoSize = true;
-            checkBox_checkrecipe.Checked = true;
-            checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 10F);
-            checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
-            checkBox_checkrecipe.Location = new Point(10, 283);
-            checkBox_checkrecipe.MinimumSize = new Size(1, 1);
-            checkBox_checkrecipe.Name = "checkBox_checkrecipe";
-            checkBox_checkrecipe.Size = new Size(133, 25);
-            checkBox_checkrecipe.TabIndex = 4;
-            checkBox_checkrecipe.Text = "自动检查Recipe";
-            checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
+            uiTextBox_trayId.Font = new Font("Microsoft YaHei UI", 11F);
+            uiTextBox_trayId.Location = new Point(76, 273);
+            uiTextBox_trayId.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_trayId.MinimumSize = new Size(1, 16);
+            uiTextBox_trayId.Name = "uiTextBox_trayId";
+            uiTextBox_trayId.Padding = new Padding(5);
+            uiTextBox_trayId.ShowText = false;
+            uiTextBox_trayId.Size = new Size(202, 29);
+            uiTextBox_trayId.TabIndex = 0;
+            uiTextBox_trayId.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_trayId.Watermark = "";
             // 
-            // uiTextBox1
+            // uiTextBox_modelName
             // 
-            uiTextBox1.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox1.Location = new Point(76, 246);
-            uiTextBox1.Margin = new Padding(4, 5, 4, 5);
-            uiTextBox1.MinimumSize = new Size(1, 16);
-            uiTextBox1.Name = "uiTextBox1";
-            uiTextBox1.Padding = new Padding(5);
-            uiTextBox1.ShowText = false;
-            uiTextBox1.Size = new Size(202, 29);
-            uiTextBox1.TabIndex = 0;
-            uiTextBox1.TextAlignment = ContentAlignment.MiddleLeft;
-            uiTextBox1.Watermark = "";
+            uiTextBox_modelName.Font = new Font("Microsoft YaHei UI", 11F);
+            uiTextBox_modelName.Location = new Point(117, 70);
+            uiTextBox_modelName.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_modelName.MinimumSize = new Size(1, 16);
+            uiTextBox_modelName.Name = "uiTextBox_modelName";
+            uiTextBox_modelName.Padding = new Padding(5);
+            uiTextBox_modelName.ReadOnly = true;
+            uiTextBox_modelName.ShowText = false;
+            uiTextBox_modelName.Size = new Size(202, 29);
+            uiTextBox_modelName.TabIndex = 0;
+            uiTextBox_modelName.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_modelName.Watermark = "";
+            uiTextBox_modelName.TextChanged += uiTextBox_modelName_TextChanged;
             // 
             // uiLabel1
             // 
             uiLabel1.AutoSize = true;
             uiLabel1.Font = new Font("Microsoft YaHei UI", 11F);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel1.Location = new Point(10, 250);
+            uiLabel1.Location = new Point(10, 277);
             uiLabel1.Name = "uiLabel1";
             uiLabel1.Size = new Size(59, 20);
             uiLabel1.TabIndex = 1;
             uiLabel1.Text = "Tray ID";
+            // 
+            // uiLabel4
+            // 
+            uiLabel4.AutoSize = true;
+            uiLabel4.Font = new Font("Microsoft YaHei UI", 11F);
+            uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel4.Location = new Point(10, 70);
+            uiLabel4.Name = "uiLabel4";
+            uiLabel4.Size = new Size(104, 20);
+            uiLabel4.TabIndex = 1;
+            uiLabel4.Text = "Model Name";
+            // 
+            // checkBox_checkrecipe
+            // 
+            checkBox_checkrecipe.AutoSize = true;
+            checkBox_checkrecipe.Checked = true;
+            checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 10F);
+            checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
+            checkBox_checkrecipe.Location = new Point(553, 20);
+            checkBox_checkrecipe.MinimumSize = new Size(1, 1);
+            checkBox_checkrecipe.Name = "checkBox_checkrecipe";
+            checkBox_checkrecipe.Size = new Size(105, 25);
+            checkBox_checkrecipe.TabIndex = 4;
+            checkBox_checkrecipe.Text = "检查Recipe";
+            checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
             // 
             // label_ProcessState
             // 
@@ -285,7 +318,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(553, 21);
+            button_CompareRecipe.Location = new Point(553, 51);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -318,7 +351,7 @@ namespace EAP.Client.Forms
             // 
             // uiGroupBox1
             // 
-            uiGroupBox1.Controls.Add(uiButton_check);
+            uiGroupBox1.Controls.Add(uiButton_update);
             uiGroupBox1.Controls.Add(uiButton_del);
             uiGroupBox1.Controls.Add(uiButton_add);
             uiGroupBox1.Controls.Add(uiDataGridView_Material);
@@ -334,16 +367,16 @@ namespace EAP.Client.Forms
             uiGroupBox1.TextAlignment = ContentAlignment.MiddleLeft;
             uiGroupBox1.Click += uiGroupBox1_Click;
             // 
-            // uiButton_check
+            // uiButton_update
             // 
-            uiButton_check.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_check.Location = new Point(245, 35);
-            uiButton_check.MinimumSize = new Size(1, 1);
-            uiButton_check.Name = "uiButton_check";
-            uiButton_check.Size = new Size(100, 35);
-            uiButton_check.TabIndex = 11;
-            uiButton_check.Text = "检查";
-            uiButton_check.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_update.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_update.Location = new Point(245, 35);
+            uiButton_update.MinimumSize = new Size(1, 1);
+            uiButton_update.Name = "uiButton_update";
+            uiButton_update.Size = new Size(100, 35);
+            uiButton_update.TabIndex = 11;
+            uiButton_update.Text = "更新";
+            uiButton_update.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             // 
             // uiButton_del
             // 
@@ -355,6 +388,7 @@ namespace EAP.Client.Forms
             uiButton_del.TabIndex = 11;
             uiButton_del.Text = "删除";
             uiButton_del.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_del.Click += uiButton_del_Click;
             // 
             // uiButton_add
             // 
@@ -460,11 +494,13 @@ namespace EAP.Client.Forms
             uiTabControl1.TabIndex = 12;
             uiTabControl1.TabUnSelectedForeColor = Color.FromArgb(240, 240, 240);
             uiTabControl1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiTabControl1.SelectedIndexChanged += uiTabControl1_SelectedIndexChanged;
             // 
             // tabPage1
             // 
             tabPage1.Controls.Add(groupBox_1);
             tabPage1.Controls.Add(button_CompareRecipe);
+            tabPage1.Controls.Add(checkBox_checkrecipe);
             tabPage1.Location = new Point(0, 23);
             tabPage1.Name = "tabPage1";
             tabPage1.Size = new Size(674, 328);
@@ -496,7 +532,7 @@ namespace EAP.Client.Forms
             // uiTextBox_empNo
             // 
             uiTextBox_empNo.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox_empNo.Location = new Point(98, 83);
+            uiTextBox_empNo.Location = new Point(80, 81);
             uiTextBox_empNo.Margin = new Padding(4, 5, 4, 5);
             uiTextBox_empNo.MinimumSize = new Size(1, 16);
             uiTextBox_empNo.Name = "uiTextBox_empNo";
@@ -506,6 +542,33 @@ namespace EAP.Client.Forms
             uiTextBox_empNo.TabIndex = 0;
             uiTextBox_empNo.TextAlignment = ContentAlignment.MiddleLeft;
             uiTextBox_empNo.Watermark = "";
+            uiTextBox_empNo.TextChanged += uiTextBox_empNo_TextChanged;
+            // 
+            // uiLabel3
+            // 
+            uiLabel3.AutoSize = true;
+            uiLabel3.Font = new Font("Microsoft YaHei UI", 11F);
+            uiLabel3.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel3.Location = new Point(312, 83);
+            uiLabel3.Name = "uiLabel3";
+            uiLabel3.Size = new Size(39, 20);
+            uiLabel3.TabIndex = 1;
+            uiLabel3.Text = "线体";
+            // 
+            // uiTextBox_line
+            // 
+            uiTextBox_line.Font = new Font("Microsoft YaHei UI", 11F);
+            uiTextBox_line.Location = new Point(358, 81);
+            uiTextBox_line.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_line.MinimumSize = new Size(1, 16);
+            uiTextBox_line.Name = "uiTextBox_line";
+            uiTextBox_line.Padding = new Padding(5);
+            uiTextBox_line.ShowText = false;
+            uiTextBox_line.Size = new Size(202, 29);
+            uiTextBox_line.TabIndex = 0;
+            uiTextBox_line.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_line.Watermark = "";
+            uiTextBox_line.TextChanged += uiTextBox_line_TextChanged;
             // 
             // MainForm
             // 
@@ -516,7 +579,9 @@ namespace EAP.Client.Forms
             Controls.Add(uiLabel_admin);
             Controls.Add(richTextBox1);
             Controls.Add(label_ProcessState);
+            Controls.Add(uiTextBox_line);
             Controls.Add(uiTextBox_empNo);
+            Controls.Add(uiLabel3);
             Controls.Add(label_conn_status);
             Controls.Add(uiLabel2);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -535,6 +600,7 @@ namespace EAP.Client.Forms
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_Material).EndInit();
             uiTabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -561,21 +627,25 @@ namespace EAP.Client.Forms
         private UIButton uiButton_login;
         private UIButton uiButton_del;
         private UIButton uiButton_add;
-        private UIButton uiButton_check;
+        private UIButton uiButton_update;
         private UITabControl uiTabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private UITextBox uiTextBox1;
+        public UITextBox uiTextBox_trayId;
         private UILabel uiLabel1;
         private DataGridViewTextBoxColumn sNDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn carrierIdDataGridViewTextBoxColumn;
         private UIButton uiButton_ScanSn;
         private UILabel uiLabel2;
-        private UITextBox uiTextBox_empNo;
+        public UITextBox uiTextBox_empNo;
         private UILabel uiLabel_inputStatus;
         private UIDataGridView uiDataGridView_snInfo;
         private BindingSource snInfoBindingSource;
+        private UILabel uiLabel3;
+        public UITextBox uiTextBox_line;
+        public UITextBox uiTextBox_modelName;
+        private UILabel uiLabel4;
     }
 }
