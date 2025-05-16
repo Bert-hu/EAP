@@ -377,6 +377,7 @@ namespace EAP.Client.Forms
             uiButton_update.TabIndex = 11;
             uiButton_update.Text = "更新";
             uiButton_update.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_update.Click += uiButton_update_Click;
             // 
             // uiButton_del
             // 
@@ -511,9 +512,9 @@ namespace EAP.Client.Forms
             // tabPage2
             // 
             tabPage2.Controls.Add(uiGroupBox1);
-            tabPage2.Location = new Point(0, 40);
+            tabPage2.Location = new Point(0, 23);
             tabPage2.Name = "tabPage2";
-            tabPage2.Size = new Size(200, 60);
+            tabPage2.Size = new Size(674, 328);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Cathode";
             tabPage2.UseVisualStyleBackColor = true;

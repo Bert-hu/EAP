@@ -760,15 +760,6 @@ namespace EAP.Client.Forms
 
         private void uiTabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var config = manager.LoadConfig();
-            List<CathodeSetting> settings = config.CathodeSettings;
-            var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-            var empNo = uiTextBox_empNo.Text;
-            var line = uiTextBox_line.Text;
-            var modelName = uiTextBox_modelName.Text;
-            string cathodeStr = string.Join(" ", settings.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
-
-            var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},JQ01-3FAP-96,,OK,,,{cathodeStr},,,,,,{modelName}";
 
         }
 
@@ -777,6 +768,43 @@ namespace EAP.Client.Forms
             var config = manager.LoadConfig();
             config.ModelName = uiTextBox_modelName.Text;
             manager.SaveConfig(config);
+        }
+
+        private void uiButton_update_Click(object sender, EventArgs e)
+        {
+            uiButton_update.Enabled = false;
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var config = manager.LoadConfig();
+
+                    List<CathodeSetting> settings = config.CathodeSettings;
+                    if (settings.Count > 0)
+                    {
+                        var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+                        var empNo = uiTextBox_empNo.Text;
+                        var line = uiTextBox_line.Text;
+                        var modelName = uiTextBox_modelName.Text;
+                        string cathodeStr = string.Join(" ", settings.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
+                        var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},JQ01-3FAP-96,,OK,,,{cathodeStr},,,,,,{modelName}";
+                        BaymaxService baymaxService = new BaymaxService();
+                        var step3Res = await baymaxService.GetBaymaxTrans(_configuration.GetSection("Custom")["SfisIp"], int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347"), sfiscommand);
+                        if (step3Res.Result && step3Res.BaymaxResponse.ToUpper().StartsWith("OK"))
+                        {
+                            UIMessageBox.ShowInfo("更新成功");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    traLog.Error(ex.ToString());
+                }
+                this.Invoke(() =>
+                {
+                    uiButton_update.Enabled = true;
+                });
+            });
         }
     }
 }
