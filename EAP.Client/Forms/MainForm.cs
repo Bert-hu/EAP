@@ -106,6 +106,8 @@ namespace EAP.Client.Forms
                 }
                 else
                 {
+                    config.Settings.Add(packageName, new CountSetting());
+                    configManager.SaveConfig(config);
                     icosMaxCount = 0;
                     mMaxCount = 0;
                     ohMaxCount = 0;
