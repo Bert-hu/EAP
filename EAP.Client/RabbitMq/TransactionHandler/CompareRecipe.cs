@@ -180,7 +180,7 @@ namespace EAP.Client.RabbitMq
                 var machineBody = await secsGem.SendAsync(s7f25);
 
 
-                var compareResult = CompareSputterFormattedRecipe(serverBody, serverBody);
+                var compareResult = CompareSputterFormattedRecipe(serverBody, machineBody);
 
 
                 reptrans.Parameters.Add("Result", string.IsNullOrEmpty(compareResult));

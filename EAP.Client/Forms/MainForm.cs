@@ -390,7 +390,7 @@ namespace EAP.Client.Forms
                 {
                     var s1f3 = new SecsMessage(1, 3)
                     {
-                        SecsItem = L(U2(650), U2(651))
+                        SecsItem = L(U4(650), U4(651))
                     };
                     var s1f4 = _secsGem.SendAsync(s1f3).Result;
                     var recipeName = s1f4.SecsItem.Items[0].GetString();
@@ -632,11 +632,12 @@ namespace EAP.Client.Forms
 
                                     var s1f3 = new SecsMessage(1, 3)
                                     {
-                                        SecsItem = L(U4(42))
+                                        SecsItem = L(U4(650), U4(651))
                                     };
                                     var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                                    var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
-
+                                    var recipeName = s1f4.SecsItem.Items[0].GetString();
+                                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
+                                    var machineRecipeName = recipeNum + "_" + recipeName;
 
                                     var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
                                     var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
@@ -648,7 +649,7 @@ namespace EAP.Client.Forms
                                     var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
                                     if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
                                     {
-                                        if (machineRecipeName == getRecipeNameRes.RecipeName.Split("_")[1])
+                                        if (machineRecipeName == getRecipeNameRes.RecipeName)
                                         {
                                             var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
                                             var compareRecipeBodyReeq = new
@@ -787,12 +788,16 @@ namespace EAP.Client.Forms
                         var line = uiTextBox_line.Text;
                         var modelName = uiTextBox_modelName.Text;
                         string cathodeStr = string.Join(" ", settings.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
-                        var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},JQ01-3FAP-96,,OK,,,{cathodeStr},,,,,,{modelName}";
+                        var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},{line},,OK,,,{cathodeStr},,,,,,{modelName}";
                         BaymaxService baymaxService = new BaymaxService();
                         var step3Res = await baymaxService.GetBaymaxTrans(_configuration.GetSection("Custom")["SfisIp"], int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347"), sfiscommand);
                         if (step3Res.Result && step3Res.BaymaxResponse.ToUpper().StartsWith("OK"))
                         {
                             UIMessageBox.ShowInfo("更新成功");
+                        }
+                        else
+                        {
+                            UIMessageBox.ShowError2($"更新失败：{step3Res.BaymaxResponse}");
                         }
                     }
                 }
@@ -805,6 +810,22 @@ namespace EAP.Client.Forms
                     uiButton_update.Enabled = true;
                 });
             });
+        }
+
+        private void uiButton_clearSn_Click(object sender, EventArgs e)
+        {
+            var confirm = this.ShowAskDialog("确定清空吗?");
+            if (confirm)
+            {
+                snInfos.Clear();
+                this.Invoke(() =>
+                {
+                    uiDataGridView_snInfo.DataSource = snInfos.ToList();
+                    uiDataGridView_snInfo.Refresh();
+                    AllowInput = InputStatus.Wait;
+                });
+            }
+
         }
     }
 }
