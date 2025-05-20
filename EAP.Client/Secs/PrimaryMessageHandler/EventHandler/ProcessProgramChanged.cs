@@ -25,19 +25,19 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
         public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
         {
-            var recipename = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
+            //var recipename = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
             //bool recmoteControl = commonLibrary.CustomSettings["RemoteControl"]?.ToUpper() == "TRUE";
             {
                 var linkedRecipeName = ProcessStateChanged.ChangeRecipeName;
                 if (ProcessStateChanged.NeedChangeRecipe && ProcessStateChanged.OnPpSelectStatus)
                 {
-                    if (ProcessStateChanged.ChangeDateTime.AddMinutes(4) > DateTime.Now)//4分钟内的机种切换完成事件,发送停止到报告生成一般在一分钟左右，发送切换到切换完成一般也是一分钟内
+                    if (ProcessStateChanged.ChangeDateTime.AddMinutes(2) > DateTime.Now)
                     {
-                        if (linkedRecipeName != recipename + ".recipe")
-                        {
-                            traLog.Warn($"Recipe mismatch: {linkedRecipeName} != {recipename + ".recipe"}");
-                        }
-                        else
+                        //if (linkedRecipeName != recipename + ".recipe")
+                        //{
+                        //    traLog.Warn($"Recipe mismatch: {linkedRecipeName} != {recipename + ".recipe"}");
+                        //}
+                        //else
                         {
                             traLog.Info($"Auto PP-SELECT success, Send START COMMAND");
                             SendPanelStartCommand(secsGem);

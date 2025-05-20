@@ -46,8 +46,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 traLog.Info($"BarcodeScanned: {panelsn},{machinerecipename}");
                 // Send message to SFIS to get LOT INFO
                 BaymaxService baymax = new BaymaxService();
-                 var baymaxTrans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???").Result;
-
+                //var baymaxTrans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???").Result;
+                var baymaxTrans = baymax.GetBaymaxTrans(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???").Result;
                 //(bool success, string sfisResponse, string errorMessage) = SendMessageToSfis(sfisIp, sfisPort, $"EQXXXXXX01,{panelsn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???");
 
                 bool autoCheckRecipe = MainForm.Instance.isAutoCheckRecipe;
@@ -59,8 +59,11 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         Dictionary<string, string> sfisParameters = baymaxTrans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
                             .Where(keyValueArray => keyValueArray.Length == 2)
                             .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                        string modelName = sfisParameters["SN_MODEL_NAME_INFO"];
-                        MainForm.Instance.UpdateAoiPanelAndModelname(panelsn, modelName);
+                        //string modelName = sfisParameters["SN_MODEL_NAME_INFO"];
+                        string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                        string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+
+                        MainForm.Instance.UpdatePanelInfo(panelsn, modelName,projectName);
 
                         //(string linkedRecipeName, string recipeErrorMessage) = CheckRecipeGroup(rmsApiUrl, equipmentId, modelName);
                         string linkedRecipeName = GetAoiRelatedRecipe(secsGem, modelName);
@@ -72,54 +75,47 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                                 MainForm.Instance.ConfirmMessageBox("未找到关联的recipe");
                             }
                         }
-                        else if (linkedRecipeName != machinerecipename + ".recipe")
+                        else if (linkedRecipeName != machinerecipename )
                         {
                             traLog.Warn($"Panelid: {panelsn},ModelName:{modelName},recipe mismatch: {linkedRecipeName} != {machinerecipename + ".recipe"}");
-                            //if (recmoteControl) SendS10F3ToEquipment(secsGem, $"Panelid: {panelsn},ModelName:{modelName},Linked recipe:{linkedRecipeName}, Current recipe: {machinerecipename + ".recipe"}, Start to change recipe.");
 
-                            if (autoCheckRecipe)
-                            {
-                                if (MainForm.Instance.ConfirmMessageBox($"Panelid: {panelsn},ModelName:{modelName},recipe 不匹配，是否切换到 {linkedRecipeName} ？"))
-                                {
-                                    if (!ProcessStateChanged.OnPpSelectStatus)//避免重复切换
-                                    {
-                                        traLog.Info($"Send STOP COMMAND '{linkedRecipeName}'");
-                                        var s2f41stop = new SecsMessage(2, 41)
-                                        {
-                                            SecsItem = L(
-                                              A("STOP"),
-                                              L(
 
-                                                  )
-                                              )
-                                        };
+                            //if (autoCheckRecipe)
+                            //{
+                            //    if (MainForm.Instance.ConfirmMessageBox($"Panelid: {panelsn},ModelName:{modelName},recipe 不匹配，是否切换到 {linkedRecipeName} ？"))
+                            //    {
+                            //        if (!ProcessStateChanged.OnPpSelectStatus)//避免重复切换
+                            //        {
+                            //            traLog.Info($"Send STOP COMMAND '{linkedRecipeName}'");
+                            //            var s2f41stop = new SecsMessage(2, 41)
+                            //            {
+                            //                SecsItem = L(
+                            //                  A("STOP"),
+                            //                  L(
 
-                                        var s2f42stop = await secsGem.SendAsync(s2f41stop);
-                                        if (s2f42stop.SecsItem.Items[0].FirstValue<byte>() != 0)
-                                        {
-                                            traLog.Info($"Machine reject stop command");
-                                            //SendS10F3ToEquipment(secsGem, $"Send STOP Fail, Code: {s2f42stop.SecsItem.Items[0].FirstValue<byte>()}");
-                                            return;
-                                        }
-                                        else
-                                        {
-                                            ProcessStateChanged.OnPpSelectStatus = true;
-                                            ProcessStateChanged.ChangeRecipeName = linkedRecipeName;
-                                            ProcessStateChanged.ChangeDateTime = DateTime.Now;
-                                        }
-                                    }
-                                }
-                            }
+                            //                      )
+                            //                  )
+                            //            };
+
+                            //            var s2f42stop = await secsGem.SendAsync(s2f41stop);
+                            //            if (s2f42stop.SecsItem.Items[0].FirstValue<byte>() != 0)
+                            //            {
+                            //                traLog.Info($"Machine reject stop command");
+                            //                //SendS10F3ToEquipment(secsGem, $"Send STOP Fail, Code: {s2f42stop.SecsItem.Items[0].FirstValue<byte>()}");
+                            //                return;
+                            //            }
+                            //            else
+                            //            {
+                            //                ProcessStateChanged.OnPpSelectStatus = true;
+                            //                ProcessStateChanged.ChangeRecipeName = linkedRecipeName;
+                            //                ProcessStateChanged.ChangeDateTime = DateTime.Now;
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                         }
-                        else
-                        {
-                            if (autoCheckRecipe)
-                            {
-                                SendPanelStartCommand(secsGem);
-                            }
-                            traLog.Info($"Panelid: {panelsn} OK");
-                        }
+
                     }
                 }
                 else
@@ -148,29 +144,6 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             return relatedRecipe;
         }
 
-        private void SendPanelStartCommand(ISecsGem secs)
-        {
-            //TODO: Send S2F41 BYPASS-CIRCUIT
-            var s2f41baypass = new SecsMessage(2, 41)
-            {
-                SecsItem = L(A("BYPASS-CIRCUIT"), L(A("CIRCUIT"), U4()))
-            };
-            var s2f42baypass = secs.SendAsync(s2f41baypass).Result;
-            if (s2f42baypass.SecsItem.Items[0].FirstValue<byte>() != 0)
-            {
-                SendS10F3ToEquipment(secs, $"BYPASS-CIRCUIT Fail, Code: {s2f42baypass.SecsItem.Items[0].FirstValue<byte>()}");
-                return;
-            }
-            else
-            {
-                //TODO: Send S2F41 LOAD
-                var s2f41load = new SecsMessage(2, 41)
-                {
-                    SecsItem = L(A("LOAD"), L())
-                };
-                secs.SendAsync(s2f41load);
-            }
-        }
 
         internal void SendS10F3ToEquipment(ISecsGem secs, string message)
         {

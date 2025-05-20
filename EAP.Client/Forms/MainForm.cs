@@ -95,7 +95,7 @@ namespace EAP.Client.Forms
                 this.textBox_machinerecipe.Text = recipename;
             }));
         }
-        public void UpdateAoiPanelAndModelname(string panelid, string modelname)
+        public void UpdatePanelInfo(string panelid, string modelname, string projectName)
         {
             this.Invoke(new Action(() =>
             {
@@ -103,6 +103,7 @@ namespace EAP.Client.Forms
                 this.textBox_panelid.Text = panelid;
                 // if (string.IsNullOrEmpty(modelname))
                 this.textBox_modelname.Text = modelname;
+                this.textBox_projectname.Text = projectName;
                 this.label_updatetime_aoi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
             }));
         }

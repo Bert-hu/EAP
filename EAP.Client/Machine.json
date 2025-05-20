@@ -2,104 +2,21 @@
   "Secs": {
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
-    "EnableDynamicEvent": true,
-    "EnableAllEvent": false,
+    "EnableDynamicEvent": false,
+    "EnableAllEvent": true,
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 3
+        "ID": 400
       },
       {
         "Name": "ProcessState",
-        "ID": 4
-      },
-      {
-        "Name": "BarcodeLabel",
-        "ID": 100
-      },
-      {
-        "Name": "PPChangeName",
-        "ID": 3003
-      },
-      {
-        "Name": "PPChangeStatus",
-        "ID": 3004
-      },
-      {
-        "Name": "RecipeName",
-        "ID": 2
-      },
-      {
-        "Name": "Panel_width",
-        "ID": 200
-      },
-      {
-        "Name": "Panel_length",
-        "ID": 201
-      },
-      {
-        "Name": "NbOfBoards",
-        "ID": 203
-      },
-      {
-        "Name": "NbOfComponents",
-        "ID": 204
-      },
-      {
-        "Name": "NbOfPads",
-        "ID": 205
-      },
-      {
-        "Name": "NbOfFiducials",
-        "ID": 206
-      },
-      {
-        "Name": "NbOfBarcodes",
-        "ID": 207
-      },
-      {
-        "Name": "NbOfSkipmarks",
-        "ID": 208
-      },
-      {
-        "Name": "NbOfProcessedUnit",
-        "ID": 209
-      },
-      {
-        "Name": "InspectionResultXML",
-        "ID": 504
+        "ID": 402
       }
 
     ],
     "ReportList": [
-      //{
-      //  "ID": 100,
-      //  "SvidNames": [ "ControlState", "ProcessState" ]
-      //},
-      //{
-      //  "ID": 101,
-      //  "SvidNames": [ "ProcessState", "ControlState" ]
-      //}
-      {
-        "ID": 3,
-        "SvidNames": [ "ProcessState" ]
-      },
-      {
-        "ID": 5,
-        "SvidNames": [ "PPChangeName", "PPChangeStatus" ]
-      },
-      {
-        "ID": 7,
-        "SvidNames": [ "InspectionResultXML" ]
-      },
-      {
-        "ID": 9,
-        "SvidNames": [ "BarcodeLabel", "RecipeName" ]
-      },
-      {
-        "ID": 102,
-        "SvidNames": [ "RecipeName", "Panel_width", "Panel_length", "NbOfBoards", "NbOfComponents", "NbOfPads", "NbOfFiducials", "NbOfBarcodes", "NbOfSkipmarks", "NbOfProcessedUnit" ]
-      }
+
     ],
     "CEIDList": [
       //{
@@ -114,30 +31,25 @@
       },
       {
         "Name": "ProcessStateChanged",
-        "ID": 9,
-        "ReportIds": [ 3 ]
+        "ID": 304,
+        "ReportIds": []
       },
       {
         "Name": "BarcodeScanned",
-        "ID": 100,
-        "ReportIds": [ 9 ]
+        "ID": 314,
+        "ReportIds": []
       },
       {
         "Name": "ProcessProgramChanged",
-        "ID": 11,
-        "ReportIds": [ 5 ]
-      },
-      {
-        "Name": "InspectionResultXML",
-        "ID": 103,
-        "ReportIds": [ 7 ]
+        "ID": 308,
+        "ReportIds": []
       }
     ],
     "ProcessStateCodes": {
       "0": "Idle",
-      "1": "Idle",
-      "4": "Run",
-      "5": "Idle"
+      "1": "Run",
+      "4": "Idle",
+      "5": "Alarm"
     }
   },
   "Others": {

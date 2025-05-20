@@ -51,7 +51,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                     var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
                     ProcessStateChanged.NeedChangeRecipe = true;
 
-                    if (processStateCode != 4)//空闲状态，直接发切换指令
+                    if (processStateCode != 2 && processStateCode != 4)//空闲状态，直接发切换指令
                     {
                         traLog.Info($"Send PP-SELECT COMMAND '{recipeName}'");
                         var s2f41 = new SecsMessage(2, 41)
