@@ -170,7 +170,8 @@ namespace EAP.Client.Forms
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] +" Version: "+ assembly.GetName().Version.ToString();
+                this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
+                notifyIcon.Text = _commonLibrary.CustomSettings["EquipmentType"] + " " + _commonLibrary.CustomSettings["EquipmentId"];
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
             }));
@@ -192,7 +193,7 @@ namespace EAP.Client.Forms
 
             AutoUpdater.Start(updateUrl);
 
-            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(1) };//定时去检测更新根据自己业务需求
+            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };//定时去检测更新根据自己业务需求
             timer.Tick += delegate
             {
                 AutoUpdater.Start(updateUrl);
@@ -209,7 +210,7 @@ namespace EAP.Client.Forms
                     this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
                     bool dialogResult =
                             UIMessageBox.ShowAsk2(
-                                $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新，否则点击取消");
+                                $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
 
 
                     // Uncomment the following line if you want to show standard update dialog instead.
@@ -221,7 +222,7 @@ namespace EAP.Client.Forms
                         {
                             if (AutoUpdater.DownloadUpdate(args))
                             {
-                                Application.Exit();
+                                Environment.Exit(0);
                             }
                         }
                         catch (Exception exception)
@@ -240,8 +241,8 @@ namespace EAP.Client.Forms
             {
                 if (args.Error is WebException)
                 {
-                    UIMessageBox.ShowError(
-                        @"There is a problem reaching update server. Please check your internet connection and try again later.");
+                    //UIMessageBox.ShowError(@"There is a problem reaching update server. Please check your internet connection and try again later.");
+                    this.Text = _configuration.GetSection("Custom")["EquipmentId"] + " " + _configuration.GetSection("Custom")["EquipmentType"];
                 }
                 else
                 {
@@ -718,6 +719,29 @@ namespace EAP.Client.Forms
                 });
 
             });
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Minimized;
+                this.Hide();
+            }
+            else if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                this.Activate();
+            }
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Hide();
+            }
         }
     }
 }
