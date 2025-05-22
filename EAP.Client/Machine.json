@@ -3,7 +3,7 @@
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
     "EnableDynamicEvent": false,
-    "EnableAllEvent": false,
+    "EnableAllEvent": true,
     "SVIDList": [
       {
         "Name": "ControlState",
@@ -23,12 +23,31 @@
 
     ],
     "CEIDList": [
-      //{
-      //  "Name": "ProcessStateChange",
-      //  "ID": 10150,
-      //  "ReportIds": [ 100, 101 ]
-      //},
-
+      {
+        "Name": "ProcessStateChanged",
+        "ID": 5,
+        "ReportIds": []
+      },
+      {
+        "Name": "LoadTrayIn",
+        "ID": 107,
+        "ReportIds": []
+      },
+      {
+        "Name": "LoadTrayEmpty",
+        "ID": 108,
+        "ReportIds": []
+      },
+      {
+        "Name": "OffloadTrayIn",
+        "ID": 109,
+        "ReportIds": []
+      },
+      {
+        "Name": "OffloadTrayEmpty",
+        "ID": 110,
+        "ReportIds": []
+      }
     ],
     "ProcessStateCodes": {
       "1": "Idle",
