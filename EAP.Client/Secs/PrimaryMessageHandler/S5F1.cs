@@ -16,7 +16,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
 
         public async Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper)
         {
-            var alarmset = wrapper.PrimaryMessage.SecsItem[0].FirstValue<byte>() > 128;
+            var alarmset = wrapper.PrimaryMessage.SecsItem[0].FirstValue<byte>() >= 128;
             var equipmentId = commonLibrary.CustomSettings["EquipmentId"];
             var alarmcode = wrapper.PrimaryMessage.SecsItem[1].FirstValue<byte>().ToString();
             var alarmtext = wrapper.PrimaryMessage.SecsItem[2].GetString();
