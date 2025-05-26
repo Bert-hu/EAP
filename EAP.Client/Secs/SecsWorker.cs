@@ -122,7 +122,7 @@ namespace EAP.Client.Secs
                     if (secondaryMessage == null)
                     {
 
-                        secondaryMessage = new SecsMessage(wrapper.PrimaryMessage.S, (byte)(wrapper.PrimaryMessage.F + 1))
+                        secondaryMessage = new SecsMessage(wrapper.PrimaryMessage.S, (byte)(wrapper.PrimaryMessage.F + 1),false)
                         {
                             SecsItem = wrapper.PrimaryMessage.SecsItem,
                         };

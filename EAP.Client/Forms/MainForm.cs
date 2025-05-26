@@ -738,6 +738,22 @@ namespace EAP.Client.Forms
         private void SetInputStatus(InputStatus status)
         {
             AllowInput = status;
+            if (status == InputStatus.Allow)
+            {
+                var s2f41 = new SecsMessage(2, 41)
+                {
+                    SecsItem = L(A("CHB1_ALLOW"), L())
+                };
+                var s2f42 = _secsGem.SendAsync(s2f41);
+            }
+            else
+            {
+                var s2f41 = new SecsMessage(2, 41)
+                {
+                    SecsItem = L(A("CHB1_REJECT"), L())
+                };
+                var s2f42 = _secsGem.SendAsync(s2f41);
+            }
         }
 
         private void uiGroupBox1_Click(object sender, EventArgs e)
