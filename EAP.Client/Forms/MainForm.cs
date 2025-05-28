@@ -542,12 +542,12 @@ namespace EAP.Client.Forms
                     if (confirm)
                     {
                         var config = manager.LoadConfig();
-                        List<CathodeSetting> settings = config.CathodeSettings;
+
                         try
                         {
-                            settings = settings.Where(it => it.Seq != selectRow.Seq && it.CathodeId != selectRow.CathodeId).ToList();
+                            config.CathodeSettings = config.CathodeSettings.Where(it => it.Seq != selectRow.Seq && it.CathodeId != selectRow.CathodeId).ToList();
                             manager.SaveConfig(config);
-                            uiDataGridView_Material.DataSource = settings;
+                            uiDataGridView_Material.DataSource = config.CathodeSettings;
                             uiDataGridView_Material.Refresh();
                         }
                         catch (Exception ex)
