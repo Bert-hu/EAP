@@ -696,6 +696,7 @@ namespace EAP.Client.Forms
                                         var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
                                         traLog.Error(message);
                                         UIMessageBox.ShowError2(message);
+                                        SetInputStatus(InputStatus.Reject);
                                     }
                                 }
 
