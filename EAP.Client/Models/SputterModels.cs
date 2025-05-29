@@ -10,6 +10,8 @@ namespace EAP.Client.Models
     {
         public string SN { get; set; }
         public string CarrierId { get; set; }
+        public string ModelName { get; set; }
+        public string ProjectName { get; set; }
     }
     public class SputtereConfig
     {

@@ -32,31 +32,33 @@ namespace EAP.Client.Forms
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle21 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle22 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle23 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle24 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle25 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle11 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle12 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle13 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle14 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle15 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            DataGridViewCellStyle dataGridViewCellStyle26 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle27 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle28 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle29 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle30 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle16 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle17 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle18 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle19 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle20 = new DataGridViewCellStyle();
             textBox_machinerecipe = new UITextBox();
             label2 = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_scanTray = new UIButton();
             uiDataGridView_snInfo = new UIDataGridView();
-            sNDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            carrierIdDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            snInfoBindingSource = new BindingSource(components);
             uiLabel_inputStatus = new UILabel();
+            uiButton_clearSn = new UIButton();
             uiButton_ScanSn = new UIButton();
+            uiTextBox_sn = new UITextBox();
             uiTextBox_trayId = new UITextBox();
             uiTextBox_modelName = new UITextBox();
+            uiLabel5 = new UILabel();
             uiLabel1 = new UILabel();
             uiLabel4 = new UILabel();
+            snInfoBindingSource = new BindingSource(components);
             checkBox_checkrecipe = new UICheckBox();
             label_ProcessState = new UILabel();
             button_CompareRecipe = new UIButton();
@@ -69,22 +71,16 @@ namespace EAP.Client.Forms
             uiDataGridView_Material = new UIDataGridView();
             uiLabel_admin = new UILabel();
             uiButton_login = new UIButton();
-            uiTabControl1 = new UITabControl();
-            tabPage1 = new TabPage();
-            tabPage2 = new TabPage();
             uiLabel2 = new UILabel();
             uiTextBox_empNo = new UITextBox();
             uiLabel3 = new UILabel();
             uiTextBox_line = new UITextBox();
-            uiButton_clearSn = new UIButton();
+            uiButton_endScan = new UIButton();
             groupBox_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_snInfo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).BeginInit();
             uiGroupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_Material).BeginInit();
-            uiTabControl1.SuspendLayout();
-            tabPage1.SuspendLayout();
-            tabPage2.SuspendLayout();
             SuspendLayout();
             // 
             // textBox_machinerecipe
@@ -97,7 +93,7 @@ namespace EAP.Client.Forms
             textBox_machinerecipe.Padding = new Padding(5);
             textBox_machinerecipe.ReadOnly = true;
             textBox_machinerecipe.ShowText = false;
-            textBox_machinerecipe.Size = new Size(202, 29);
+            textBox_machinerecipe.Size = new Size(252, 29);
             textBox_machinerecipe.TabIndex = 0;
             textBox_machinerecipe.TextAlignment = ContentAlignment.MiddleLeft;
             textBox_machinerecipe.Watermark = "";
@@ -127,127 +123,153 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_endScan);
+            groupBox_1.Controls.Add(uiButton_scanTray);
             groupBox_1.Controls.Add(uiDataGridView_snInfo);
             groupBox_1.Controls.Add(uiLabel_inputStatus);
             groupBox_1.Controls.Add(uiButton_clearSn);
             groupBox_1.Controls.Add(uiButton_ScanSn);
+            groupBox_1.Controls.Add(uiTextBox_sn);
             groupBox_1.Controls.Add(uiTextBox_trayId);
             groupBox_1.Controls.Add(uiTextBox_modelName);
             groupBox_1.Controls.Add(textBox_machinerecipe);
+            groupBox_1.Controls.Add(uiLabel5);
             groupBox_1.Controls.Add(uiLabel1);
             groupBox_1.Controls.Add(uiLabel4);
             groupBox_1.Controls.Add(label2);
             groupBox_1.Font = new Font("宋体", 12F);
-            groupBox_1.Location = new Point(8, 5);
+            groupBox_1.Location = new Point(14, 120);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(538, 313);
+            groupBox_1.Size = new Size(607, 466);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
             // 
+            // uiButton_scanTray
+            // 
+            uiButton_scanTray.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_scanTray.Location = new Point(485, 70);
+            uiButton_scanTray.MinimumSize = new Size(1, 1);
+            uiButton_scanTray.Name = "uiButton_scanTray";
+            uiButton_scanTray.Size = new Size(109, 29);
+            uiButton_scanTray.TabIndex = 10;
+            uiButton_scanTray.Text = "开始扫码";
+            uiButton_scanTray.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_scanTray.Click += uiButton_scanTray_Click;
+            // 
             // uiDataGridView_snInfo
             // 
-            dataGridViewCellStyle21.BackColor = Color.FromArgb(235, 243, 255);
-            uiDataGridView_snInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle21;
-            uiDataGridView_snInfo.AutoGenerateColumns = false;
+            dataGridViewCellStyle11.BackColor = Color.FromArgb(235, 243, 255);
+            uiDataGridView_snInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
             uiDataGridView_snInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             uiDataGridView_snInfo.BackgroundColor = Color.White;
             uiDataGridView_snInfo.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle22.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle22.BackColor = Color.FromArgb(80, 160, 255);
-            dataGridViewCellStyle22.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            dataGridViewCellStyle22.ForeColor = Color.White;
-            dataGridViewCellStyle22.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle22.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle22.WrapMode = DataGridViewTriState.True;
-            uiDataGridView_snInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = Color.FromArgb(80, 160, 255);
+            dataGridViewCellStyle12.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            dataGridViewCellStyle12.ForeColor = Color.White;
+            dataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = DataGridViewTriState.True;
+            uiDataGridView_snInfo.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
             uiDataGridView_snInfo.ColumnHeadersHeight = 32;
             uiDataGridView_snInfo.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            uiDataGridView_snInfo.Columns.AddRange(new DataGridViewColumn[] { sNDataGridViewTextBoxColumn, carrierIdDataGridViewTextBoxColumn });
-            uiDataGridView_snInfo.DataSource = snInfoBindingSource;
-            dataGridViewCellStyle23.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle23.BackColor = SystemColors.Window;
-            dataGridViewCellStyle23.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            dataGridViewCellStyle23.ForeColor = Color.FromArgb(48, 48, 48);
-            dataGridViewCellStyle23.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle23.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle23.WrapMode = DataGridViewTriState.False;
-            uiDataGridView_snInfo.DefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle13.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = SystemColors.Window;
+            dataGridViewCellStyle13.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            dataGridViewCellStyle13.ForeColor = Color.FromArgb(48, 48, 48);
+            dataGridViewCellStyle13.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = DataGridViewTriState.False;
+            uiDataGridView_snInfo.DefaultCellStyle = dataGridViewCellStyle13;
             uiDataGridView_snInfo.EnableHeadersVisualStyles = false;
             uiDataGridView_snInfo.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiDataGridView_snInfo.GridColor = Color.FromArgb(80, 160, 255);
-            uiDataGridView_snInfo.Location = new Point(12, 115);
+            uiDataGridView_snInfo.Location = new Point(10, 184);
             uiDataGridView_snInfo.Name = "uiDataGridView_snInfo";
-            dataGridViewCellStyle24.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle24.BackColor = Color.FromArgb(235, 243, 255);
-            dataGridViewCellStyle24.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            dataGridViewCellStyle24.ForeColor = Color.FromArgb(48, 48, 48);
-            dataGridViewCellStyle24.SelectionBackColor = Color.FromArgb(80, 160, 255);
-            dataGridViewCellStyle24.SelectionForeColor = Color.White;
-            dataGridViewCellStyle24.WrapMode = DataGridViewTriState.True;
-            uiDataGridView_snInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle24;
-            dataGridViewCellStyle25.BackColor = Color.White;
-            dataGridViewCellStyle25.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiDataGridView_snInfo.RowsDefaultCellStyle = dataGridViewCellStyle25;
+            dataGridViewCellStyle14.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = Color.FromArgb(235, 243, 255);
+            dataGridViewCellStyle14.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            dataGridViewCellStyle14.ForeColor = Color.FromArgb(48, 48, 48);
+            dataGridViewCellStyle14.SelectionBackColor = Color.FromArgb(80, 160, 255);
+            dataGridViewCellStyle14.SelectionForeColor = Color.White;
+            dataGridViewCellStyle14.WrapMode = DataGridViewTriState.True;
+            uiDataGridView_snInfo.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle15.BackColor = Color.White;
+            dataGridViewCellStyle15.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiDataGridView_snInfo.RowsDefaultCellStyle = dataGridViewCellStyle15;
             uiDataGridView_snInfo.SelectedIndex = -1;
-            uiDataGridView_snInfo.Size = new Size(510, 150);
+            uiDataGridView_snInfo.Size = new Size(512, 233);
             uiDataGridView_snInfo.StripeOddColor = Color.FromArgb(235, 243, 255);
             uiDataGridView_snInfo.TabIndex = 9;
-            // 
-            // sNDataGridViewTextBoxColumn
-            // 
-            sNDataGridViewTextBoxColumn.DataPropertyName = "SN";
-            sNDataGridViewTextBoxColumn.HeaderText = "SN";
-            sNDataGridViewTextBoxColumn.Name = "sNDataGridViewTextBoxColumn";
-            // 
-            // carrierIdDataGridViewTextBoxColumn
-            // 
-            carrierIdDataGridViewTextBoxColumn.DataPropertyName = "CarrierId";
-            carrierIdDataGridViewTextBoxColumn.HeaderText = "CarrierId";
-            carrierIdDataGridViewTextBoxColumn.Name = "carrierIdDataGridViewTextBoxColumn";
-            // 
-            // snInfoBindingSource
-            // 
-            snInfoBindingSource.DataSource = typeof(Models.SnInfo);
             // 
             // uiLabel_inputStatus
             // 
             uiLabel_inputStatus.BackColor = Color.Orange;
             uiLabel_inputStatus.Font = new Font("黑体", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 134);
             uiLabel_inputStatus.ForeColor = Color.White;
-            uiLabel_inputStatus.Location = new Point(347, 273);
+            uiLabel_inputStatus.Location = new Point(8, 420);
             uiLabel_inputStatus.Name = "uiLabel_inputStatus";
             uiLabel_inputStatus.Size = new Size(175, 29);
             uiLabel_inputStatus.TabIndex = 7;
             uiLabel_inputStatus.Text = "等待中";
             uiLabel_inputStatus.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // uiButton_clearSn
+            // 
+            uiButton_clearSn.Font = new Font("宋体", 10F);
+            uiButton_clearSn.Location = new Point(528, 184);
+            uiButton_clearSn.MinimumSize = new Size(1, 1);
+            uiButton_clearSn.Name = "uiButton_clearSn";
+            uiButton_clearSn.Size = new Size(66, 29);
+            uiButton_clearSn.TabIndex = 6;
+            uiButton_clearSn.Text = "清空";
+            uiButton_clearSn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_clearSn.Click += uiButton_clearSn_Click;
+            // 
             // uiButton_ScanSn
             // 
             uiButton_ScanSn.Font = new Font("宋体", 10F);
-            uiButton_ScanSn.Location = new Point(386, 29);
+            uiButton_ScanSn.Location = new Point(485, 29);
             uiButton_ScanSn.MinimumSize = new Size(1, 1);
             uiButton_ScanSn.Name = "uiButton_ScanSn";
-            uiButton_ScanSn.Size = new Size(96, 29);
+            uiButton_ScanSn.Size = new Size(109, 29);
             uiButton_ScanSn.TabIndex = 6;
             uiButton_ScanSn.Text = "扫码";
             uiButton_ScanSn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_ScanSn.Click += uiButton_ScanSn_Click;
             // 
+            // uiTextBox_sn
+            // 
+            uiTextBox_sn.Font = new Font("Microsoft YaHei UI", 11F);
+            uiTextBox_sn.Location = new Point(117, 150);
+            uiTextBox_sn.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_sn.MinimumSize = new Size(1, 16);
+            uiTextBox_sn.Name = "uiTextBox_sn";
+            uiTextBox_sn.Padding = new Padding(5);
+            uiTextBox_sn.ReadOnly = true;
+            uiTextBox_sn.ShowText = false;
+            uiTextBox_sn.Size = new Size(252, 29);
+            uiTextBox_sn.TabIndex = 0;
+            uiTextBox_sn.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_sn.Watermark = "";
+            uiTextBox_sn.KeyDown += uiTextBox_sn_KeyDown;
+            // 
             // uiTextBox_trayId
             // 
             uiTextBox_trayId.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox_trayId.Location = new Point(76, 273);
+            uiTextBox_trayId.Location = new Point(117, 111);
             uiTextBox_trayId.Margin = new Padding(4, 5, 4, 5);
             uiTextBox_trayId.MinimumSize = new Size(1, 16);
             uiTextBox_trayId.Name = "uiTextBox_trayId";
             uiTextBox_trayId.Padding = new Padding(5);
+            uiTextBox_trayId.ReadOnly = true;
             uiTextBox_trayId.ShowText = false;
-            uiTextBox_trayId.Size = new Size(202, 29);
+            uiTextBox_trayId.Size = new Size(252, 29);
             uiTextBox_trayId.TabIndex = 0;
             uiTextBox_trayId.TextAlignment = ContentAlignment.MiddleLeft;
             uiTextBox_trayId.Watermark = "";
@@ -262,18 +284,29 @@ namespace EAP.Client.Forms
             uiTextBox_modelName.Padding = new Padding(5);
             uiTextBox_modelName.ReadOnly = true;
             uiTextBox_modelName.ShowText = false;
-            uiTextBox_modelName.Size = new Size(202, 29);
+            uiTextBox_modelName.Size = new Size(252, 29);
             uiTextBox_modelName.TabIndex = 0;
             uiTextBox_modelName.TextAlignment = ContentAlignment.MiddleLeft;
             uiTextBox_modelName.Watermark = "";
             uiTextBox_modelName.TextChanged += uiTextBox_modelName_TextChanged;
+            // 
+            // uiLabel5
+            // 
+            uiLabel5.AutoSize = true;
+            uiLabel5.Font = new Font("Microsoft YaHei UI", 11F);
+            uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
+            uiLabel5.Location = new Point(10, 150);
+            uiLabel5.Name = "uiLabel5";
+            uiLabel5.Size = new Size(30, 20);
+            uiLabel5.TabIndex = 1;
+            uiLabel5.Text = "SN";
             // 
             // uiLabel1
             // 
             uiLabel1.AutoSize = true;
             uiLabel1.Font = new Font("Microsoft YaHei UI", 11F);
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel1.Location = new Point(10, 277);
+            uiLabel1.Location = new Point(10, 111);
             uiLabel1.Name = "uiLabel1";
             uiLabel1.Size = new Size(59, 20);
             uiLabel1.TabIndex = 1;
@@ -296,7 +329,7 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe.Checked = true;
             checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 10F);
             checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
-            checkBox_checkrecipe.Location = new Point(553, 20);
+            checkBox_checkrecipe.Location = new Point(717, 50);
             checkBox_checkrecipe.MinimumSize = new Size(1, 1);
             checkBox_checkrecipe.Name = "checkBox_checkrecipe";
             checkBox_checkrecipe.Size = new Size(105, 25);
@@ -320,7 +353,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(553, 51);
+            button_CompareRecipe.Location = new Point(828, 49);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -333,14 +366,14 @@ namespace EAP.Client.Forms
             // 
             richTextBox1.FillColor = Color.White;
             richTextBox1.Font = new Font("宋体", 10F);
-            richTextBox1.Location = new Point(14, 477);
+            richTextBox1.Location = new Point(14, 596);
             richTextBox1.Margin = new Padding(4, 5, 4, 5);
             richTextBox1.MinimumSize = new Size(1, 1);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.Padding = new Padding(2);
             richTextBox1.ReadOnly = true;
             richTextBox1.ShowText = false;
-            richTextBox1.Size = new Size(674, 114);
+            richTextBox1.Size = new Size(997, 88);
             richTextBox1.TabIndex = 8;
             richTextBox1.TextAlignment = ContentAlignment.MiddleCenter;
             // 
@@ -358,21 +391,20 @@ namespace EAP.Client.Forms
             uiGroupBox1.Controls.Add(uiButton_add);
             uiGroupBox1.Controls.Add(uiDataGridView_Material);
             uiGroupBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiGroupBox1.Location = new Point(8, 7);
+            uiGroupBox1.Location = new Point(629, 120);
             uiGroupBox1.Margin = new Padding(4, 5, 4, 5);
             uiGroupBox1.MinimumSize = new Size(1, 1);
             uiGroupBox1.Name = "uiGroupBox1";
             uiGroupBox1.Padding = new Padding(0, 32, 0, 0);
-            uiGroupBox1.Size = new Size(662, 321);
+            uiGroupBox1.Size = new Size(382, 466);
             uiGroupBox1.TabIndex = 9;
             uiGroupBox1.Text = "Cathode";
             uiGroupBox1.TextAlignment = ContentAlignment.MiddleLeft;
-            uiGroupBox1.Click += uiGroupBox1_Click;
             // 
             // uiButton_update
             // 
             uiButton_update.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_update.Location = new Point(245, 35);
+            uiButton_update.Location = new Point(243, 35);
             uiButton_update.MinimumSize = new Size(1, 1);
             uiButton_update.Name = "uiButton_update";
             uiButton_update.Size = new Size(100, 35);
@@ -384,7 +416,7 @@ namespace EAP.Client.Forms
             // uiButton_del
             // 
             uiButton_del.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_del.Location = new Point(131, 35);
+            uiButton_del.Location = new Point(129, 35);
             uiButton_del.MinimumSize = new Size(1, 1);
             uiButton_del.Name = "uiButton_del";
             uiButton_del.Size = new Size(100, 35);
@@ -396,7 +428,7 @@ namespace EAP.Client.Forms
             // uiButton_add
             // 
             uiButton_add.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_add.Location = new Point(14, 35);
+            uiButton_add.Location = new Point(12, 35);
             uiButton_add.MinimumSize = new Size(1, 1);
             uiButton_add.Name = "uiButton_add";
             uiButton_add.Size = new Size(100, 35);
@@ -411,51 +443,51 @@ namespace EAP.Client.Forms
             uiDataGridView_Material.AllowUserToDeleteRows = false;
             uiDataGridView_Material.AllowUserToResizeColumns = false;
             uiDataGridView_Material.AllowUserToResizeRows = false;
-            dataGridViewCellStyle26.BackColor = Color.FromArgb(235, 243, 255);
-            uiDataGridView_Material.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle16.BackColor = Color.FromArgb(235, 243, 255);
+            uiDataGridView_Material.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle16;
             uiDataGridView_Material.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             uiDataGridView_Material.BackgroundColor = Color.White;
             uiDataGridView_Material.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle27.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle27.BackColor = Color.FromArgb(80, 160, 255);
-            dataGridViewCellStyle27.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            dataGridViewCellStyle27.ForeColor = Color.White;
-            dataGridViewCellStyle27.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle27.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle27.WrapMode = DataGridViewTriState.True;
-            uiDataGridView_Material.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle27;
+            dataGridViewCellStyle17.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle17.BackColor = Color.FromArgb(80, 160, 255);
+            dataGridViewCellStyle17.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            dataGridViewCellStyle17.ForeColor = Color.White;
+            dataGridViewCellStyle17.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle17.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = DataGridViewTriState.True;
+            uiDataGridView_Material.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
             uiDataGridView_Material.ColumnHeadersHeight = 32;
             uiDataGridView_Material.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle28.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle28.BackColor = SystemColors.Window;
-            dataGridViewCellStyle28.Font = new Font("宋体", 15F);
-            dataGridViewCellStyle28.ForeColor = Color.FromArgb(48, 48, 48);
-            dataGridViewCellStyle28.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle28.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle28.WrapMode = DataGridViewTriState.False;
-            uiDataGridView_Material.DefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle18.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle18.BackColor = SystemColors.Window;
+            dataGridViewCellStyle18.Font = new Font("宋体", 15F);
+            dataGridViewCellStyle18.ForeColor = Color.FromArgb(48, 48, 48);
+            dataGridViewCellStyle18.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle18.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle18.WrapMode = DataGridViewTriState.False;
+            uiDataGridView_Material.DefaultCellStyle = dataGridViewCellStyle18;
             uiDataGridView_Material.EnableHeadersVisualStyles = false;
             uiDataGridView_Material.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiDataGridView_Material.GridColor = Color.FromArgb(80, 160, 255);
-            uiDataGridView_Material.Location = new Point(14, 91);
+            uiDataGridView_Material.Location = new Point(12, 91);
             uiDataGridView_Material.Name = "uiDataGridView_Material";
             uiDataGridView_Material.ReadOnly = true;
-            dataGridViewCellStyle29.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle29.BackColor = Color.FromArgb(235, 243, 255);
-            dataGridViewCellStyle29.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            dataGridViewCellStyle29.ForeColor = Color.FromArgb(48, 48, 48);
-            dataGridViewCellStyle29.SelectionBackColor = Color.FromArgb(80, 160, 255);
-            dataGridViewCellStyle29.SelectionForeColor = Color.White;
-            dataGridViewCellStyle29.WrapMode = DataGridViewTriState.True;
-            uiDataGridView_Material.RowHeadersDefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle19.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle19.BackColor = Color.FromArgb(235, 243, 255);
+            dataGridViewCellStyle19.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            dataGridViewCellStyle19.ForeColor = Color.FromArgb(48, 48, 48);
+            dataGridViewCellStyle19.SelectionBackColor = Color.FromArgb(80, 160, 255);
+            dataGridViewCellStyle19.SelectionForeColor = Color.White;
+            dataGridViewCellStyle19.WrapMode = DataGridViewTriState.True;
+            uiDataGridView_Material.RowHeadersDefaultCellStyle = dataGridViewCellStyle19;
             uiDataGridView_Material.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle30.BackColor = Color.White;
-            dataGridViewCellStyle30.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiDataGridView_Material.RowsDefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle20.BackColor = Color.White;
+            dataGridViewCellStyle20.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiDataGridView_Material.RowsDefaultCellStyle = dataGridViewCellStyle20;
             uiDataGridView_Material.RowTemplate.Height = 23;
             uiDataGridView_Material.SelectedIndex = -1;
             uiDataGridView_Material.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            uiDataGridView_Material.Size = new Size(632, 218);
+            uiDataGridView_Material.Size = new Size(360, 358);
             uiDataGridView_Material.StripeOddColor = Color.FromArgb(235, 243, 255);
             uiDataGridView_Material.TabIndex = 10;
             // 
@@ -480,46 +512,6 @@ namespace EAP.Client.Forms
             uiButton_login.Text = "登录";
             uiButton_login.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_login.Click += uiButton_login_Click;
-            // 
-            // uiTabControl1
-            // 
-            uiTabControl1.Controls.Add(tabPage1);
-            uiTabControl1.Controls.Add(tabPage2);
-            uiTabControl1.DrawMode = TabDrawMode.OwnerDrawFixed;
-            uiTabControl1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiTabControl1.ItemSize = new Size(150, 23);
-            uiTabControl1.Location = new Point(14, 118);
-            uiTabControl1.MainPage = "";
-            uiTabControl1.Name = "uiTabControl1";
-            uiTabControl1.SelectedIndex = 0;
-            uiTabControl1.Size = new Size(674, 351);
-            uiTabControl1.SizeMode = TabSizeMode.Fixed;
-            uiTabControl1.TabIndex = 12;
-            uiTabControl1.TabUnSelectedForeColor = Color.FromArgb(240, 240, 240);
-            uiTabControl1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiTabControl1.SelectedIndexChanged += uiTabControl1_SelectedIndexChanged;
-            // 
-            // tabPage1
-            // 
-            tabPage1.Controls.Add(groupBox_1);
-            tabPage1.Controls.Add(button_CompareRecipe);
-            tabPage1.Controls.Add(checkBox_checkrecipe);
-            tabPage1.Location = new Point(0, 23);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Size = new Size(674, 328);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "过站";
-            tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            tabPage2.Controls.Add(uiGroupBox1);
-            tabPage2.Location = new Point(0, 40);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Size = new Size(200, 60);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "Cathode";
-            tabPage2.UseVisualStyleBackColor = true;
             // 
             // uiLabel2
             // 
@@ -566,6 +558,7 @@ namespace EAP.Client.Forms
             uiTextBox_line.MinimumSize = new Size(1, 16);
             uiTextBox_line.Name = "uiTextBox_line";
             uiTextBox_line.Padding = new Padding(5);
+            uiTextBox_line.ReadOnly = true;
             uiTextBox_line.ShowText = false;
             uiTextBox_line.Size = new Size(202, 29);
             uiTextBox_line.TabIndex = 0;
@@ -573,23 +566,26 @@ namespace EAP.Client.Forms
             uiTextBox_line.Watermark = "";
             uiTextBox_line.TextChanged += uiTextBox_line_TextChanged;
             // 
-            // uiButton_clearSn
+            // uiButton_endScan
             // 
-            uiButton_clearSn.Font = new Font("宋体", 10F);
-            uiButton_clearSn.Location = new Point(386, 70);
-            uiButton_clearSn.MinimumSize = new Size(1, 1);
-            uiButton_clearSn.Name = "uiButton_clearSn";
-            uiButton_clearSn.Size = new Size(96, 29);
-            uiButton_clearSn.TabIndex = 6;
-            uiButton_clearSn.Text = "清空";
-            uiButton_clearSn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_clearSn.Click += uiButton_clearSn_Click;
+            uiButton_endScan.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_endScan.Location = new Point(485, 105);
+            uiButton_endScan.MinimumSize = new Size(1, 1);
+            uiButton_endScan.Name = "uiButton_endScan";
+            uiButton_endScan.Size = new Size(109, 29);
+            uiButton_endScan.TabIndex = 10;
+            uiButton_endScan.Text = "检查过站";
+            uiButton_endScan.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_endScan.Click += uiButton_endScan_Click;
             // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
-            ClientSize = new Size(703, 603);
-            Controls.Add(uiTabControl1);
+            ClientSize = new Size(1035, 703);
+            Controls.Add(uiGroupBox1);
+            Controls.Add(groupBox_1);
+            Controls.Add(button_CompareRecipe);
+            Controls.Add(checkBox_checkrecipe);
             Controls.Add(uiButton_login);
             Controls.Add(uiLabel_admin);
             Controls.Add(richTextBox1);
@@ -613,10 +609,6 @@ namespace EAP.Client.Forms
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).EndInit();
             uiGroupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_Material).EndInit();
-            uiTabControl1.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
-            tabPage1.PerformLayout();
-            tabPage2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -643,9 +635,6 @@ namespace EAP.Client.Forms
         private UIButton uiButton_del;
         private UIButton uiButton_add;
         private UIButton uiButton_update;
-        private UITabControl uiTabControl1;
-        private TabPage tabPage1;
-        private TabPage tabPage2;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         public UITextBox uiTextBox_trayId;
@@ -663,5 +652,9 @@ namespace EAP.Client.Forms
         public UITextBox uiTextBox_modelName;
         private UILabel uiLabel4;
         private UIButton uiButton_clearSn;
+        public UITextBox uiTextBox_sn;
+        private UILabel uiLabel5;
+        private UIButton uiButton_scanTray;
+        private UIButton uiButton_endScan;
     }
 }

@@ -18,6 +18,8 @@ using EAP.Client.Models;
 using System.Threading.Tasks;
 using System.Windows.Ink;
 using Newtonsoft.Json.Linq;
+using System.Windows.Shapes;
+using System.Configuration;
 
 namespace EAP.Client.Forms
 {
@@ -92,16 +94,31 @@ namespace EAP.Client.Forms
                     {
                         uiLabel_inputStatus.Text = "允许入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(A("CHB1_ALLOW"), L())
+                        };
+                        _secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Reject)
                     {
                         uiLabel_inputStatus.Text = "禁止入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(A("CHB1_REJECT"), L())
+                        };
+                        _secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Wait)
                     {
                         uiLabel_inputStatus.Text = "等待中";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Orange;
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(A("CHB1_REJECT"), L())
+                        };
+                        _secsGem.SendAsync(s2f41);
                     }
                 }));
             }
@@ -354,7 +371,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        public bool isAutoCheckRecipe = true;
+        public bool isAutoCheckRecipe { get; set; } = true;
         private void checkBox_checkrecipe_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_checkrecipe.Checked == false)
@@ -589,7 +606,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        public List<SnInfo> snInfos = new List<SnInfo>();
+        public List<SnInfo> snInfos { get; set; } = new List<SnInfo>();
 
         private void uiButton_ScanSn_Click(object sender, EventArgs e)
         {
@@ -699,11 +716,6 @@ namespace EAP.Client.Forms
                                         SetInputStatus(InputStatus.Reject);
                                     }
                                 }
-
-
-
-
-
                             }
                             else
                             {
@@ -757,10 +769,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        private void uiGroupBox1_Click(object sender, EventArgs e)
-        {
 
-        }
 
         private void uiTextBox_empNo_TextChanged(object sender, EventArgs e)
         {
@@ -843,6 +852,190 @@ namespace EAP.Client.Forms
                 });
             }
 
+        }
+
+        private void uiButton_scanTray_Click(object sender, EventArgs e)
+        {
+            uiButton_scanTray.Enabled = false;
+            ScanBarcodeForm form = new ScanBarcodeForm();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                uiTextBox_trayId.Text = form.Value;
+                uiTextBox_sn.ReadOnly = false;
+                uiTextBox_sn.Focus();
+            }
+            uiButton_scanTray.Enabled = true;
+
+        }
+
+        private async void uiTextBox_sn_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.SuppressKeyPress = true;
+                    e.Handled = true;
+                    var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+                    var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
+                    var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+                    var empNo = uiTextBox_empNo.Text;
+                    var sn = uiTextBox_sn.Text;
+                    BaymaxService baymaxService = new BaymaxService();
+
+                    var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
+                    var trans = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo);
+                    if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+                    {
+                        Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                                  .Where(keyValueArray => keyValueArray.Length == 2)
+                                  .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                        string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                        string projectName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+
+
+                        var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
+                        var step7Res = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req);
+                        if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
+                        {
+                            Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+      .Where(keyValueArray => keyValueArray.Length == 2)
+      .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                            var CarrierId = sfisParameters["CARRIER_ID"].Trim();
+                            if (!snInfos.Any(it => it.CarrierId == CarrierId))
+                            {
+                                snInfos.Add(new SnInfo
+                                {
+                                    SN = sn,
+                                    CarrierId = CarrierId,
+                                    ModelName = modelName,
+                                    ProjectName = projectName,
+                                });
+                                uiDataGridView_snInfo.DataSource = snInfos.ToList();
+                                uiDataGridView_snInfo.Refresh();
+                                uiTextBox_modelName.Text = modelName;
+                            }
+                            else
+                            {
+                                var message = $"Carrier ID 重复:{CarrierId}";
+                                traLog.Warn(message);
+                            }
+                        }
+                        else
+                        {
+                            var message = $"无法获取绑定Carrier: {sn}";
+                            traLog.Warn(message);
+                        }
+                    }
+
+                    uiTextBox_sn.Text = string.Empty;
+                    if (snInfos.Count >= 6)
+                    {
+                        uiTextBox_sn.ReadOnly = true;
+
+                        uiButton_endScan_Click(sender, e);
+                    }
+                    else
+                    {
+                        uiTextBox_sn.Focus();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error(ex.ToString());
+            }
+        }
+
+        private async void uiButton_endScan_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+
+                if (isAutoCheckRecipe)
+                {
+                    var s1f3 = new SecsMessage(1, 3)
+                    {
+                        SecsItem = L(U4(650), U4(651))
+                    };
+                    var s1f4 = await _secsGem.SendAsync(s1f3);
+                    var recipeName = s1f4.SecsItem.Items[0].GetString();
+                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
+                    var machineRecipeName = recipeNum + "_" + recipeName;
+                    var projectNameList = snInfos.Select(x => x.ProjectName).Distinct().ToList();
+                    var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+                    var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
+                    foreach (var projectName in projectNameList)
+                    {
+                        var getRecipeNameReq = new
+                        {
+                            EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
+                            RecipeNameAlias = projectName
+                        };
+                        var getRecipeNameRes = await HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq);
+                        if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
+                        {
+                            if (machineRecipeName != getRecipeNameRes.RecipeName)
+                            {
+                                AllowInput = InputStatus.Reject;
+                                var sninfo = snInfos.FirstOrDefault(x => x.ProjectName == projectName);
+                                var message = $"该项目找不到匹配的程式，请联系ME。项目名：{projectName},SN:{sninfo.SN},CARRIER_ID:{sninfo.CarrierId},MODEL_NAME:{sninfo.ModelName},PROJECT_NAME:{sninfo.ProjectName}";
+                                traLog.Error(message);
+                                UIMessageBox.ShowError2(message);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            var message = $"{projectName}获取绑定Recipe失败，请检查网络";
+                            traLog.Error(message);
+                            UIMessageBox.ShowError2(message);
+                            return;
+                        }
+                    }
+
+                    var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
+                    var compareRecipeBodyReeq = new
+                    {
+                        EquipmentId = equipmentId,
+                        RecipeName = machineRecipeName
+                    };
+                    var compareRecipeBodyRes = await HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq);
+                    if (compareRecipeBodyRes == null || !compareRecipeBodyRes.Result)
+                    {
+                        AllowInput = InputStatus.Reject;
+                        var message = $"程式{machineRecipeName}内容不匹配，请联系ME/EQ:{compareRecipeBodyRes.Message}";
+                        traLog.Error(message);
+                        UIMessageBox.ShowError2(message);
+                        return;
+                    }
+                }
+
+                //过站
+                var empno = uiTextBox_empNo.Text;
+                var line = uiTextBox_line.Text;
+                ConfigManager<SputtereConfig> manager = new ConfigManager<SputtereConfig>();
+                var config = manager.LoadConfig().CathodeSettings;
+                var modelName = uiTextBox_modelName.Text;
+                var trayId = uiTextBox_trayId.Text;
+                var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
+                var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+
+                string cathodeStr = string.Join(" ", config.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
+                string step2Req = $@"{equipmentId},{snInfos.First().CarrierId},2,{empno},{line},,OK,,,ACTUAL_GROUP=SPUTTER {cathodeStr} ,,,{string.Join(";", snInfos.Select(it => it.CarrierId))},{trayId},,{modelName}";
+                BaymaxService baymaxService = new BaymaxService();
+                var trans = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step2Req);
+                if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+                {
+                    AllowInput = InputStatus.Allow;
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error(ex.ToString());
+            }
         }
     }
 }
