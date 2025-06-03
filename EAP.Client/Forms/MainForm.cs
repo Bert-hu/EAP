@@ -943,6 +943,12 @@ namespace EAP.Client.Forms
             {
                 var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
 
+                if (snInfos.Count == 0)
+                {
+                    UIMessageBox.ShowError("请先扫描SN");
+                    return;
+                }
+
                 if (isAutoCheckRecipe)
                 {
                     var s1f3 = new SecsMessage(1, 3)
