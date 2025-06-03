@@ -47,6 +47,8 @@ namespace EAP.Client.Forms
             label2 = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_allowInput = new UIButton();
+            uiButton_endScan = new UIButton();
             uiButton_scanTray = new UIButton();
             uiDataGridView_snInfo = new UIDataGridView();
             uiLabel_inputStatus = new UILabel();
@@ -75,7 +77,6 @@ namespace EAP.Client.Forms
             uiTextBox_empNo = new UITextBox();
             uiLabel3 = new UILabel();
             uiTextBox_line = new UITextBox();
-            uiButton_endScan = new UIButton();
             groupBox_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)uiDataGridView_snInfo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).BeginInit();
@@ -123,6 +124,7 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_allowInput);
             groupBox_1.Controls.Add(uiButton_endScan);
             groupBox_1.Controls.Add(uiButton_scanTray);
             groupBox_1.Controls.Add(uiDataGridView_snInfo);
@@ -149,10 +151,35 @@ namespace EAP.Client.Forms
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
             // 
+            // uiButton_allowInput
+            // 
+            uiButton_allowInput.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_allowInput.Location = new Point(214, 420);
+            uiButton_allowInput.MinimumSize = new Size(1, 1);
+            uiButton_allowInput.Name = "uiButton_allowInput";
+            uiButton_allowInput.Size = new Size(100, 29);
+            uiButton_allowInput.TabIndex = 11;
+            uiButton_allowInput.Text = "强制允许";
+            uiButton_allowInput.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_allowInput.Visible = false;
+            uiButton_allowInput.Click += uiButton1_Click;
+            // 
+            // uiButton_endScan
+            // 
+            uiButton_endScan.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_endScan.Location = new Point(485, 81);
+            uiButton_endScan.MinimumSize = new Size(1, 1);
+            uiButton_endScan.Name = "uiButton_endScan";
+            uiButton_endScan.Size = new Size(109, 29);
+            uiButton_endScan.TabIndex = 10;
+            uiButton_endScan.Text = "检查过站";
+            uiButton_endScan.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_endScan.Click += uiButton_endScan_Click;
+            // 
             // uiButton_scanTray
             // 
             uiButton_scanTray.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_scanTray.Location = new Point(485, 70);
+            uiButton_scanTray.Location = new Point(485, 46);
             uiButton_scanTray.MinimumSize = new Size(1, 1);
             uiButton_scanTray.Name = "uiButton_scanTray";
             uiButton_scanTray.Size = new Size(109, 29);
@@ -165,7 +192,7 @@ namespace EAP.Client.Forms
             // 
             dataGridViewCellStyle11.BackColor = Color.FromArgb(235, 243, 255);
             uiDataGridView_snInfo.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
-            uiDataGridView_snInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            uiDataGridView_snInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             uiDataGridView_snInfo.BackgroundColor = Color.White;
             uiDataGridView_snInfo.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -234,13 +261,14 @@ namespace EAP.Client.Forms
             // uiButton_ScanSn
             // 
             uiButton_ScanSn.Font = new Font("宋体", 10F);
-            uiButton_ScanSn.Location = new Point(485, 29);
+            uiButton_ScanSn.Location = new Point(499, 11);
             uiButton_ScanSn.MinimumSize = new Size(1, 1);
             uiButton_ScanSn.Name = "uiButton_ScanSn";
             uiButton_ScanSn.Size = new Size(109, 29);
             uiButton_ScanSn.TabIndex = 6;
             uiButton_ScanSn.Text = "扫码";
             uiButton_ScanSn.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_ScanSn.Visible = false;
             uiButton_ScanSn.Click += uiButton_ScanSn_Click;
             // 
             // uiTextBox_sn
@@ -566,18 +594,6 @@ namespace EAP.Client.Forms
             uiTextBox_line.Watermark = "";
             uiTextBox_line.TextChanged += uiTextBox_line_TextChanged;
             // 
-            // uiButton_endScan
-            // 
-            uiButton_endScan.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_endScan.Location = new Point(485, 105);
-            uiButton_endScan.MinimumSize = new Size(1, 1);
-            uiButton_endScan.Name = "uiButton_endScan";
-            uiButton_endScan.Size = new Size(109, 29);
-            uiButton_endScan.TabIndex = 10;
-            uiButton_endScan.Text = "检查过站";
-            uiButton_endScan.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_endScan.Click += uiButton_endScan_Click;
-            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -656,5 +672,6 @@ namespace EAP.Client.Forms
         private UILabel uiLabel5;
         private UIButton uiButton_scanTray;
         private UIButton uiButton_endScan;
+        private UIButton uiButton_allowInput;
     }
 }

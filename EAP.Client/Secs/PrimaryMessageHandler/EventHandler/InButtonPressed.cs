@@ -18,7 +18,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         internal static ILog traLog = LogManager.GetLogger("Trace");
         private readonly ISecsGem secsGem;
         private readonly IConfiguration configuration;
-        public InButtonPressed(ISecsGem secsGem,IConfiguration configuration)
+        public InButtonPressed(ISecsGem secsGem, IConfiguration configuration)
         {
             this.secsGem = secsGem;
             this.configuration = configuration;
@@ -73,7 +73,30 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             //    };
             //    var s2f42 = await secsGem.SendAsync(s2f41);
             //}
-            await Task.Delay(500);
+
+
+
+            if (MainForm.Instance.AllowInput == MainForm.InputStatus.Allow)
+            {
+                traLog.Info("允许入料");
+                var s2f41 = new SecsMessage(2, 41)
+                {
+                    SecsItem = L(A("CHB1_ALLOW"), L())
+                };
+                var s2f42 = await secsGem.SendAsync(s2f41);
+                //await Task.Delay(20000);
+                MainForm.Instance.ClearInfos();
+            }
+            else
+            {
+                traLog.Warn("拒绝入料");
+                var s2f41 = new SecsMessage(2, 41)
+                {
+                    SecsItem = L(A("CHB1_REJECT"), L())
+                };
+                var s2f42 = await secsGem.SendAsync(s2f41);
+            }
+
 
         }
 

@@ -65,10 +65,12 @@ namespace EAP.Client.Forms
                     if (value)
                     {
                         uiButton_login.Text = "登出";
+                        uiButton_allowInput.Visible = true;
                     }
                     else
                     {
                         uiButton_login.Text = "登录";
+                        uiButton_allowInput.Visible = false;
                     }
                 }));
             }
@@ -94,31 +96,31 @@ namespace EAP.Client.Forms
                     {
                         uiLabel_inputStatus.Text = "允许入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
-                        var s2f41 = new SecsMessage(2, 41)
-                        {
-                            SecsItem = L(A("CHB1_ALLOW"), L())
-                        };
-                        _secsGem.SendAsync(s2f41);
+                        //var s2f41 = new SecsMessage(2, 41)
+                        //{
+                        //    SecsItem = L(A("CHB1_ALLOW"), L())
+                        //};
+                        //_secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Reject)
                     {
                         uiLabel_inputStatus.Text = "禁止入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
-                        var s2f41 = new SecsMessage(2, 41)
-                        {
-                            SecsItem = L(A("CHB1_REJECT"), L())
-                        };
-                        _secsGem.SendAsync(s2f41);
+                        //var s2f41 = new SecsMessage(2, 41)
+                        //{
+                        //    SecsItem = L(A("CHB1_REJECT"), L())
+                        //};
+                        //_secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Wait)
                     {
                         uiLabel_inputStatus.Text = "等待中";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Orange;
-                        var s2f41 = new SecsMessage(2, 41)
-                        {
-                            SecsItem = L(A("CHB1_REJECT"), L())
-                        };
-                        _secsGem.SendAsync(s2f41);
+                        //var s2f41 = new SecsMessage(2, 41)
+                        //{
+                        //    SecsItem = L(A("CHB1_REJECT"), L())
+                        //};
+                        //_secsGem.SendAsync(s2f41);
                     }
                 }));
             }
@@ -682,7 +684,7 @@ namespace EAP.Client.Forms
                                                     SN = sn,
                                                     CarrierId = CarrierId
                                                 });
-                                                SetInputStatus(InputStatus.Allow);
+                                                AllowInput = InputStatus.Allow;
                                                 this.Invoke(() =>
                                                 {
                                                     uiDataGridView_snInfo.DataSource = snInfos.ToList();
@@ -696,7 +698,7 @@ namespace EAP.Client.Forms
                                                 var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
                                                 traLog.Error(message);
                                                 UIMessageBox.ShowError2(message);
-                                                SetInputStatus(InputStatus.Reject);
+                                                AllowInput = InputStatus.Reject;
                                             }
                                         }
                                         else
@@ -705,7 +707,7 @@ namespace EAP.Client.Forms
                                             traLog.Error(message);
                                             UIMessageBox.ShowError2(message);
 
-                                            SetInputStatus(InputStatus.Reject);
+                                            AllowInput = InputStatus.Reject;
                                         }
                                     }
                                     else
@@ -713,7 +715,7 @@ namespace EAP.Client.Forms
                                         var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
                                         traLog.Error(message);
                                         UIMessageBox.ShowError2(message);
-                                        SetInputStatus(InputStatus.Reject);
+                                        AllowInput = InputStatus.Reject;
                                     }
                                 }
                             }
@@ -748,26 +750,6 @@ namespace EAP.Client.Forms
             });
         }
 
-        private void SetInputStatus(InputStatus status)
-        {
-            AllowInput = status;
-            if (status == InputStatus.Allow)
-            {
-                var s2f41 = new SecsMessage(2, 41)
-                {
-                    SecsItem = L(A("CHB1_ALLOW"), L())
-                };
-                var s2f42 = _secsGem.SendAsync(s2f41);
-            }
-            else
-            {
-                var s2f41 = new SecsMessage(2, 41)
-                {
-                    SecsItem = L(A("CHB1_REJECT"), L())
-                };
-                var s2f42 = _secsGem.SendAsync(s2f41);
-            }
-        }
 
 
 
@@ -843,15 +825,22 @@ namespace EAP.Client.Forms
             var confirm = this.ShowAskDialog("确定清空吗?");
             if (confirm)
             {
-                snInfos.Clear();
-                this.Invoke(() =>
-                {
-                    uiDataGridView_snInfo.DataSource = snInfos.ToList();
-                    uiDataGridView_snInfo.Refresh();
-                    AllowInput = InputStatus.Wait;
-                });
+                ClearInfos();
             }
 
+        }
+
+        public void ClearInfos()
+        {
+            snInfos.Clear();
+            this.Invoke(() =>
+            {
+                uiDataGridView_snInfo.DataSource = snInfos.ToList();
+                uiDataGridView_snInfo.Refresh();
+                AllowInput = InputStatus.Wait;
+                uiTextBox_trayId.Text = string.Empty;
+                uiTextBox_sn.ReadOnly = true;
+            });
         }
 
         private void uiButton_scanTray_Click(object sender, EventArgs e)
@@ -989,7 +978,8 @@ namespace EAP.Client.Forms
                         }
                         else
                         {
-                            var message = $"{projectName}获取绑定Recipe失败，请检查网络";
+                            AllowInput = InputStatus.Reject;
+                            var message = $"{projectName}获取绑定Recipe失败，{getRecipeNameRes.Message}";
                             traLog.Error(message);
                             UIMessageBox.ShowError2(message);
                             return;
@@ -1031,11 +1021,23 @@ namespace EAP.Client.Forms
                 {
                     AllowInput = InputStatus.Allow;
                 }
+                else
+                {
+                    AllowInput = InputStatus.Reject;
+                    var message = $"SFIS过站失败：{trans.BaymaxResponse}";
+                    traLog.Error(message);
+                    UIMessageBox.ShowError2(message);
+                }
             }
             catch (Exception ex)
             {
                 traLog.Error(ex.ToString());
             }
+        }
+
+        private void uiButton1_Click(object sender, EventArgs e)
+        {
+            AllowInput = InputStatus.Allow;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace EAP.Client.Forms
                 RichTextBox.Invoke(new Action(() =>
                 {
                     //超过100行清空
-                    if (RichTextBox.Lines.Length > 20)
+                    if (RichTextBox.Lines.Length > 50)
                     {
                         RichTextBox.Clear();
                     }
@@ -57,8 +57,8 @@ namespace EAP.Client.Forms
                     RichTextBox.SelectionLength = 0;
                     RichTextBox.SelectionColor = color;
                     RichTextBox.AppendText(message);
-                    //RichTextBox.SelectionColor = RichTextBox.ForeColor;
-                    //RichTextBox.ScrollToCaret();
+                    RichTextBox.SelectionColor = RichTextBox.ForeColor;
+                    RichTextBox.ScrollToCaret();
 
                 }));
             }
