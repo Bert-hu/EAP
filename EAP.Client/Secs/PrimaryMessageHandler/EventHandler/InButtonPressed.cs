@@ -78,7 +78,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
             if (MainForm.Instance.AllowInput == MainForm.InputStatus.Allow)
             {
-                traLog.Info("允许入料");
+                traLog.Info("检测到入料按钮，允许入料");
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(A("CHB1_ALLOW"), L())
@@ -89,7 +89,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             }
             else
             {
-                traLog.Warn("拒绝入料");
+                traLog.Warn("检测到入料按钮，拒绝入料");
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(A("CHB1_REJECT"), L())

@@ -20,6 +20,8 @@ using System.Windows.Ink;
 using Newtonsoft.Json.Linq;
 using System.Windows.Shapes;
 using System.Configuration;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace EAP.Client.Forms
 {
@@ -46,10 +48,14 @@ namespace EAP.Client.Forms
                 return instance;
             }
         }
-        //public MainForm()
-        //{
-        //    InitializeComponent();
-        //}
+
+
+        private System.Windows.Forms.Timer adminTimer = new System.Windows.Forms.Timer { Interval = 120000 }; // 2分钟
+        public void RefreshTimer()
+        {
+            adminTimer.Stop();
+            adminTimer.Start(); // 重置倒计时
+        }
 
         bool _isAdmin;
         bool isAdmin
@@ -66,9 +72,12 @@ namespace EAP.Client.Forms
                     {
                         uiButton_login.Text = "登出";
                         uiButton_allowInput.Visible = true;
+                        adminTimer.Start();
                     }
                     else
                     {
+                        adminTimer.Stop();
+                        traLog.Info("用户登出");
                         uiButton_login.Text = "登录";
                         uiButton_allowInput.Visible = false;
                     }
@@ -94,33 +103,20 @@ namespace EAP.Client.Forms
                 {
                     if (_allowInput == InputStatus.Allow)
                     {
+                        traLog.Info("允许入料");
                         uiLabel_inputStatus.Text = "允许入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
-                        //var s2f41 = new SecsMessage(2, 41)
-                        //{
-                        //    SecsItem = L(A("CHB1_ALLOW"), L())
-                        //};
-                        //_secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Reject)
                     {
+                        traLog.Warn("禁止入料");
                         uiLabel_inputStatus.Text = "禁止入料";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
-                        //var s2f41 = new SecsMessage(2, 41)
-                        //{
-                        //    SecsItem = L(A("CHB1_REJECT"), L())
-                        //};
-                        //_secsGem.SendAsync(s2f41);
                     }
                     else if (_allowInput == InputStatus.Wait)
                     {
                         uiLabel_inputStatus.Text = "等待中";
                         uiLabel_inputStatus.BackColor = System.Drawing.Color.Orange;
-                        //var s2f41 = new SecsMessage(2, 41)
-                        //{
-                        //    SecsItem = L(A("CHB1_REJECT"), L())
-                        //};
-                        //_secsGem.SendAsync(s2f41);
                     }
                 }));
             }
@@ -140,6 +136,10 @@ namespace EAP.Client.Forms
             var appender = LogManager.GetRepository().GetAppenders().First(it => it.Name == "TraceLog") as RichTextBoxAppender;
             appender.RichTextBox = this.richTextBox1;
 
+            adminTimer.Tick += (sender, e) =>
+            {
+                isAdmin = false;
+            };
         }
 
         private void _secsConnection_ConnectionChanged(object? sender, ConnectionState e)
@@ -506,10 +506,9 @@ namespace EAP.Client.Forms
 
         private void uiButton_add_Click(object sender, EventArgs e)
         {
-
             if (isAdmin)
             {
-
+                RefreshTimer();
                 SputterCathodeSettingForm form = new SputterCathodeSettingForm();
                 DialogResult dr = form.ShowDialog();
                 if (dr == DialogResult.OK)
@@ -552,6 +551,7 @@ namespace EAP.Client.Forms
         {
             if (isAdmin)
             {
+                RefreshTimer();
                 var selectRows = uiDataGridView_Material.SelectedRows;
                 if (selectRows.Count == 1)
                 {
@@ -589,18 +589,29 @@ namespace EAP.Client.Forms
         {
             if (!isAdmin)
             {
-                PasswordForm form = new PasswordForm();
-                if (form.ShowDialog() == DialogResult.OK)
+                //PasswordForm form = new PasswordForm();
+                //if (form.ShowDialog() == DialogResult.OK)
+                //{
+                //    if (form.Value == _commonLibrary.CustomSettings["Password"])
+                //    {
+                //        isAdmin = true;
+                //    }
+                //    else
+                //    {
+                //        UIMessageBox.ShowError("密码错误");
+                //    }
+                //}
+
+                LoginForm loginForm = new LoginForm();
+                loginForm.ShowDialog();
+                if (loginForm.IsLogin)
                 {
-                    if (form.Value == _commonLibrary.CustomSettings["Password"])
-                    {
-                        isAdmin = true;
-                    }
-                    else
-                    {
-                        UIMessageBox.ShowError("密码错误");
-                    }
+                    UIMessageTip.ShowOk("登录成功");
+                    traLog.Info($"用户{loginForm.UserName}登入");
+                    isAdmin = true;
                 }
+                loginForm.Dispose();
+
             }
             else
             {
@@ -1043,6 +1054,8 @@ namespace EAP.Client.Forms
 
         private void uiButton1_Click(object sender, EventArgs e)
         {
+            traLog.Warn("强制允许入料");
+            RefreshTimer();
             AllowInput = InputStatus.Allow;
         }
     }

@@ -19,6 +19,7 @@ namespace EAP.Client.Models
         public string Line { get; set; } = string.Empty;
         public string ModelName { get; set; } = string.Empty;
         public List<CathodeSetting> CathodeSettings { get; set; } = new List<CathodeSetting>();
+        public Dictionary<string, string> UserPassword { get; set; } = new Dictionary<string, string>() { };
     }
 
     public class CathodeSetting
