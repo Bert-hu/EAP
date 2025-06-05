@@ -1,15 +1,11 @@
 using EAP.Client.Forms;
+using EAP.Client.NonSecs;
 using EAP.Client.RabbitMq;
-using EAP.Client.Secs;
-using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Secs4Net;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace EAP.Client
 {
@@ -58,12 +54,15 @@ namespace EAP.Client
                 .ConfigureServices((hostContext, services) =>
                 {
                     //Secs
-                    services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
+                    //services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
+
+                    //NonSecs
+                    services.AddNonSecs();
 
                     //RabbitMqService
                     services.AddRabbitMq();
 
-                    services.AddHostedService<SecsWorker>();
+                    //services.AddHostedService<SecsWorker>();
                     services.AddSingleton<MainForm>();
 
                 });

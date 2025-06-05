@@ -1,9 +1,6 @@
-﻿using EAP.Client.Secs;
-using log4net;
-using Newtonsoft.Json;
+﻿using log4net;
 using Secs4Net;
 using System.Text;
-using static Secs4Net.Item;
 
 namespace EAP.Client.RabbitMq
 {
@@ -14,14 +11,12 @@ namespace EAP.Client.RabbitMq
         internal readonly RabbitMqService rabbitMq;
         internal readonly ISecsGem secsGem;
         internal readonly ISecsConnection hsmsConnection;
-        internal readonly CommonLibrary commonLibrary;
 
-        public CompareRecipe(RabbitMqService rabbitMq, ISecsGem secsGem, ISecsConnection hsmsConnection, CommonLibrary commonLibrary) 
+        public CompareRecipe(RabbitMqService rabbitMq, ISecsGem secsGem, ISecsConnection hsmsConnection) 
         {
             this.rabbitMq = rabbitMq;
             this.secsGem = secsGem;
             this.hsmsConnection = hsmsConnection;
-            this.commonLibrary = commonLibrary;
 
 
         }

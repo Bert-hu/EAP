@@ -1,11 +1,4 @@
-﻿using EAP.Client.Secs;
-using log4net;
-using Secs4Net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using log4net;
 
 namespace EAP.Client.RabbitMq
 {
@@ -15,16 +8,11 @@ namespace EAP.Client.RabbitMq
         internal readonly ILog traLog = LogManager.GetLogger("Trace");
 
         internal readonly RabbitMqService rabbitMq;
-        internal readonly ISecsGem secsGem;
-        internal readonly ISecsConnection hsmsConnection;
-        internal readonly CommonLibrary commonLibrary;
 
-        public TransactionHandler1(RabbitMqService rabbitMq, ISecsGem secsGem, ISecsConnection hsmsConnection, CommonLibrary commonLibrary) 
+
+        public TransactionHandler1(RabbitMqService rabbitMq) 
         {
             this.rabbitMq = rabbitMq;
-            this.secsGem = secsGem;
-            this.hsmsConnection = hsmsConnection;
-            this.commonLibrary = commonLibrary;
         }
         public abstract Task HandleTransaction(RabbitMqTransaction trans);
     }

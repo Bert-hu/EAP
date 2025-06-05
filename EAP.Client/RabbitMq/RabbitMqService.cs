@@ -1,22 +1,14 @@
-﻿using EAP.Client.Secs;
-using log4net;
+﻿using log4net;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using Secs4Net;
 
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Text;
 
 namespace EAP.Client.RabbitMq
 {
     public class RabbitMqService
-
-
     {
         private readonly IConfiguration configuration;
 

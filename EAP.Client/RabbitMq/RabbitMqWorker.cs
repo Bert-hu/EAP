@@ -1,13 +1,10 @@
-﻿using EAP.Client.Secs;
-using log4net;
+﻿using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Secs4Net;
-using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text;
 
@@ -16,25 +13,18 @@ namespace EAP.Client.RabbitMq
     internal class RabbitMqWorker : BackgroundService
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-        private readonly ILog eqpLog = LogManager.GetLogger("Secs");
         private readonly ILog traLog = LogManager.GetLogger("Trace");
 
         private readonly IConfiguration _configuration;
-        private readonly ISecsConnection _hsmsConnection;
-        private readonly ISecsGem _secsGem;
-        private CommonLibrary _commonLibrary;
         private RabbitMqService _rabbitMqService;
         private readonly IServiceProvider _serviceProvider;
 
         private readonly System.Threading.Timer _equipmentStatusTimer;
 
 
-        public RabbitMqWorker(IConfiguration configuration, ISecsConnection hsmsConnection, ISecsGem secsGem, CommonLibrary commonLibrary, RabbitMqService rabbitMqService,IServiceProvider serviceProvider)
+        public RabbitMqWorker(IConfiguration configuration,  RabbitMqService rabbitMqService,IServiceProvider serviceProvider)
         {
             _configuration = configuration;
-            _secsGem = secsGem;
-            _hsmsConnection = hsmsConnection;
-            _commonLibrary = commonLibrary;
             _rabbitMqService = rabbitMqService;
             _serviceProvider = serviceProvider;
 

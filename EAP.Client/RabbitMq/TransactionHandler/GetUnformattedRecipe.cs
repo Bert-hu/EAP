@@ -1,8 +1,5 @@
 ﻿using log4net;
-using Newtonsoft.Json;
 using Secs4Net;
-using Secs4Net.Sml;
-using EAP.Client.Secs;
 using static Secs4Net.Item;
 
 namespace EAP.Client.RabbitMq
