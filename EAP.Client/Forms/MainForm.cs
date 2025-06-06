@@ -343,12 +343,13 @@ namespace EAP.Client.Forms
             public string EquipmentTypeId { get; set; }
             public string RecipeName { get; set; }
         }
+        string lastSn = string.Empty;
         private string HandleBaymaxResponse(BaymaxService sender, string machineRequest, string baymaxResponse)
         {
             try
             {
                 var stepid = machineRequest.Split(',')[2];
-                var panelsn = machineRequest.Split(',')[1];
+                var moduleSn = machineRequest.Split(',')[1];
 
                 if (stepid == "1" && baymaxResponse.ToUpper().StartsWith("OK"))
                 {
@@ -366,7 +367,15 @@ namespace EAP.Client.Forms
                             }
                             else
                             {
-                                icosCount++;
+                                if (moduleSn != lastSn)
+                                {
+                                    icosCount++;
+                                    lastSn = moduleSn;
+                                }
+                                else
+                                {
+                                    traLog.Warn($"SN {moduleSn}重复，此次不计数");
+                                }
                             }
                             break;
                         case "MIX-M":
@@ -376,7 +385,15 @@ namespace EAP.Client.Forms
                             }
                             else
                             {
-                                mCount++;
+                                if (moduleSn != lastSn)
+                                {
+                                    mCount++;
+                                    lastSn = moduleSn;
+                                }
+                                else
+                                {
+                                    traLog.Warn($"SN {moduleSn}重复，此次不计数");
+                                }
                             }
                             break;
                         case "MIX-OH":
@@ -386,7 +403,15 @@ namespace EAP.Client.Forms
                             }
                             else
                             {
-                                ohCount++;
+                                if (moduleSn != lastSn)
+                                {
+                                    ohCount++;
+                                    lastSn = moduleSn;
+                                }
+                                else
+                                {
+                                    traLog.Warn($"SN {moduleSn}重复，此次不计数");
+                                }
                             }
                             break;
                         default:
