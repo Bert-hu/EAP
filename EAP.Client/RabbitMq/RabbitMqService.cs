@@ -63,7 +63,10 @@ namespace EAP.Client.RabbitMq
         {
             try
             {
-                dbgLog.Info($"RabbitMqService Send message to {routingKey}: " + message);
+                string truncatedMessage = message.Length > 100
+                    ? message.Substring(0, 100) + "..."
+                    : message;
+                dbgLog.Info($"RabbitMqService Send message to {routingKey}: " + truncatedMessage);
                 Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
                 //channel.QueueDeclare(routingKey, false, false, true, arguments);
                 var properties = new BasicProperties();

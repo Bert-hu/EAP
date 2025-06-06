@@ -91,7 +91,7 @@ namespace EAP.Client.RabbitMq
                 reptrans?.Parameters.Add("Status", Status);
                 if (reptrans != null) rabbitMq.Produce(trans.ReplyChannel, reptrans);
                 UpdateEquipmentStatus(Status);
-                MainForm.Instance?.UpdateState(Status);
+                //MainForm.Instance?.UpdateState(Status);
             }
             catch (Exception ex)
             {

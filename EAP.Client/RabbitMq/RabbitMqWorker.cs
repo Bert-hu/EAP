@@ -60,8 +60,10 @@ namespace EAP.Client.RabbitMq
                 var message = Encoding.UTF8.GetString(args.Body.ToArray());
 
                 // Process the received message
-                dbgLog.Info("RabbitMqService Received message: " + message);
-
+                string truncatedMessage = message.Length > 100
+                    ? message.Substring(0, 100) + "..."
+                    : message;
+                dbgLog.Info("RabbitMqService Received message: " + truncatedMessage);
                 return Task.Run(() => HandleRecivedTrans(message));
             };
             Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
