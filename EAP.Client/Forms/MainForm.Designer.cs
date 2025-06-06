@@ -42,7 +42,10 @@ namespace EAP.Client.Forms
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
             uiButton_Test = new UIButton();
+            uiNavBar1 = new UINavBar();
+            uiButton_messageTest = new UIButton();
             groupBox_1.SuspendLayout();
+            uiNavBar1.SuspendLayout();
             SuspendLayout();
             // 
             // textBox_panelid
@@ -127,12 +130,12 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(label_1);
             groupBox_1.Controls.Add(label1);
             groupBox_1.Font = new Font("宋体", 12F);
-            groupBox_1.Location = new Point(12, 40);
+            groupBox_1.Location = new Point(12, 73);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(471, 302);
+            groupBox_1.Size = new Size(471, 269);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
@@ -172,10 +175,39 @@ namespace EAP.Client.Forms
             uiButton_Test.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_Test.Click += uiButton_Test_Click;
             // 
+            // uiNavBar1
+            // 
+            uiNavBar1.BackColor = Color.White;
+            uiNavBar1.Controls.Add(uiButton_messageTest);
+            uiNavBar1.Dock = DockStyle.Top;
+            uiNavBar1.DropMenuFont = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiNavBar1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiNavBar1.Location = new Point(0, 35);
+            uiNavBar1.MenuHoverColor = Color.FromArgb(128, 255, 255);
+            uiNavBar1.MenuSelectedColor = Color.FromArgb(0, 192, 192);
+            uiNavBar1.MenuStyle = UIMenuStyle.Custom;
+            uiNavBar1.Name = "uiNavBar1";
+            uiNavBar1.Size = new Size(614, 41);
+            uiNavBar1.TabIndex = 10;
+            uiNavBar1.Text = "uiNavBar1";
+            // 
+            // uiButton_messageTest
+            // 
+            uiButton_messageTest.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_messageTest.Location = new Point(17, 5);
+            uiButton_messageTest.MinimumSize = new Size(1, 1);
+            uiButton_messageTest.Name = "uiButton_messageTest";
+            uiButton_messageTest.Size = new Size(100, 25);
+            uiButton_messageTest.TabIndex = 0;
+            uiButton_messageTest.Text = "消息测试";
+            uiButton_messageTest.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_messageTest.Click += uiButton_messageTest_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
+            Controls.Add(uiNavBar1);
             Controls.Add(uiButton_Test);
             Controls.Add(richTextBox1);
             Controls.Add(groupBox_1);
@@ -189,6 +221,7 @@ namespace EAP.Client.Forms
             SizeChanged += MainForm_SizeChanged;
             groupBox_1.ResumeLayout(false);
             groupBox_1.PerformLayout();
+            uiNavBar1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -209,5 +242,7 @@ namespace EAP.Client.Forms
         private UIRichTextBox richTextBox1;
         private NotifyIcon notifyIcon;
         private UIButton uiButton_Test;
+        private UINavBar uiNavBar1;
+        private UIButton uiButton_messageTest;
     }
 }

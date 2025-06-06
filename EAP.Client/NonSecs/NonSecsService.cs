@@ -18,6 +18,8 @@ using System.Threading.Channels;
 public class NonSecsService
 {
     internal static ILog nonSecsLog = LogManager.GetLogger("NonSecs");
+    internal static ILog TraceLog = LogManager.GetLogger("Trace");
+
     private readonly IConfiguration configuration;
     private readonly NonSecsConfig config;
     private readonly Channel<NonSecsMessageWrapper> PrimaryInQueue = Channel.CreateUnbounded<NonSecsMessageWrapper>();
@@ -41,7 +43,6 @@ public class NonSecsService
     public enum ConnectionState
     {
         NotConnnected,
-        Connecting,
         Connected
     }
     #endregion
@@ -67,6 +68,7 @@ public class NonSecsService
         }
         catch (Exception ex)
         {
+            TraceLog.Error("启动服务失败", ex);
             nonSecsLog.Error("启动服务失败", ex);
             connectionState = ConnectionState.NotConnnected;
         }
@@ -103,24 +105,26 @@ public class NonSecsService
         {
             try
             {
-                connectionState = ConnectionState.Connecting;
+                connectionState = ConnectionState.NotConnnected;
                 client = new TcpClient();
                 await client.ConnectAsync(ipAddress, port, cancellationToken);
                 connectionState = ConnectionState.Connected;
                 nonSecsLog.Info($"已连接到服务器: {ipAddress}:{port}");
-
+                TraceLog.Info($"已连接到服务器: {ipAddress}:{port}");
                 await ReadMessagesAsync(client.GetStream(), cancellationToken);
                 //break; // 如果读取完成正常退出循环
             }
             catch (OperationCanceledException)
             {
                 nonSecsLog.Info("客户端连接操作被取消");
+                TraceLog.Info("客户端连接操作被取消");
                 connectionState = ConnectionState.NotConnnected;
                 throw;
             }
             catch (Exception ex)
             {
                 nonSecsLog.Error($"客户端连接失败: {ipAddress}:{port}，{ex.Message}");
+                TraceLog.Error($"客户端连接失败: {ipAddress}:{port}，{ex.Message}");
                 connectionState = ConnectionState.NotConnnected;
 
                 // 清理可能存在的无效连接
@@ -135,20 +139,20 @@ public class NonSecsService
 
     private async Task StartServerAsync(IPAddress ipAddress, int port, CancellationToken cancellationToken)
     {
-        connectionState = ConnectionState.Connecting;
+        connectionState = ConnectionState.NotConnnected;
 
         try
         {
             server = new TcpListener(ipAddress, port);
             server.Start();
-            connectionState = ConnectionState.Connected;
             nonSecsLog.Info($"服务器已启动: {ipAddress}:{port}");
-
+            TraceLog.Info($"服务器已启动: {ipAddress}:{port}");
             while (!cancellationToken.IsCancellationRequested)
             {
                 client = await server.AcceptTcpClientAsync(cancellationToken);
+                connectionState = ConnectionState.Connected;
                 nonSecsLog.Info($"客户端已连接: {((IPEndPoint)client.Client.RemoteEndPoint!).Address}");
-
+                TraceLog.Info($"客户端已连接: {((IPEndPoint)client.Client.RemoteEndPoint!).Address}");
                 _ = Task.Run(async () =>
                 {
                     try
@@ -158,6 +162,7 @@ public class NonSecsService
                     catch (Exception ex)
                     {
                         nonSecsLog.Error("客户端通信异常", ex);
+                        TraceLog.Info("客户端通信异常", ex);
                     }
                     finally
                     {
@@ -169,6 +174,7 @@ public class NonSecsService
         catch (Exception ex)
         {
             nonSecsLog.Error($"服务器启动失败: {ipAddress}:{port}", ex);
+            TraceLog.Error($"服务器启动失败: {ipAddress}:{port}", ex);
             connectionState = ConnectionState.NotConnnected;
             throw;
         }
@@ -193,7 +199,13 @@ public class NonSecsService
             try
             {
                 int bytesRead = await stream.ReadAsync(buffer, cancellationToken);
-                if (bytesRead == 0) break;
+                if (bytesRead == 0)
+                {
+                    TraceLog.Info("客户端已断开");
+                    nonSecsLog.Info("客户端已断开");
+                    connectionState = ConnectionState.NotConnnected;
+                    break;
+                }
 
                 string rawmessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 var messages = SplitJson(rawmessage);
@@ -312,7 +324,7 @@ public class NonSecsService
 
     ConcurrentDictionary<NonSecsMessageWrapper, TaskCompletionSource<NonSecsMessageWrapper>> PrimaryOutMessageQueue = new ConcurrentDictionary<NonSecsMessageWrapper, TaskCompletionSource<NonSecsMessageWrapper>>();
 
-    public async Task<NonSecsMessageWrapper?> SendMessage(NonSecsMessage message, int timeoutSecond = 5, CancellationToken cancellationToken = default)
+    public async Task<NonSecsMessageWrapper?> SendMessage(string message, int timeoutSecond = 5, CancellationToken cancellationToken = default)
     {
         if (connectionState != ConnectionState.Connected)
         {
@@ -323,9 +335,11 @@ public class NonSecsService
 
         try
         {
+            var messageObj = JsonConvert.DeserializeObject<NonSecsMessage>(message);
+
             // 序列化消息
-            var messageData = JsonConvert.SerializeObject(message);
-            var messageBytes = Encoding.UTF8.GetBytes(messageData);
+            //var messageData = JsonConvert.SerializeObject(message);
+            var messageBytes = Encoding.UTF8.GetBytes(message);
 
             // 根据isActive状态选择不同的发送方式
             if (config.IsActive) // 判断isActive状态
@@ -341,7 +355,7 @@ public class NonSecsService
                 await stream.WriteAsync(messageBytes, 0, messageBytes.Length, cancellationToken);
                 await stream.FlushAsync(cancellationToken);
 
-                nonSecsLog.Info($"Out: {messageData}");
+                nonSecsLog.Info($"Out: {message}");
             }
             else
             {
@@ -363,10 +377,10 @@ public class NonSecsService
                 await stream.WriteAsync(messageBytes, 0, messageBytes.Length, cancellationToken);
                 await stream.FlushAsync(cancellationToken);
 
-                nonSecsLog.Info($"Out: {messageData}");
+                nonSecsLog.Info($"Out: {message}");
             }
 
-            if (message.Function % 2 == 1)//Primary out
+            if (messageObj.Function % 2 == 1)//Primary out
             {
                 // 将消息添加到队列，使用当前时间作为键
                 var timestamp = DateTime.Now;
@@ -374,10 +388,10 @@ public class NonSecsService
                 var primaryMessage = new NonSecsMessageWrapper
                 {
                     nonSecsService = this,
-                    Stream = message.Stream,
-                    Function = message.Function,
+                    Stream = messageObj.Stream,
+                    Function = messageObj.Function,
                     MessageTime = timestamp,
-                    PrimaryMessageString = messageData
+                    PrimaryMessageString = message
                 };
 
                 if (!PrimaryOutMessageQueue.TryAdd(primaryMessage, tcs))
@@ -397,7 +411,7 @@ public class NonSecsService
                 else
                 {
                     PrimaryOutMessageQueue.TryRemove(primaryMessage, out _);
-                    var errMessage = $"S{message.Stream}F{message.Function} timeout, {timeoutSecond} s";
+                    var errMessage = $"S{messageObj.Stream}F{messageObj.Function} timeout, {timeoutSecond} s";
                     nonSecsLog.Error(errMessage);
                     throw new TimeoutException(errMessage);
                 }
@@ -419,5 +433,11 @@ public class NonSecsService
             nonSecsLog.Error("发送消息时发生错误", ex);
             throw;
         }
+
+    }
+
+    public async Task<NonSecsMessageWrapper?> SendMessage(NonSecsMessage message, int timeoutSecond = 5, CancellationToken cancellationToken = default)
+    {
+        return await SendMessage(JsonConvert.SerializeObject(message), timeoutSecond, cancellationToken);
     }
 }

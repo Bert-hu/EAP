@@ -47,7 +47,7 @@ namespace EAP.Client.Forms
             instance = this;
             InitializeComponent();
 
-            //_secsConnection.ConnectionChanged += _secsConnection_ConnectionChanged;
+            nonSecsService.ConnectionChanged += _secsConnection_ConnectionChanged;
             var appender = LogManager.GetRepository().GetAppenders().First(it => it.Name == "TraceLog") as RichTextBoxAppender;
             appender.RichTextBox = this.richTextBox1;
 
@@ -61,13 +61,13 @@ namespace EAP.Client.Forms
             var backcolor = Color.Gray;
             switch (e)
             {
-                case ConnectionState.Connecting:
-                    showtext = "Connecting";
+                case ConnectionState.NotConnnected:
+                    showtext = "NotConnnected";
                     backcolor = Color.Gray;
                     break;
                 case ConnectionState.Connected:
                     showtext = "Connected";
-                    backcolor = Color.Yellow;
+                    backcolor = Color.Green;
                     break;
             }
             this.Invoke(new Action(() =>
@@ -154,19 +154,19 @@ namespace EAP.Client.Forms
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
-                notifyIcon.Text = configuration.GetSection("Custtom")["EquipmentType"] + " " + configuration.GetSection("Custtom")["EquipmentId"];
+                this.Text = configuration.GetSection("Custom")["EquipmentId"] + " " + configuration.GetSection("Custom")["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
+                notifyIcon.Text = configuration.GetSection("Custom")["EquipmentType"] + " " + configuration.GetSection("Custom")["EquipmentId"];
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
             }));
 
-            string sfisIp = configuration.GetSection("Custtom")["SfisIp"];
-            int sfisPort = Convert.ToInt32(configuration.GetSection("Custtom")["SfisPort"]);
+            string sfisIp = configuration.GetSection("Custom")["SfisIp"];
+            int sfisPort = Convert.ToInt32(configuration.GetSection("Custom")["SfisPort"]);
             //BaymaxService baymax = new BaymaxService();
             //baymax.OnBaymaxTransCompleted += Baymax_OnBaymaxTrans;
             //baymax.StartBaymaxForwardingService(_secsConnection.IpAddress.ToString(), 21347, sfisIp, sfisPort, HandleBaymaxResponse);
 
-            var updateUrl = configuration.GetSection("Custom")["UpdateUrl"].TrimEnd('/') + "/" + configuration.GetSection("Custtom")["EquipmentType"] + "/AutoUpdate.xml";
+            var updateUrl = configuration.GetSection("Custom")["UpdateUrl"].TrimEnd('/') + "/" + configuration.GetSection("Custom")["EquipmentType"] + "/AutoUpdate.xml";
             Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("zh");
             AutoUpdater.LetUserSelectRemindLater = true;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
@@ -190,8 +190,8 @@ namespace EAP.Client.Forms
             {
                 if (args.IsUpdateAvailable)
                 {
-                    var eqpType = configuration.GetSection("Custtom")["EquipmentType"];
-                    this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
+                    var eqpType = configuration.GetSection("Custom")["EquipmentType"];
+                    this.Text = configuration.GetSection("Custom")["EquipmentId"] + " " + configuration.GetSection("Custom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
                     bool dialogResult =
                             UIMessageBox.ShowAsk2(
                                 $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
@@ -218,7 +218,7 @@ namespace EAP.Client.Forms
                 else
                 {
                     Assembly assembly = Assembly.GetExecutingAssembly();
-                    this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 最新版本";
+                    this.Text = configuration.GetSection("Custom")["EquipmentId"] + " " + configuration.GetSection("Custom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 最新版本";
                 }
             }
             else
@@ -309,6 +309,12 @@ namespace EAP.Client.Forms
             {
 
             }
+        }
+
+        private void uiButton_messageTest_Click(object sender, EventArgs e)
+        {
+            MessageTestForm messageTest = new MessageTestForm(nonSecsService);
+            messageTest.Show();
         }
     }
 }
