@@ -1,7 +1,9 @@
-﻿namespace EAP.Client.NonSecs
+﻿using EAP.Client.NonSecs.Message;
+
+namespace EAP.Client.NonSecs
 {
     internal interface IPrimaryMessageHandler
     {
-        //Task HandlePrimaryMessage(PrimaryMessageWrapper wrapper);
+        Task HandlePrimaryMessage(NonSecsMessageWrapper wrapper);
     }
 }

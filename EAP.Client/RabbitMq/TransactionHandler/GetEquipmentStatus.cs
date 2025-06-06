@@ -1,4 +1,5 @@
 ﻿using EAP.Client.Forms;
+using EAP.Client.NonSecs.Message;
 using log4net;
 using Microsoft.Extensions.Configuration;
 
@@ -9,13 +10,15 @@ namespace EAP.Client.RabbitMq
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
         private readonly IConfiguration configuration;
         private readonly RabbitMqService rabbitMq;
+        private readonly NonSecsService nonSecsService;
 
 
 
-        public GetEquipmentStatus(IConfiguration configuration, RabbitMqService rabbitMq)
+        public GetEquipmentStatus(IConfiguration configuration, RabbitMqService rabbitMq, NonSecsService nonSecsService)
         {
             this.configuration = configuration;
             this.rabbitMq = rabbitMq;
+            this.nonSecsService = nonSecsService;
         }
 
         public async Task HandleTransaction(RabbitMqTransaction trans)
@@ -29,14 +32,45 @@ namespace EAP.Client.RabbitMq
                 {
                     //TODO get status svid
 
-                    string controlState = "Unknown";
-                    string processState = "Unknown";
 
-                    //commonLibrary.SecsConfigs.ProcessStateCodes.TryGetValue(processStateCode.ToString(), out processState);
+                    var paramsVid = configuration.GetSection("NonSecs:ParamsVid").Get<List<string>>();
+                    var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
+                    var s1f3 = new S1F3() { List = paramsVid };
+                    var reply = await nonSecsService.SendMessage(s1f3);
+
+                    var s1f4 = reply.SecondaryMessage as S1F4;
+
+                    if (vidDict.ContainsValue("Status"))
+                    {
+                        var statusVid = vidDict.FirstOrDefault(it => it.Value == "Status").Key;
+                        s1f4?.List?.TryGetValue(statusVid, out Status);
+                    }
+                    var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
+                    foreach (var item in s1f4?.List)
+                    {
+                        var name = string.Empty;
+                        vidDict.TryGetValue(item.Key, out name);
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            var para = new Dictionary<string, object> {
+                                { "EQID",equipmentId },
+                                { "NAME",name},
+                                { "SVID",item.Key},
+                                { "Value",item.Value},
+                                { "UPDATETIME",DateTime.Now}
+                            };
+                            var paratrans = new RabbitMqTransaction
+                            {
+                                TransactionName = "EquipmentParams",
+                                Parameters = para
+                            };
+                            rabbitMq.Produce("EAP.Services", paratrans);
+                        }
+
+
+                    }
 
                     reptrans?.Parameters.Add("Result", true);
-                    reptrans?.Parameters.Add("ControlState", controlState);
-                    reptrans?.Parameters.Add("ProcessState", processState);
                 }
                 catch (Exception ex)
                 {

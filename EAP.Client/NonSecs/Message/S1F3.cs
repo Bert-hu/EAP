@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace EAP.Client.NonSecs.Models
+namespace EAP.Client.NonSecs.Message
 {
     public class S1F3 : NonSecsMessage
     {
@@ -13,9 +15,7 @@ namespace EAP.Client.NonSecs.Models
             base.Stream = 1;
             base.Function = 3;
         }
-        public S1F3(int stream, int function) : base(stream, function)
-        {
-        }
+
         public List<string>? List { get; set; }
     }
 }

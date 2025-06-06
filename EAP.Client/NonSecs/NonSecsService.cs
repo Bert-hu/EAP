@@ -1,5 +1,5 @@
 ﻿using EAP.Client.NonSecs;
-using EAP.Client.NonSecs.Models;
+using EAP.Client.NonSecs.Message;
 using EAP.Client.RabbitMq;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -8,21 +8,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Channels;
 
-public class PrimaryOutMessage : NonSecsMessage
-{
-    public DateTime SendTime { get; set; } = DateTime.Now;
-}
+
 
 public class NonSecsService
 {
     internal static ILog nonSecsLog = LogManager.GetLogger("NonSecs");
     private readonly IConfiguration configuration;
     private readonly NonSecsConfig config;
-    private readonly Channel<NonSecsMessage> PrimaryInQueue = Channel.CreateUnbounded<NonSecsMessage>();
+    private readonly Channel<NonSecsMessageWrapper> PrimaryInQueue = Channel.CreateUnbounded<NonSecsMessageWrapper>();
     private TcpClient? client;
     private TcpListener? server;
     private CancellationTokenSource? cts;
@@ -52,7 +50,6 @@ public class NonSecsService
     {
         this.configuration = configuration;
         config = configuration.GetSection("NonSecs").Get<NonSecsConfig>();
-        var s1f3 = new S1F3 { List = new List<string>() };
     }
 
     public async Task Start(CancellationToken stoppingToken)
@@ -176,16 +173,14 @@ public class NonSecsService
             throw;
         }
     }
-    public async Task<NonSecsMessage> GetPrimaryMessageAsync(CancellationToken cancellationToken = default)
+
+
+    public async IAsyncEnumerable<NonSecsMessageWrapper> GetPrimaryMessageAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        try
+        // 使用 ReadAllAsync 替代单次读取
+        await foreach (var message in PrimaryInQueue.Reader.ReadAllAsync(cancellationToken))
         {
-            return await PrimaryInQueue.Reader.ReadAsync(cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            nonSecsLog.Warn("获取消息被取消");
-            throw;
+            yield return message;
         }
     }
 
@@ -209,18 +204,36 @@ public class NonSecsService
                     try
                     {
                         message = JsonConvert.DeserializeObject<NonSecsMessage>(strMessage);
-                        if (message.Function % 2 == 1)
+                        if (message.Function % 2 == 1)//Primary In
                         {
-                            await PrimaryInQueue.Writer.WriteAsync(message);
-                        }
-                        else
-                        {
-                            var primaryMessage = PrimaryOutMessageQueue.OrderBy(it => it.Key.SendTime).FirstOrDefault(it => it.Key.Stream == message.Stream && it.Key.Function == message.Function - 1);
-                            if (!primaryMessage.Equals(default(KeyValuePair<PrimaryOutMessage, TaskCompletionSource<NonSecsMessage>>)))
+                            var primaryMessage = new NonSecsMessageWrapper
                             {
-                                if (PrimaryOutMessageQueue.TryGetValue(primaryMessage.Key, out TaskCompletionSource<NonSecsMessage> tcs))
+                                nonSecsService = this,
+                                Stream = message.Stream,
+                                Function = message.Function,
+                                MessageTime = DateTime.Now,
+                                PrimaryMessageString = strMessage
+                            };
+
+                            await PrimaryInQueue.Writer.WriteAsync(primaryMessage);
+                        }
+                        else//Secondary In
+                        {
+                            var primaryMessage = PrimaryOutMessageQueue.OrderBy(it => it.Key.MessageTime).FirstOrDefault(it => it.Key.Stream == message.Stream && it.Key.Function == message.Function - 1);
+                            if (!primaryMessage.Equals(default(KeyValuePair<NonSecsMessageWrapper, TaskCompletionSource<NonSecsMessageWrapper>>)))
+                            {
+                                if (PrimaryOutMessageQueue.TryGetValue(primaryMessage.Key, out TaskCompletionSource<NonSecsMessageWrapper> tcs))
                                 {
-                                    tcs.SetResult(message);
+                                    var result = new NonSecsMessageWrapper
+                                    {
+                                        nonSecsService = this,
+                                        Stream = message.Stream,
+                                        Function = message.Function,
+                                        MessageTime = primaryMessage.Key.MessageTime,
+                                        PrimaryMessageString = primaryMessage.Key.PrimaryMessageString,
+                                        SecondaryMessageString = strMessage
+                                    };
+                                    tcs.SetResult(result);
                                 }
                             }
                             else
@@ -297,9 +310,9 @@ public class NonSecsService
     }
     #endregion
 
-    ConcurrentDictionary<PrimaryOutMessage, TaskCompletionSource<NonSecsMessage>> PrimaryOutMessageQueue = new ConcurrentDictionary<PrimaryOutMessage, TaskCompletionSource<NonSecsMessage>>();
+    ConcurrentDictionary<NonSecsMessageWrapper, TaskCompletionSource<NonSecsMessageWrapper>> PrimaryOutMessageQueue = new ConcurrentDictionary<NonSecsMessageWrapper, TaskCompletionSource<NonSecsMessageWrapper>>();
 
-    public async Task<NonSecsMessage?> SendMessage(NonSecsMessage message, int timeoutSecond = 5, CancellationToken cancellationToken = default)
+    public async Task<NonSecsMessageWrapper?> SendMessage(NonSecsMessage message, int timeoutSecond = 5, CancellationToken cancellationToken = default)
     {
         if (connectionState != ConnectionState.Connected)
         {
@@ -357,8 +370,15 @@ public class NonSecsService
             {
                 // 将消息添加到队列，使用当前时间作为键
                 var timestamp = DateTime.Now;
-                var tcs = new TaskCompletionSource<NonSecsMessage>();
-                var primaryMessage = JsonConvert.DeserializeObject<PrimaryOutMessage>(messageData);
+                var tcs = new TaskCompletionSource<NonSecsMessageWrapper>();
+                var primaryMessage = new NonSecsMessageWrapper
+                {
+                    nonSecsService = this,
+                    Stream = message.Stream,
+                    Function = message.Function,
+                    MessageTime = timestamp,
+                    PrimaryMessageString = messageData
+                };
 
                 if (!PrimaryOutMessageQueue.TryAdd(primaryMessage, tcs))
                 {

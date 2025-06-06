@@ -41,6 +41,7 @@ namespace EAP.Client.Forms
             groupBox_1 = new UIGroupBox();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
+            uiButton_Test = new UIButton();
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -159,10 +160,23 @@ namespace EAP.Client.Forms
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
             // 
+            // uiButton_Test
+            // 
+            uiButton_Test.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_Test.Location = new Point(490, 142);
+            uiButton_Test.MinimumSize = new Size(1, 1);
+            uiButton_Test.Name = "uiButton_Test";
+            uiButton_Test.Size = new Size(100, 35);
+            uiButton_Test.TabIndex = 9;
+            uiButton_Test.Text = "Test";
+            uiButton_Test.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_Test.Click += uiButton_Test_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
+            Controls.Add(uiButton_Test);
             Controls.Add(richTextBox1);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -194,5 +208,6 @@ namespace EAP.Client.Forms
         private UIGroupBox groupBox_1;
         private UIRichTextBox richTextBox1;
         private NotifyIcon notifyIcon;
+        private UIButton uiButton_Test;
     }
 }

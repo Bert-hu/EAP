@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EAP.Client.NonSecs.Models
+namespace EAP.Client.NonSecs.Message
 {
     public class S1F4 : NonSecsMessage
     {
@@ -12,9 +12,6 @@ namespace EAP.Client.NonSecs.Models
         {
             base.Stream = 1;
             base.Function = 4;
-        }
-        public S1F4(int stream, int function) : base(stream, function)
-        {
         }
         public Dictionary<string, string>? List { get; set; }
     }

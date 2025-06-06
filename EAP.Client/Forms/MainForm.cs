@@ -1,4 +1,5 @@
 ﻿using AutoUpdaterDotNET;
+using EAP.Client.NonSecs.Message;
 using EAP.Client.Sfis;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Sunny.UI;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using static NonSecsService;
 
@@ -14,8 +16,9 @@ namespace EAP.Client.Forms
     public partial class MainForm : UIForm
     {
         private static MainForm instance;
-        private readonly IConfiguration _configuration;
-        private readonly RabbitMq.RabbitMqService _rabbitMq;
+        private readonly IConfiguration configuration;
+        private readonly RabbitMq.RabbitMqService rabbitMq;
+        private readonly NonSecsService nonSecsService;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
 
@@ -36,10 +39,11 @@ namespace EAP.Client.Forms
         //}
 
 
-        public MainForm(IConfiguration configuration, RabbitMq.RabbitMqService rabbitMq)
+        public MainForm(IConfiguration configuration, RabbitMq.RabbitMqService rabbitMq, NonSecsService nonSecsService)
         {
-            _configuration = configuration;
-            _rabbitMq = rabbitMq;
+            this.configuration = configuration;
+            this.rabbitMq = rabbitMq;
+            this.nonSecsService = nonSecsService;
             instance = this;
             InitializeComponent();
 
@@ -150,19 +154,19 @@ namespace EAP.Client.Forms
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                this.Text = _configuration.GetSection("Custtom")["EquipmentId"] + " " + _configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
-                notifyIcon.Text = _configuration.GetSection("Custtom")["EquipmentType"] + " " + _configuration.GetSection("Custtom")["EquipmentId"];
+                this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + assembly.GetName().Version.ToString();
+                notifyIcon.Text = configuration.GetSection("Custtom")["EquipmentType"] + " " + configuration.GetSection("Custtom")["EquipmentId"];
                 label_conn_status.Text = showtext;
                 label_conn_status.BackColor = backcolor;
             }));
 
-            string sfisIp = _configuration.GetSection("Custtom")["SfisIp"];
-            int sfisPort = Convert.ToInt32(_configuration.GetSection("Custtom")["SfisPort"]);
+            string sfisIp = configuration.GetSection("Custtom")["SfisIp"];
+            int sfisPort = Convert.ToInt32(configuration.GetSection("Custtom")["SfisPort"]);
             //BaymaxService baymax = new BaymaxService();
             //baymax.OnBaymaxTransCompleted += Baymax_OnBaymaxTrans;
             //baymax.StartBaymaxForwardingService(_secsConnection.IpAddress.ToString(), 21347, sfisIp, sfisPort, HandleBaymaxResponse);
 
-            var updateUrl = _configuration.GetSection("Custom")["UpdateUrl"].TrimEnd('/') + "/" + _configuration.GetSection("Custtom")["EquipmentType"] + "/AutoUpdate.xml";
+            var updateUrl = configuration.GetSection("Custom")["UpdateUrl"].TrimEnd('/') + "/" + configuration.GetSection("Custtom")["EquipmentType"] + "/AutoUpdate.xml";
             Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("zh");
             AutoUpdater.LetUserSelectRemindLater = true;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Minutes;
@@ -186,8 +190,8 @@ namespace EAP.Client.Forms
             {
                 if (args.IsUpdateAvailable)
                 {
-                    var eqpType = _configuration.GetSection("Custtom")["EquipmentType"];
-                    this.Text = _configuration.GetSection("Custtom")["EquipmentId"] + " " + _configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
+                    var eqpType = configuration.GetSection("Custtom")["EquipmentType"];
+                    this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
                     bool dialogResult =
                             UIMessageBox.ShowAsk2(
                                 $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
@@ -214,7 +218,7 @@ namespace EAP.Client.Forms
                 else
                 {
                     Assembly assembly = Assembly.GetExecutingAssembly();
-                    this.Text = _configuration.GetSection("Custtom")["EquipmentId"] + " " + _configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 最新版本";
+                    this.Text = configuration.GetSection("Custtom")["EquipmentId"] + " " + configuration.GetSection("Custtom")["EquipmentType"] + " Version: " + args.InstalledVersion + " 最新版本";
                 }
             }
             else
@@ -222,7 +226,7 @@ namespace EAP.Client.Forms
                 if (args.Error is WebException)
                 {
                     //UIMessageBox.ShowError(@"There is a problem reaching update server. Please check your internet connection and try again later.");
-                    this.Text = _configuration.GetSection("Custom")["EquipmentId"] + " " + _configuration.GetSection("Custom")["EquipmentType"];
+                    this.Text = configuration.GetSection("Custom")["EquipmentId"] + " " + configuration.GetSection("Custom")["EquipmentType"];
                 }
                 else
                 {
@@ -289,6 +293,21 @@ namespace EAP.Client.Forms
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.Hide();
+            }
+        }
+
+        private async void uiButton_Test_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var s1f3 = new S1F3 { List = new List<string> { "1001", "1002" } };
+                var s1f4 = await nonSecsService.SendMessage(s1f3, 10);
+
+                S1F4 aa = s1f4.SecondaryMessage as S1F4;
+            }
+            catch (Exception ex)
+            {
+
             }
         }
     }

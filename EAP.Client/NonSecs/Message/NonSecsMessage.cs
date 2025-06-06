@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EAP.Client.NonSecs.Models
+namespace EAP.Client.NonSecs.Message
 {
     public class NonSecsMessage
     {
@@ -16,5 +16,6 @@ namespace EAP.Client.NonSecs.Models
         }
         public int Stream { get; set; } = 0;
         public int Function { get; set; } = 0;
+
     }
 }
