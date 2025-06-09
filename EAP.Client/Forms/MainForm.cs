@@ -602,6 +602,7 @@ namespace EAP.Client.Forms
                 //    }
                 //}
 
+
                 LoginForm loginForm = new LoginForm();
                 loginForm.ShowDialog();
                 if (loginForm.IsLogin)

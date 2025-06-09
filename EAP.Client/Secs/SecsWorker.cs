@@ -42,7 +42,7 @@ namespace EAP.Client.Secs
             {
                 _heartBeatTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 eqpLog.Info($"{DateTime.Now} Connection state = {_hsmsConnection.State}");
-                traLog.Info($"{DateTime.Now} Connection state = {_hsmsConnection.State}");
+                //traLog.Info($"{DateTime.Now} Connection state = {_hsmsConnection.State}");
 
                 switch (_hsmsConnection.State)
                 {
