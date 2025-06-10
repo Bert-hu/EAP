@@ -72,6 +72,7 @@ namespace EAP.Client.Forms
                     {
                         uiButton_login.Text = "登出";
                         uiButton_allowInput.Visible = true;
+                        uiTextBox_modelName.ReadOnly = false;
                         adminTimer.Start();
                     }
                     else
@@ -80,6 +81,7 @@ namespace EAP.Client.Forms
                         traLog.Info("用户登出");
                         uiButton_login.Text = "登录";
                         uiButton_allowInput.Visible = false;
+                        uiTextBox_modelName.ReadOnly = true;
                     }
                 }));
             }
