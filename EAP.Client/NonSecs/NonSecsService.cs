@@ -79,7 +79,6 @@ public class NonSecsService
         try
         {
             cts?.Cancel();
-
             if (client != null)
             {
                 client.Dispose();
