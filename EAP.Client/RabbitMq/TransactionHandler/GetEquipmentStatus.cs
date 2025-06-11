@@ -35,42 +35,43 @@ namespace EAP.Client.RabbitMq
 
                     var paramsVid = configuration.GetSection("NonSecs:ParamsVid").Get<List<string>>();
                     var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
-                    var s1f3 = new S1F3() { List = paramsVid };
-                    var reply = await nonSecsService.SendMessage(s1f3);
-
-                    var s1f4 = reply.SecondaryMessage as S1F4;
-
-                    if (vidDict.ContainsValue("Status"))
+                    if (nonSecsService.connectionState == NonSecsService.ConnectionState.Connected)
                     {
-                        var statusVid = vidDict.FirstOrDefault(it => it.Value == "Status").Key;
-                        s1f4?.List?.TryGetValue(statusVid, out Status);
-                    }
-                    var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
-                    foreach (var item in s1f4?.List)
-                    {
-                        var name = string.Empty;
-                        vidDict.TryGetValue(item.Key, out name);
-                        if (!string.IsNullOrEmpty(name))
+                        var s1f3 = new S1F3() { List = paramsVid };
+                        var reply = await nonSecsService.SendMessage(s1f3);
+
+                        var s1f4 = reply.SecondaryMessage as S1F4;
+
+                        if (vidDict.ContainsValue("Status"))
                         {
-                            var para = new Dictionary<string, object> {
+                            var statusVid = vidDict.FirstOrDefault(it => it.Value == "Status").Key;
+                            s1f4?.List?.TryGetValue(statusVid, out Status);
+                        }
+                        var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
+                        foreach (var item in s1f4?.List)
+                        {
+                            var name = string.Empty;
+                            vidDict.TryGetValue(item.Key, out name);
+                            if (!string.IsNullOrEmpty(name))
+                            {
+                                var para = new Dictionary<string, object> {
                                 { "EQID",equipmentId },
                                 { "NAME",name},
                                 { "SVID",item.Key},
                                 { "Value",item.Value},
                                 { "UPDATETIME",DateTime.Now}
                             };
-                            var paratrans = new RabbitMqTransaction
-                            {
-                                TransactionName = "EquipmentParams",
-                                Parameters = para
-                            };
-                            rabbitMq.Produce("EAP.Services", paratrans);
+                                var paratrans = new RabbitMqTransaction
+                                {
+                                    TransactionName = "EquipmentParams",
+                                    Parameters = para
+                                };
+                                rabbitMq.Produce("EAP.Services", paratrans);
+                            }
                         }
+                    }          
 
-
-                    }
-
-                    reptrans?.Parameters.Add("Result", true);
+                    reptrans?.Parameters?.Add("Result", true);
                 }
                 catch (Exception ex)
                 {
@@ -79,8 +80,8 @@ namespace EAP.Client.RabbitMq
                     reptrans?.Parameters.Add("Message", $"EAP Error {ex.Message}");
                     dbgLog.Error(ex.Message, ex);
                 }
-                reptrans?.Parameters.Add("Status", Status);
-                if (reptrans != null) rabbitMq.Produce(trans.ReplyChannel, reptrans);
+                reptrans?.Parameters?.Add("Status", Status);
+                if (reptrans != null && reptrans.NeedReply) rabbitMq.Produce(trans!.ReplyChannel, reptrans);
                 UpdateEquipmentStatus(Status);
                 MainForm.Instance?.UpdateState(Status);
             }
