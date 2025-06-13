@@ -44,8 +44,20 @@ namespace EAP.Client.RabbitMq
 
                         if (vidDict.ContainsValue("Status"))
                         {
+                            var statusDict = configuration.GetSection("NonSecs:ProcessStateCodes").Get<Dictionary<string, string>>();
                             var statusVid = vidDict.FirstOrDefault(it => it.Value == "Status").Key;
-                            s1f4?.List?.TryGetValue(statusVid, out Status);
+
+                            var statusString = string.Empty;
+                            s1f4?.List?.TryGetValue(statusVid, out statusString);
+
+                            if (statusDict.ContainsKey(statusString))
+                            {
+                                Status = statusDict[statusString];
+                            }
+                            else
+                            {
+                                Status = "Unknown";
+                            }
                         }
                         var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
                         foreach (var item in s1f4?.List)
@@ -69,7 +81,7 @@ namespace EAP.Client.RabbitMq
                                 rabbitMq.Produce("EAP.Services", paratrans);
                             }
                         }
-                    }          
+                    }
 
                     reptrans?.Parameters?.Add("Result", true);
                 }
