@@ -2,6 +2,7 @@ using EAP.Client.Forms;
 using EAP.Client.Http;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
+using EAP.Client.Utils;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
@@ -66,8 +67,11 @@ namespace EAP.Client
 
                     //services.AddHostedService<SecsWorker>();
                     services.AddSingleton<MainForm>();
+                    services.AddSqlSugarService();
+
 
                     services.AddHostedService<HttpDataCollectService>();
+                    services.AddHostedService<PanasonicDataHandleService>();
 
                 });
             var _host = host.Build();
