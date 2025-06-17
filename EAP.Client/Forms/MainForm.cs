@@ -410,7 +410,7 @@ namespace EAP.Client.Forms
         {
             Task.Run(() =>
             {
-                this.Invoke(new Action(() =>
+                this.Invoke(new Action(async () =>
                 {
                     try
                     {
@@ -426,7 +426,7 @@ namespace EAP.Client.Forms
                             var getModelnameReq = $"EQXXXXXX01,{panelSn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???";
                             traLog.Info($"扫码切换程式:{panelSn}");
                             BaymaxService baymax = new BaymaxService();
-                            var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelnameReq).Result;
+                            var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelnameReq);
                             if (trans.Result || trans.BaymaxResponse.ToLower().StartsWith("fail"))
                             {
                                 Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
@@ -447,7 +447,7 @@ namespace EAP.Client.Forms
                                                 )
                                             ))
                                     };
-                                    var aa = _secsGem.SendAsync(stop).Result;
+                                    var aa = await _secsGem.SendAsync(stop);
 
                                     //等2秒
                                     Thread.Sleep(5000);
@@ -464,7 +464,9 @@ namespace EAP.Client.Forms
                                                     )
                                                 ))
                                     };
-                                    _secsGem.SendAsync(s2f41load);
+                                    await _secsGem.SendAsync(s2f41load);
+                                    traLog.Info($"发送切换到 {recipeName} 指令完成");
+
                                 }
                                 else
                                 {
@@ -530,6 +532,6 @@ namespace EAP.Client.Forms
             return (result, message);
         }
 
-     
+
     }
 }

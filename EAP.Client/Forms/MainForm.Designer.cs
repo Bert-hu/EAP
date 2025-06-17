@@ -225,7 +225,6 @@ namespace EAP.Client.Forms
             button_CompareRecipe.TabIndex = 5;
             button_CompareRecipe.Text = "比较参数";
             button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            button_CompareRecipe.Visible = false;
             button_CompareRecipe.Click += button_CompareRecipe_Click;
             // 
             // richTextBox1
@@ -260,7 +259,6 @@ namespace EAP.Client.Forms
             uiButton_PpSelect.TabIndex = 5;
             uiButton_PpSelect.Text = "扫码调用程式";
             uiButton_PpSelect.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_PpSelect.Visible = false;
             uiButton_PpSelect.Click += uiButton_ppSelect_Click;
             // 
             // MainForm
