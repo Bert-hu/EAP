@@ -61,11 +61,11 @@ namespace EAP.Client.Secs
                         Task.Run(() =>
                         {
                             SecsInitialization.Initialization(secsGem, commonLibrary);
-                            using (var scope = _serviceProvider.CreateAsyncScope())
-                            {
-                                var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                                handler.HandleTransaction(null);
-                            }
+                            //using (var scope = _serviceProvider.CreateAsyncScope())
+                            //{
+                            //    var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+                            //    handler.HandleTransaction(null);
+                            //}
                         });
                         break;
                     default:

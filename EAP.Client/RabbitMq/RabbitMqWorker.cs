@@ -20,37 +20,31 @@ namespace EAP.Client.RabbitMq
         private readonly ILog traLog = LogManager.GetLogger("Trace");
 
         private readonly IConfiguration _configuration;
-        private readonly ISecsConnection _hsmsConnection;
-        private readonly ISecsGem _secsGem;
-        private CommonLibrary _commonLibrary;
         private RabbitMqService _rabbitMqService;
         private readonly IServiceProvider _serviceProvider;
 
         private readonly System.Threading.Timer _equipmentStatusTimer;
 
 
-        public RabbitMqWorker(IConfiguration configuration, ISecsConnection hsmsConnection, ISecsGem secsGem, CommonLibrary commonLibrary, RabbitMqService rabbitMqService,IServiceProvider serviceProvider)
+        public RabbitMqWorker(IConfiguration configuration, RabbitMqService rabbitMqService, IServiceProvider serviceProvider)
         {
             _configuration = configuration;
-            _secsGem = secsGem;
-            _hsmsConnection = hsmsConnection;
-            _commonLibrary = commonLibrary;
             _rabbitMqService = rabbitMqService;
             _serviceProvider = serviceProvider;
 
             var interval = int.Parse(_configuration.GetSection("RabbitMQ")["GetEquipmentStatusInterval"] ?? "120");
 
-            if (interval > 0)
-            {
-                _equipmentStatusTimer = new System.Threading.Timer(delegate
-                {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                        handler.HandleTransaction(null);
-                    }
-                }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(interval));
-            }
+            //if (interval > 0)
+            //{
+            //    _equipmentStatusTimer = new System.Threading.Timer(delegate
+            //    {
+            //        using (var scope = _serviceProvider.CreateScope())
+            //        {
+            //            var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+            //            handler.HandleTransaction(null);
+            //        }
+            //    }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(interval));
+            //}
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {

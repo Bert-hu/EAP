@@ -1,4 +1,5 @@
 using EAP.Client.Forms;
+using EAP.Client.Http;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
 using log4net;
@@ -58,13 +59,15 @@ namespace EAP.Client
                 .ConfigureServices((hostContext, services) =>
                 {
                     //Secs
-                    services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
+                    //services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
 
                     //RabbitMqService
                     services.AddRabbitMq();
 
-                    services.AddHostedService<SecsWorker>();
+                    //services.AddHostedService<SecsWorker>();
                     services.AddSingleton<MainForm>();
+
+                    services.AddHostedService<HttpDataCollectService>();
 
                 });
             var _host = host.Build();
