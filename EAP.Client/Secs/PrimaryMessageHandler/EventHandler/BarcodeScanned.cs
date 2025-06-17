@@ -75,7 +75,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
 
                     bool autoCheckRecipe = MainForm.Instance.isAutoCheckRecipe;
-                    //bool autoCheckRecipePara = MainForm.Instance.isAutoCheckRecipePara;
+                    bool autoCheckRecipePara = MainForm.Instance.isAutoCheckRecipePara;
                     if (autoCheckRecipe)
                     {
                         if (!modelName.Contains(machinerecipename.Substring(0, machinerecipename.Length > 9 ? 9 : machinerecipename.Length)))
@@ -87,7 +87,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                         }
                         else
                         {
-                            //if (autoCheckRecipePara)
+                            if (autoCheckRecipePara)
                             {
                                 (bool result, string message) = CheckRecipePara(machinerecipename);
                                 if (result)
