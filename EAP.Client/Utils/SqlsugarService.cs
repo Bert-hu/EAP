@@ -24,7 +24,7 @@ namespace EAP.Client.Utils
             {
                 DbType = SqlSugar.DbType.Sqlite,
                 ConnectionString = oracleConnectionString,
-                IsAutoCloseConnection = true,
+                IsAutoCloseConnection = false,
                 InitKeyType = InitKeyType.Attribute,
                 MoreSettings = new ConnMoreSettings()
                 {
@@ -42,14 +42,14 @@ namespace EAP.Client.Utils
                 }
             };
 
-            Action<string, SugarParameter[]> onLogExecuting = (sql, pars) =>
-            {
-                // OnLogExecuting 的逻辑
-            };
+            //Action<string, SugarParameter[]> onLogExecuting = (sql, pars) =>
+            //{
+            //    // OnLogExecuting 的逻辑
+            //};
 
             SqlSugarScope sqlSugar = new SqlSugarScope(connectionConfig, db =>
             {
-                db.Aop.OnLogExecuting = onLogExecuting;
+                //db.Aop.OnLogExecuting = onLogExecuting;
             });
 
             //初始化namespace 为EAP.Client.Model.Database的表

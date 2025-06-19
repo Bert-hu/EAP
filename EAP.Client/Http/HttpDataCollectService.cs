@@ -34,7 +34,7 @@ namespace EAP.Client.Http
             {
                 try
                 {
-                    traLog.Info("Collect");
+                    traLog.Info("开始采集LNB数据");
                     var lnbUrl = configuration.GetSection("Custom")["LnbUrl"].TrimEnd('/');
                     var handler = new HttpClientHandler
                     {
@@ -137,12 +137,13 @@ namespace EAP.Client.Http
                             sqlSugarClient.Insertable<PanasonicEventData>(latestData).ExecuteCommand();
                         }
                     }
+                    traLog.Info("采集LNB数据完成");
                 }
                 catch (Exception ex)
                 {
-
+                    traLog.Error(ex.ToString());
                 }
-                await Task.Delay(10000);
+                await Task.Delay(30000);
             }
         }
 

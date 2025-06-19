@@ -41,6 +41,13 @@
     }
   },
   "Others": {
-
+    "ProcessStateCodes": {
+      //{Message_SubMessage} 包含Key的数据，识别为Value状态
+      "报警_": "Alarm",
+      "进入主菜单状态": "Idle",
+      "进入单一停止状态": "Idle",
+      "进入循环停止状态": "Idle",
+      "自动运转允许确认_自动运转允许OK": "Run"
+    }
   }
 }

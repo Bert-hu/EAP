@@ -72,6 +72,7 @@ namespace EAP.Client
 
                     services.AddHostedService<HttpDataCollectService>();
                     services.AddHostedService<PanasonicDataHandleService>();
+                    services.AddHostedService<PanasonicDataCleanService>();
 
                 });
             var _host = host.Build();
