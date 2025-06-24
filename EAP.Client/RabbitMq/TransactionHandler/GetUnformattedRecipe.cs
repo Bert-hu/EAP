@@ -146,8 +146,8 @@ namespace EAP.Client.RabbitMq
                 // 解析 Heat Temp
                 ParseAndSetValue(lines, heatTempLineIndex, "Set Point", value => para.HeatTemp = value, recipeName);
 
-                int glueStartLine = 240;
-                int guleEndLine = 262;
+                int glueStartLine = Array.FindIndex(lines, line => line.StartsWith("START PASS:"));
+                int guleEndLine = Array.FindLastIndex(lines, line => line.StartsWith("END PASS: ")) + 3;//+1就够了
                 var glueConfigs = ExtractGlueConfigs(lines.Skip(glueStartLine - 1).Take(guleEndLine - glueStartLine).ToArray());
                 para.GlueConfigs = glueConfigs;
                 lastReadRecipePara = para;
