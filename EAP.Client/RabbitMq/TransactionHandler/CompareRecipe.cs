@@ -3,6 +3,7 @@ using EAP.Client.Secs;
 using log4net;
 using Newtonsoft.Json;
 using Secs4Net;
+using System.Collections.Generic;
 using System.Text;
 using static Secs4Net.Item;
 
@@ -36,9 +37,12 @@ namespace EAP.Client.RabbitMq
                 var recipename = string.Empty;
                 //byte[] recipebody = new byte[0];
                 var recipeParameters = string.Empty;
+                List<RMS_PARAMETER_SCOPE> scope = new List<RMS_PARAMETER_SCOPE>();
+
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
                 //if (trans.Parameters.TryGetValue("RecipeBody", out object _body)) recipebody = Convert.FromBase64String(_body.ToString());
                 if (trans.Parameters.TryGetValue("RecipeParameters", out object _parameters)) recipeParameters = _parameters.ToString();
+                if (trans.Parameters.TryGetValue("RecipeParameterScope", out object _scope)) scope = JsonConvert.DeserializeObject<List<RMS_PARAMETER_SCOPE>>(JsonConvert.SerializeObject(_scope));
 
                 var recipePath = commonLibrary.CustomSettings["MachineRecipePath"];
                 var filePath = Path.Combine(recipePath, recipename);
@@ -54,7 +58,7 @@ namespace EAP.Client.RabbitMq
                     var machineRecipePara = GetUnformattedRecipe.GetRecipePara(recipename, machineRecipeText);
                     var serverRecipePara = JsonConvert.DeserializeObject<RecipePara>(recipeParameters);
 
-                    var compareResult = machineRecipePara.CompareTo(serverRecipePara);
+                    var compareResult = machineRecipePara.CompareTo(serverRecipePara, scope);
 
                     if (string.IsNullOrEmpty(compareResult))
                     {
@@ -75,6 +79,6 @@ namespace EAP.Client.RabbitMq
                 dbgLog.Error(ex.Message, ex);
             }
             rabbitMq.Produce(trans.ReplyChannel, reptrans);
-        }        
+        }
     }
 }

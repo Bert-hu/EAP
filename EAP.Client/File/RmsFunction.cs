@@ -52,7 +52,7 @@ namespace EAP.Client.File
                 EquipmentID = equipmentId,
                 Parameters = new Dictionary<string, object>() { { "EquipmentId", equipmentId }, { "RecipeName", recipeName }, }
             };
-            var repTrans = rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);
+            var repTrans = rabbitMq.ProduceWaitReply("Rms.Service.Test", rabbitTrans);
             if (repTrans != null)
             {
                 var result = false;

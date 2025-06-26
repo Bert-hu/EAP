@@ -16,7 +16,7 @@ namespace EAP.Client.Model
         public DateTime InputTime { get; set; }
         public RecipePara RecipePara { get; set; }
 
-       
+
     }
     public class RecipePara
     {
@@ -25,15 +25,119 @@ namespace EAP.Client.Model
         public double NozzleTemp { get; set; }
         public double HeatTemp { get; set; }
         public List<GlueConfig> GlueConfigs { get; set; }
-        public string CompareTo(RecipePara other)
+
+        public string CompareTo(RecipePara other, List<RMS_PARAMETER_SCOPE> scope)
         {
             var differences = new List<string>();
 
             // 比较 PreheatTime
-            if (Math.Abs(this.PreheatTime - other.PreheatTime) > 20)
+            var preheatTimeScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "PreheatTime");
+            if (preheatTimeScope != null)
             {
-                differences.Add($"PreheatTime: {this.PreheatTime} != {other.PreheatTime}");
+                var difference = preheatTimeScope.CompareValue(this.PreheatTime, other.PreheatTime);
+                if (!string.IsNullOrEmpty(difference)) differences.Add(difference);
             }
+
+            // 比较 PreheatTemp
+            var preheatTempScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "PreheatTemp");
+            if (preheatTempScope != null)
+            {
+                var difference = preheatTempScope.CompareValue(this.PreheatTemp, other.PreheatTemp);
+                if (!string.IsNullOrEmpty(difference)) differences.Add(difference);
+            }
+
+            // 比较 NozzleTemp
+            var nozzleTemp = scope.FirstOrDefault(it => it.PARAMETER_NAME == "NozzleTemp");
+            if (nozzleTemp != null)
+            {
+                var difference = nozzleTemp.CompareValue(this.NozzleTemp, other.NozzleTemp);
+                if (!string.IsNullOrEmpty(difference)) differences.Add(difference);
+            }
+
+            // 比较 HeatTemp
+            var heatTempScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "HeatTemp");
+            if (heatTempScope != null)
+            {
+                var difference = heatTempScope.CompareValue(this.HeatTemp, other.HeatTemp);
+                if (!string.IsNullOrEmpty(difference)) differences.Add(difference);
+            }
+
+            // 比较 GlueConfigs
+            if (this.GlueConfigs != null && other.GlueConfigs != null)
+            {
+                for (int i = 0; i < Math.Min(this.GlueConfigs.Count, other.GlueConfigs.Count); i++)
+                {
+                    var thisGlue = this.GlueConfigs[i];
+                    var otherGlue = other.GlueConfigs[i];
+
+                    // 比较 StartX
+                    var startXScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "StartX");
+                    if (startXScope != null)
+                    {
+                        var difference = startXScope.CompareValue(thisGlue.StartX, otherGlue.StartX);
+                        if (!string.IsNullOrEmpty(difference)) differences.Add($"GlueConfig[{i}] " + difference);
+                    }
+
+                    // 比较 StartY
+                    var startYScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "StartY");
+                    if (startYScope != null)
+                    {
+                        var difference = startYScope.CompareValue(thisGlue.StartY, otherGlue.StartY);
+                        if (!string.IsNullOrEmpty(difference)) differences.Add($"GlueConfig[{i}] " + difference);
+                    }
+
+                    // 比较 EndX
+                    var endXScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "EndX");
+                    if (endXScope != null)
+                    {
+                        var difference = endXScope.CompareValue(thisGlue.EndX, otherGlue.EndX);
+                        if (!string.IsNullOrEmpty(difference)) differences.Add($"GlueConfig[{i}] " + difference);
+                    }
+
+                    // 比较 EndY
+                    var endYScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "EndY");
+                    if (endYScope != null)
+                    {
+                        var difference = endYScope.CompareValue(thisGlue.EndY, otherGlue.EndY);
+                        if (!string.IsNullOrEmpty(difference)) differences.Add($"GlueConfig[{i}] " + difference);
+                    }
+
+                    // 比较 Weight
+                    var weightScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "Weight");
+                    if (weightScope != null)
+                    {
+                        var difference = weightScope.CompareValue(thisGlue.Weight, otherGlue.Weight);
+                        if (!string.IsNullOrEmpty(difference)) differences.Add($"GlueConfig[{i}] " + difference);
+                    }
+                }
+                // 检查GlueConfigs数量是否不同
+                if (this.GlueConfigs.Count != other.GlueConfigs.Count)
+                {
+                    differences.Add($"GlueConfigs数量不同: {this.GlueConfigs.Count} != {other.GlueConfigs.Count}");
+                }
+            }
+            else if ((this.GlueConfigs == null) != (other.GlueConfigs == null))
+            {
+                differences.Add("GlueConfigs存在性不一致: 一个为null，另一个不为null");
+            }
+
+            return differences.Count == 0 ? string.Empty : string.Join(Environment.NewLine, differences);
+        }
+        public string CompareToOld(RecipePara other, List<RMS_PARAMETER_SCOPE> scope)
+        {
+            var differences = new List<string>();
+
+            // 比较 PreheatTime
+            var preheatTimeScope = scope.FirstOrDefault(it => it.PARAMETER_NAME == "PreheatTime");
+            if (preheatTimeScope != null)
+            {
+                var diference = preheatTimeScope.CompareValue(this.PreheatTime, other.PreheatTime);
+                if (!string.IsNullOrEmpty(diference)) differences.Add(diference);
+            }
+            //if (Math.Abs(this.PreheatTime - other.PreheatTime) > 20)
+            //{
+            //    differences.Add($"PreheatTime: {this.PreheatTime} != {other.PreheatTime}");
+            //}
 
             // 比较 PreheatTemp
             if (Math.Abs(this.PreheatTemp - other.PreheatTemp) > 20)
@@ -98,35 +202,6 @@ namespace EAP.Client.Model
             return differences.Count == 0 ? string.Empty : string.Join(Environment.NewLine, differences);
         }
 
-        //public string CompareTo1(RecipePara other)
-        //{
-        //    var differences = new List<string>();
-
-        //    // 比较 RecipePara 的基本属性
-        //    differences.AddRange(CompareBasicProperties(other));
-
-        //    // 比较 GlueConfigs
-        //    var glueConfigDiffs = CompareGlueConfigs(other.GlueConfigs);
-        //    differences.AddRange(glueConfigDiffs);
-
-        //    return differences.Count == 0 ? string.Empty : string.Join(Environment.NewLine, differences);
-        //}
-
-        //private IEnumerable<string> CompareBasicProperties(RecipePara other)
-        //{
-        //    var properties = GetType().GetProperties()
-        //       .Where(p => p.PropertyType != typeof(List<GlueConfig>));
-
-        //    foreach (var property in properties)
-        //    {
-        //        var value1 = property.GetValue(this);
-        //        var value2 = property.GetValue(other);
-        //        if (!Equals(value1, value2))
-        //        {
-        //            yield return $"{property.Name}: {value1} != {value2}";
-        //        }
-        //    }
-        //}
 
         private IEnumerable<string> CompareGlueConfigs(List<GlueConfig> otherConfigs)
         {
