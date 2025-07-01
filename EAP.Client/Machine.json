@@ -2,42 +2,60 @@
   "Secs": {
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
-    "EnableDynamicEvent": true,
+    "EnableDynamicEvent": false,
     "EnableAllEvent": false,
     "SVIDList": [
       {
         "Name": "ControlState",
-        "ID": 1005
+        "ID": 2005
       },
       {
         "Name": "ProcessState",
-        "ID": 1009
+        "ID": 2006
+      },
+      {
+        "Name": "EQP_ID",
+        "ID": 2013
+      },
+      {
+        "Name": "2DINFO",
+        "ID": 2014
+      },
+      {
+        "Name": "SYSTEM_CLOCK",
+        "ID": 2004
+      },
+      {
+        "Name": "RECIPE_ID",
+        "ID": 2002
       }
-
     ],
     "ReportList": [
-      //{
-      //  "ID": 100,
-      //  "SvidNames": [ "ControlState", "ProcessState" ]
-      //},
-
+      {
+        "ID": 1103,
+        "SvidNames": [ "EQP_ID", "2DINFO", "SYSTEM_CLOCK" ]
+      }
     ],
     "CEIDList": [
       {
+        "Name": "Strip_2D_Report",
+        "ID": 103,
+        "ReportIds": [ 1103 ]
+      },
+      {
         "Name": "ProcessStateChanged",
-        "ID": 10150,
+        "ID": 2,
         "ReportIds": []
       }
-
     ],
     "ProcessStateCodes": {
       "0": "Idle",
       "1": "Idle",
       "2": "Idle",
-      "3": "Idle",
-      "4": "Run",
+      "3": "Run",
+      "4": "Idle",
       "5": "Idle",
-      "6": "Run"
+      "6": "Alarm"
     }
   },
   "Others": {
