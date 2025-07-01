@@ -132,7 +132,7 @@ namespace EAP.Client.Forms
             label_updatetime_aoi.AutoSize = true;
             label_updatetime_aoi.Font = new Font("宋体", 12F);
             label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
+            label_updatetime_aoi.Location = new Point(49, 264);
             label_updatetime_aoi.Name = "label_updatetime_aoi";
             label_updatetime_aoi.Size = new Size(103, 16);
             label_updatetime_aoi.TabIndex = 2;
@@ -170,7 +170,7 @@ namespace EAP.Client.Forms
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(471, 302);
+            groupBox_1.Size = new Size(471, 318);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
@@ -182,7 +182,7 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe.Checked = true;
             checkBox_checkrecipe.Font = new Font("Microsoft YaHei UI", 15F);
             checkBox_checkrecipe.ForeColor = Color.FromArgb(48, 48, 48);
-            checkBox_checkrecipe.Location = new Point(21, 265);
+            checkBox_checkrecipe.Location = new Point(15, 283);
             checkBox_checkrecipe.MinimumSize = new Size(1, 1);
             checkBox_checkrecipe.Name = "checkBox_checkrecipe";
             checkBox_checkrecipe.Size = new Size(250, 32);
@@ -196,12 +196,11 @@ namespace EAP.Client.Forms
             label_ProcessState.BackColor = Color.Gray;
             label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F);
             label_ProcessState.ForeColor = Color.White;
-            label_ProcessState.Location = new Point(178, 32);
+            label_ProcessState.Location = new Point(147, 32);
             label_ProcessState.Name = "label_ProcessState";
             label_ProcessState.Size = new Size(103, 27);
             label_ProcessState.TabIndex = 3;
             label_ProcessState.Text = "Unknown";
-            label_ProcessState.Visible = false;
             // 
             // textBox_projectname
             // 
@@ -231,7 +230,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
+            button_CompareRecipe.Location = new Point(490, 54);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -258,13 +257,14 @@ namespace EAP.Client.Forms
             // uiButton_ScanToDownloadRecipe
             // 
             uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
+            uiButton_ScanToDownloadRecipe.Location = new Point(490, 162);
             uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
             uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
             uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
             uiButton_ScanToDownloadRecipe.TabIndex = 5;
             uiButton_ScanToDownloadRecipe.Text = "扫码下载程式";
             uiButton_ScanToDownloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_ScanToDownloadRecipe.Visible = false;
             uiButton_ScanToDownloadRecipe.Click += uiButton_ScanToDownloadRecipe_Click;
             // 
             // notifyIcon

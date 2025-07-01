@@ -94,13 +94,14 @@ namespace EAP.Client.Forms
                 this.textBox_machinerecipe.Text = recipename;
             }));
         }
-        public void UpdateProductInfo(string panelid,string recipename, string modelname)
+        public void UpdateProductInfo(string panelid,string recipename, string modelname, string projectname)
         {
             this.Invoke(new Action(() =>
             {
                 this.textBox_panelid.Text = panelid;
                 this.textBox_machinerecipe.Text = recipename;
                 this.textBox_modelname.Text = modelname;
+                this.textBox_projectname.Text = projectname;
                 this.label_updatetime_aoi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
             }));
         }
@@ -449,76 +450,72 @@ namespace EAP.Client.Forms
             isAutoCheckRecipe = checkBox_checkrecipe.Checked;
         }
 
-        private void button_CompareRecipe_Click(object sender, EventArgs e)
+        private async void button_CompareRecipe_Click(object sender, EventArgs e)
         {
             button_CompareRecipe.Enabled = false;
-            Task.Run(() =>
+            try
             {
-
-                try
+                uint ppidSv = 2002;
+                var s1f3 = new SecsMessage(1, 3)
                 {
-                    var s1f3 = new SecsMessage(1, 3)
-                    {
-                        SecsItem = L(U2(1013), U2(1106))
-                    };
-                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                    var recipeName = s1f4.SecsItem.Items[0].GetString();
+                    SecsItem = L(U4(ppidSv))
+                };
+                var s1f4 = await _secsGem.SendAsync(s1f3);
+                var recipeName = s1f4.SecsItem.Items[0].GetString();
 
-                    string comparemsg = string.Empty;
-                    if (!string.IsNullOrEmpty(recipeName))
+                string comparemsg = string.Empty;
+                if (!string.IsNullOrEmpty(recipeName))
+                {
+                    this.Invoke(() =>
                     {
-                        this.Invoke(() =>
-                        {
-                            this.textBox_machinerecipe.Text = recipeName;
-                        });
-                        string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+                        this.textBox_machinerecipe.Text = recipeName;
+                    });
+                    string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
 
-                        var rabbitTrans = new RabbitMqTransaction()
-                        {
-                            TransactionName = "CompareRecipeBody",
-                            EquipmentID = equipmentId,
-                            Parameters = new Dictionary<string, object>()
+                    var rabbitTrans = new RabbitMqTransaction()
+                    {
+                        TransactionName = "CompareRecipeBody",
+                        EquipmentID = equipmentId,
+                        Parameters = new Dictionary<string, object>()
                                         {
                                             {"EquipmentId",equipmentId},
                                             {"RecipeName",recipeName},
                                         },
-                        };
-                        var repTrans = _rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);
-                        if (repTrans != null)
+                    };
+                    var repTrans = _rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);
+                    if (repTrans != null)
+                    {
+                        var result = false;
+                        var message = string.Empty;
+                        if (repTrans.Parameters.TryGetValue("Result", out object _result)) result = (bool)_result;
+                        if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
+                        if (!result)
                         {
-                            var result = false;
-                            var message = string.Empty;
-                            if (repTrans.Parameters.TryGetValue("Result", out object _result)) result = (bool)_result;
-                            if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
-                            if (!result)
-                            {
-                                comparemsg = "Compare recipe fail: " + message;
-                                traLog.Error(comparemsg);
-                            }
-                            else
-                            {
-                                traLog.Info("Compare recipe success!");
-                            }
+                            comparemsg = "Compare recipe fail: " + message;
+                            traLog.Error(comparemsg);
                         }
                         else
                         {
-                            comparemsg = "Compare recipe fail: Timeout";
-                            traLog.Error(comparemsg);
+                            traLog.Info("Compare recipe success!");
                         }
                     }
+                    else
+                    {
+                        comparemsg = "Compare recipe fail: Timeout";
+                        traLog.Error(comparemsg);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    traLog.Error(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error(ex);
+            }
 
 
-                this.Invoke(() =>
-                {
-                    button_CompareRecipe.Enabled = true;
-                });
+            this.Invoke(() =>
+            {
+                button_CompareRecipe.Enabled = true;
             });
-
 
         }
         public class DownloadEffectiveRecipeToMachineResponse
@@ -529,195 +526,108 @@ namespace EAP.Client.Forms
         }
 
 
-        private void uiButton_ScanToDownloadRecipe_Click(object sender, EventArgs e)
+        private async void uiButton_ScanToDownloadRecipe_Click(object sender, EventArgs e)
         {
             uiButton_ScanToDownloadRecipe.Enabled = false;
 
-            Task.Run(async () =>
+            try
             {
-                try
+                PpSelectForm form = new PpSelectForm();
+                DialogResult dr = form.ShowDialog();
+                if (dr == DialogResult.OK)
                 {
-                    PpSelectForm form = new PpSelectForm();
-                    DialogResult dr = form.ShowDialog();
-                    if (dr == DialogResult.OK)
+                    var lotno = form.Value;
+                    string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
+                    int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
+
+                    var getLotGrpInfo = $"EQXXXXXX01,{lotno},7,Admin,JORDAN,,OK,LOT_GRP_INFO_V2=???";
+                    BaymaxService baymax = new BaymaxService();
+                    traLog.Info($"Send to SFIS: {getLotGrpInfo}");
+                    var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo).Result;
+                    if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                     {
-                        var lotno = form.Value;
-                        string sfisIp = _commonLibrary.CustomSettings["SfisIp"];
-                        int sfisPort = Convert.ToInt32(_commonLibrary.CustomSettings["SfisPort"]);
+                        traLog.Info(trans.BaymaxResponse);
+                        var equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
+                        Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                                  .Where(keyValueArray => keyValueArray.Length == 2)
+                                  .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                        //string modelName = sfisParameters["SN_MODEL_NAME_INFO"];//第一种
+                        string projectName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[0];
+                        string productName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[1];
+                        string modelName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[2];
+                        string GroupName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[3];
 
-                        var getLotGrpInfo = $"EQXXXXXX01,{lotno},7,Admin,JORDAN,,OK,LOT_GRP_INFO_V2=???";
-                        BaymaxService baymax = new BaymaxService();
-                        traLog.Info($"Send to SFIS: {getLotGrpInfo}");
-                        var trans = baymax.GetBaymaxTrans(sfisIp, sfisPort, getLotGrpInfo).Result;
-                        if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+                        var rmsUrl = _commonLibrary.CustomSettings["RmsApiUrl"];
+                        var reqUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
+                        var req = new { EquipmentTypeId = "Hanmi_jigsaw", RecipeNameAlias = projectName };
+                        var rep = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(reqUrl, req).Result;
+                        if (rep != null)
                         {
-                            traLog.Info(trans.BaymaxResponse);
-                            var equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
-                            Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                                      .Where(keyValueArray => keyValueArray.Length == 2)
-                                      .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                            //string modelName = sfisParameters["SN_MODEL_NAME_INFO"];//第一种
-                            string projectName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[0];
-                            string productName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[1];
-                            string modelName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[2];
-                            string GroupName = sfisParameters["LOT_GRP_INFO_V2"].TrimEnd(';').Split(';')[0].Split(':')[3];
-
-                            var rmsUrl = _commonLibrary.CustomSettings["RmsApiUrl"];
-                            var reqUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
-                            var req = new { EquipmentTypeId = "Hanmi_jigsaw", RecipeNameAlias = projectName };
-                            var rep = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(reqUrl, req).Result;
-                            if (rep != null)
+                            if (rep.Result)
                             {
-                                if (rep.Result)
+                                var recipeName = rep.RecipeName;
+
+                                var s1f3 = new SecsMessage(1, 3)
                                 {
-                                    var recipeName = rep.RecipeName;
+                                    SecsItem = L(U2(1013), U2(1106))
+                                };
+                                var s1f4 = _secsGem.SendAsync(s1f3).Result;
+                                var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
 
-                                    var s1f3 = new SecsMessage(1, 3)
-                                    {
-                                        SecsItem = L(U2(1013), U2(1106))
-                                    };
-                                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                                    var machineRecipeName = s1f4.SecsItem.Items[0].GetString();
-
-                                    if (machineRecipeName == recipeName)
-                                    {
-                                        UIMessageBox.ShowSuccess($"当前程式已是{recipeName},无需重新下载，请继续！");
-                                    }
-                                    else
-                                    {
-                                        var deleteRecipe = UIMessageBox.ShowAsk("确认删除当前所有MP的Recipe吗？");
-                                        if (deleteRecipe)
-                                        {
-                                            //DeleteAllRecipes deleteAll = new DeleteAllRecipes();
-                                            //await deleteAll.HandleTransaction(new RabbitMqTransaction(), null, _secsGem, null, commonLibrary);
-                                            SecsMessage s7f19 = new(7, 19, true)
-                                            {
-                                            };
-                                            var s7f20 = await _secsGem.SendAsync(s7f19);
-                                            var mpRecipes = new List<string>();
-                                            foreach (var item in s7f20.SecsItem.Items)
-                                            {
-                                                var rec = item.GetString();
-                                                if (rec.StartsWith("MP\\"))
-                                                {
-                                                    mpRecipes.Add(rec);
-                                                }
-                                            }
-
-                                            if (mpRecipes.Count > 0)
-                                            {
-                                                SecsMessage s7f17 = new(7, 17, true)
-                                                {
-                                                    SecsItem = L(
-                                        from recipe in mpRecipes select A(recipe)
-                                        )
-                                                };
-                                                var s7f18 = await _secsGem.SendAsync(s7f17);
-                                                var s7f18ack = s7f18.SecsItem.FirstValue<byte>();
-                                                //await Task.Delay(2000);
-                                            }
-                                        }
-                                        this.Invoke(() =>
-                                        {
-                                            Task.Run(async () =>
-                                            {
-                                                string url = _commonLibrary.CustomSettings["RmsApiUrl"].TrimEnd('/') + "/api/downloadeffectiverecipetomachine";
-                                                var req = new { TrueName = "EAP", EquipmentId = equipmentId, RecipeName = recipeName };
-
-                                                var rep = HttpClientHelper.HttpPostRequestAsync<DownloadEffectiveRecipeToMachineResponse>(url, req).Result;
-
-                                                if (rep != null && rep.Result)
-                                                {
-                                                    var waitSeconds = 5;
-                                                    var _waitSeconds = waitSeconds;
-                                                    while (_waitSeconds-- > 0)
-                                                    {
-                                                        SecsMessage s7f19 = new(7, 19, true)
-                                                        {
-                                                        };
-                                                        var s7f20 = _secsGem.SendAsync(s7f19).Result;
-                                                        List<string> EPPD = new List<string>();
-                                                        foreach (var item in s7f20.SecsItem.Items)
-                                                        {
-                                                            EPPD.Add(item.GetString());
-                                                        }
-                                                        if (EPPD.Contains(recipeName))
-                                                        {
-
-                                                            var s2f41 = new SecsMessage(2, 41, true)
-                                                            {
-                                                                SecsItem = L(
-                                                                    A("PP_SELECT_S"),
-                                                                    L(L(A("Port"), B(1)),
-                                                                    L(A("DEV_NO"), A(recipeName))))
-                                                            };
-                                                            var s2f42 = _secsGem.SendAsync(s2f41).Result;
-                                                            var s2f42ack = s2f42.SecsItem[0].FirstValue<byte>();
-
-                                                            if (s2f42ack == 0)
-                                                            {
-                                                                var message = $"{lotno},{projectName}下载程式{recipeName}成功，并且自动切换成功";
-                                                                traLog.Info(message);
-                                                                UIMessageBox.ShowSuccess(message);
-                                                            }
-                                                            else
-                                                            {
-                                                                var message = $"{lotno},{projectName}下载程式{recipeName}成功，自动切换失败，请手动切换";
-                                                                traLog.Info(message);
-                                                                UIMessageBox.ShowWarning(message);
-                                                            }
-                                                            var s1f3 = new SecsMessage(1, 3)
-                                                            {
-                                                                SecsItem = L(U2(1013), U2(1106))
-                                                            };
-                                                            var s1f4 = _secsGem.SendAsync(s1f3).Result; //注意这里一定要await
-                                                            var machinerecipeName = s1f4.SecsItem.Items[0].GetString();
-
-                                                            this.textBox_machinerecipe.Text = machinerecipeName;
-
-                                                            return;
-                                                        }
-                                                        await Task.Delay(1000);
-                                                    }
-                                                    var errmsg = $"{lotno},{projectName}下载程式{recipeName}超时：{waitSeconds}s,请检查DISCO状态";
-                                                    traLog.Error(errmsg);
-                                                    UIMessageBox.ShowError(errmsg);
-
-                                                }
-                                                else
-                                                {
-                                                    var message = $"{lotno},{projectName}下载程式{recipeName}失败：{rep.Message}";
-                                                    traLog.Error(message);
-                                                    UIMessageBox.ShowError(message);
-                                                }
-                                            });
-                                        });
-                                    }
+                                if (machineRecipeName == recipeName)
+                                {
+                                    UIMessageBox.ShowSuccess($"当前程式已是{recipeName},无需重新下载，请继续！");
                                 }
                                 else
                                 {
-                                    var errMsg = $"RMS未找到'{projectName}'对应的程式，请联系ME设定";
-                                    traLog.Error(errMsg);
-                                    UIMessageBox.ShowError(errMsg);
+                                    this.Invoke(() =>
+                                    {
+                                        Task.Run(async () =>
+                                        {
+                                            string url = _commonLibrary.CustomSettings["RmsApiUrl"].TrimEnd('/') + "/api/downloadeffectiverecipetomachine";
+                                            var req = new { TrueName = "EAP", EquipmentId = equipmentId, RecipeName = recipeName };
+
+                                            var rep = HttpClientHelper.HttpPostRequestAsync<DownloadEffectiveRecipeToMachineResponse>(url, req).Result;
+
+                                            if (rep != null && rep.Result)
+                                            {
+                                                var message = $"{lotno},{projectName}下载程式{recipeName}成功";
+                                                traLog.Info(message);
+                                                UIMessageBox.ShowSuccess(message);
+                                            }
+                                            else
+                                            {
+                                                var message = $"{lotno},{projectName}下载程式{recipeName}失败：{rep.Message}";
+                                                traLog.Error(message);
+                                                UIMessageBox.ShowError(message);
+                                            }
+                                        });
+                                    });
                                 }
                             }
-                        }
-                        else
-                        {
-                            traLog.Error(trans.BaymaxResponse);
+                            else
+                            {
+                                var errMsg = $"RMS未找到'{projectName}'对应的程式，请联系ME设定";
+                                traLog.Error(errMsg);
+                                UIMessageBox.ShowError(errMsg);
+                            }
                         }
                     }
+                    else
+                    {
+                        traLog.Error(trans.BaymaxResponse);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    UIMessageBox.ShowError(ex.Message);
-                }
-                this.Invoke(() =>
-                {
-                    uiButton_ScanToDownloadRecipe.Enabled = true;
-                });
-
+            }
+            catch (Exception ex)
+            {
+                UIMessageBox.ShowError(ex.Message);
+            }
+            this.Invoke(() =>
+            {
+                uiButton_ScanToDownloadRecipe.Enabled = true;
             });
+
         }
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)

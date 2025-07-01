@@ -41,21 +41,17 @@ namespace EAP.Client.RabbitMq
                                 )
                         };
                         var s1f4 = await secsGem.SendAsync(s1f3);
-                        var controlStateCode = s1f4.SecsItem[0].FirstValue<byte>();
-                        var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
+                        var controlStateCode = s1f4.SecsItem[0].GetString();
+                        var processStateCode = s1f4.SecsItem[1].GetString();
                         string controlState = "Unknown";
                         string processState = "Unknown";
                         switch (controlStateCode)
                         {
-                            case 1:
-                            case 2:
-                            case 3:
+                            case "0":
                                 controlState = "Offline";
                                 break;
-                            case 4:
-                                controlState = "OnlineLocal";
-                                break;
-                            case 5:
+
+                            case "2":
                                 controlState = "OnlineRemote";
                                 break;
                             default:
