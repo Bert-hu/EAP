@@ -41,47 +41,53 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 var s1f4 = secsGem.SendAsync(s1f3).Result;
                 var recipeName = s1f4.SecsItem.Items[0].GetString();
 
-                string modelName = string.Empty;
-
                 string sfisIp = commonLibrary.CustomSettings["SfisIp"];
                 int sfisPort = Convert.ToInt32(commonLibrary.CustomSettings["SfisPort"]);
-                var getModelNameReq = $"EQXXXXXX01,{panelid},7,M001603,JORDAN,,OK,SN_MODEL_NAME_INFO=???";
+                var getModelProjextReq = $"EQXXXXXX01,{panelid},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
                 BaymaxService baymax = new BaymaxService();
-                var result =await baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelNameReq);
-                if (result.Result)
+                var result = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelProjextReq);
+                if (result.Result && result.BaymaxResponse.ToUpper().StartsWith("OK"))
                 {
                     Dictionary<string, string> sfisParameters = result.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                              .Where(keyValueArray => keyValueArray.Length == 2)
-                              .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                    var hasmodelname = sfisParameters.TryGetValue("SN_MODEL_NAME_INFO", out modelName);
-                }
+          .Where(keyValueArray => keyValueArray.Length == 2)
+          .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+                    string modelName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                    string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
 
-                MainForm.Instance.UpdateProductInfo(panelid, recipeName, modelName);
 
-                if (MainForm.Instance.isAutoCheckRecipe)
-                {
-                    var compareResult = false;
-                    if (!string.IsNullOrEmpty(recipeName))
+
+                    MainForm.Instance.UpdateProductInfo(panelid, recipeName, modelName);
+
+                    if (MainForm.Instance.isAutoCheckRecipe)
                     {
-                        var case1 = modelName.Substring(5, 4);
-                        var case2 = modelName.Substring(7, 4);
-                        if (recipeName.Contains(case1) || recipeName.Contains(case2))
+                        var compareResult = false;
+                        if (!string.IsNullOrEmpty(recipeName))
                         {
-                            compareResult = true;
+                            var case1 = modelName.Substring(5, 4);
+                            var case2 = modelName.Substring(7, 4);
+                            if (recipeName.Contains(case1) || recipeName.Contains(case2))
+                            {
+                                compareResult = true;
+
+
+
+
+                                //TODO: compare recipe para
+                            }
+                            else
+                            {
+                                compareResult = false;
+                            }
                         }
-                        else
+                        if (!compareResult)
                         {
-                            compareResult = false;
+                            checkResult = "NG";
+                            SecsMessage s10f3 = new(10, 3, false)
+                            {
+                                SecsItem = L(B(0x00), A($"Recipe is not match:{recipeName},{modelName}"))
+                            };
+                            secsGem.SendAsync(s10f3);
                         }
-                    }
-                    if (!compareResult)
-                    {
-                        checkResult = "NG";
-                        SecsMessage s10f3 = new(10, 3, false)
-                        {
-                            SecsItem = L(B(0x00), A($"Recipe is not match:{recipeName},{modelName}"))
-                        };
-                        secsGem.SendAsync(s10f3);
                     }
                 }
                 var s2f41 = new SecsMessage(2, 41)
@@ -89,18 +95,11 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                     SecsItem = L(A("STRIP_2D_CHECK"), L(L(A("CheckResult"), A(checkResult))))
                 };
                 secsGem.SendAsync(s2f41);
+
             }
             catch (Exception ex)
             {
-                dbgLog.Error(ex.ToString());
-                //SecsMessage s10f3 = new(10, 3, false)
-                //{
-                //    SecsItem = L(
-                //       B(0x00),
-                //       A($"EAP Error: {ex.Message}")
-                //       )
-                //};
-                //secsGem.SendAsync(s10f3);
+                traLog.Error(ex.ToString());
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(
