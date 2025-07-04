@@ -27,7 +27,7 @@ namespace EAP.Client.RabbitMq
                 if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
                 SecsMessage s7f25 = new(7, 25, true)
                 {
-                    SecsItem = A(recipename)
+                    SecsItem = Secs4Net.Item.A(recipename)
                 };
                 var s7f26 = await secsGem.SendAsync(s7f25);
                 s7f26.Name = null;

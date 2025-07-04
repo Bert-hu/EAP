@@ -1,10 +1,5 @@
 ﻿using log4net;
 using Secs4Net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Secs4Net.Item;
 
 namespace EAP.Client.RabbitMq.TransactionHandler
@@ -32,11 +27,11 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(
-                        A("PP-SELECT"),
+                        Item.A("PP-SELECT"),
                         L(
                             L(
-                                  A("PPID"),
-                                  A(recipeName)
+                                  Item.A("PPID"),
+                                  Item.A(recipeName)
                                 )
                             ))
                 };

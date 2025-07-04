@@ -26,11 +26,11 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
         public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
         {
-            using (var scope = this.serviceProvider.CreateScope())
-            {
-                var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                handler.HandleTransaction(null);
-            }
+            //using (var scope = this.serviceProvider.CreateScope())
+            //{
+            //    var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+            //    handler.HandleTransaction(null);
+            //}
             return Task.CompletedTask;
         }
     }

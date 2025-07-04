@@ -58,15 +58,15 @@ namespace EAP.Client.Secs
                     case ConnectionState.Selected:
                         var interval = _commonLibrary.SecsConfigs.HeartBeatInterval <= 0 ? Timeout.Infinite : commonLibrary.SecsConfigs.HeartBeatInterval * 1000;
                         _heartBeatTimer.Change(100, interval);
-                        Task.Run(() =>
-                        {
-                            SecsInitialization.Initialization(secsGem, commonLibrary);
-                            using (var scope = _serviceProvider.CreateAsyncScope())
-                            {
-                                var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                                handler.HandleTransaction(null);
-                            }
-                        });
+                        //Task.Run(() =>
+                        //{
+                        //    SecsInitialization.Initialization(secsGem, commonLibrary);
+                        //    using (var scope = _serviceProvider.CreateAsyncScope())
+                        //    {
+                        //        var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+                        //        handler.HandleTransaction(null);
+                        //    }
+                        //});
                         break;
                     default:
                         break;

@@ -1,26 +1,23 @@
 ﻿{
-  "CycleTime": 300,
+  "CycleTime": 180,
   "NoLogIdleTime": 300, //多少秒没有新Log自动生成一个Idle
-  "RabbitMqHost": "10.5.1.172",
-  "RabbitMqPort": 5672,
-  "RabbitMqUserName": "admin",
-  "RabbitMqPassword": "admin",
   "MachineConfigs": [
     {
-      "EquipmentId": "EQDEC00002", //一台设备设置多个Config，上传时只取下划线之前的EquipmentId
       "Encoding": "UTF-8",
       "PathUserName": "",
       "PathUserPassword": "",
-      "FilePaths": [ "D:\\Hostar\\Log" ],
-      "FileExtensions": [ "*Barcode.txt" ],
-      "TimeFormat": "yyyy/MM/dd HH:mm:ss",
-      "TimeRegex": "(\\d{4})/(\\d{2})/(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})",
+      "FilePaths": [ "C:\\FmXP\\log" ],
+      "FileExtensions": [ "*.log" ],
+      "TimeFormat": "yyyy-MM-dd,HH:mm:ss",
+      "TimeRegex": "\\d{4}-\\d{2}-\\d{2},\\d{2}:\\d{2}:\\d{2}",
       "StateDict": {
-        "扫码1结果:OK条码": "Run"
+        "Production Run Ended": "Idle",
+        "Run Finished": "Idle",
+        "Run Started": "Run"
       },
       "AlarmDict": {
 
       }
-    }
+    } 
   ]
 }

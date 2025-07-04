@@ -8,7 +8,7 @@ namespace EAP.Client.LogFileWatcher
 {
     public class MachineConfig
     {
-        public string EquipmentId { get; set; } = string.Empty;
+        //public string EquipmentId { get; set; } = string.Empty;
         public string Encoding { get; set; } = string.Empty;
         public string PathUserName { get; set; } = string.Empty;
         public string PathUserPassword { get; set; } = string.Empty;

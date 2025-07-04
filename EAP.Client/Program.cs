@@ -3,6 +3,7 @@ using EAP.Client.Forms;
 using EAP.Client.LogFileWatcher;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
+using EAP.Client.Utils;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +61,7 @@ namespace EAP.Client
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddSqlSugarService();
                     //Secs
                     services.AddSecs4Net<SecsLogger>(hostContext.Configuration);
 

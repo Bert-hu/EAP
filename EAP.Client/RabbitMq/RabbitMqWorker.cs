@@ -38,19 +38,19 @@ namespace EAP.Client.RabbitMq
             _rabbitMqService = rabbitMqService;
             _serviceProvider = serviceProvider;
 
-            var interval = int.Parse(_configuration.GetSection("RabbitMQ")["GetEquipmentStatusInterval"] ?? "120");
+            //var interval = int.Parse(_configuration.GetSection("RabbitMQ")["GetEquipmentStatusInterval"] ?? "120");
 
-            if (interval > 0)
-            {
-                _equipmentStatusTimer = new System.Threading.Timer(delegate
-                {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
-                        handler.HandleTransaction(null);
-                    }
-                }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(interval));
-            }
+            //if (interval > 0)
+            //{
+            //    _logFileWatcherTimer = new System.Threading.Timer(delegate
+            //    {
+            //        using (var scope = _serviceProvider.CreateScope())
+            //        {
+            //            var handler = (ITransactionHandler)scope.ServiceProvider.GetRequiredService(typeof(GetEquipmentStatus));
+            //            handler.HandleTransaction(null);
+            //        }
+            //    }, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(interval));
+            //}
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
