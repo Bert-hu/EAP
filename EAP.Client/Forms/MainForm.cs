@@ -115,6 +115,32 @@ namespace EAP.Client.Forms
             }));
         }
 
+        public void UpdateState(string state,string subEQID)
+        {
+            this.Invoke(new Action(() =>
+            {
+                var backcolor = Color.Gray;
+                switch (state)
+                {
+                    case "Run":
+                        backcolor = Color.Green;
+                        break;
+                    case "Alarm":
+                        backcolor = Color.Red;
+                        break;
+                    case "Idle":
+                        backcolor = Color.Yellow;
+                        break;
+                    default:
+                        backcolor = Color.Gray;
+                        break;
+                }
+                //this.label_ProcessState.Text = state;
+                //this.label_ProcessState.BackColor = backcolor;
+
+            }));
+        }
+
         public bool ConfirmMessageBox(string showtext)
         {
             DialogResult dr = MessageBox.Show($"{showtext}", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);

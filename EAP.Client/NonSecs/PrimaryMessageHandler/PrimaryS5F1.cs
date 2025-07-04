@@ -29,22 +29,40 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
 
             var s5f1 = JsonConvert.DeserializeObject<S5F1>(wrapper.PrimaryMessageString);
 
-            var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
+            // 根据AlarmID首位映射subEQID
+            string alarmIdStr = s5f1.AlarmID ?? string.Empty;
+            string subEQIndex = alarmIdStr.Length > 0 ? alarmIdStr[..1] : "0";
+
+            string subEQID = subEQIndex switch
+            {
+                "1" => "EQPPR00010",
+                "2" => "EQCAS00001",
+                "3" => "EQPRE00030",
+                "4" => "EQCIS00002",
+                "5" => "EQPPR00011",
+                _ => "Unknown",
+                //Load, Unload 尚无
+            };
+
             var equipmentType = configuration.GetSection("Custom")["EquipmentType"];
 
-            var para = new Dictionary<string, object> {
-                            { "AlarmEqp", equipmentId},
-                            { "AlarmCode",s5f1.AlarmID},
-                            { "AlarmText",s5f1.AlarmText},
-                            { "AlarmSource", "EAP"},
-                            { "AlarmTime",DateTime.Now},
-                            { "AlarmSet",s5f1.AlarmSet =="Y"}
-                        };
+            var para = new Dictionary<string, object>
+            {
+                { "AlarmEqp", subEQID },
+                { "AlarmCode", s5f1.AlarmID },
+                { "AlarmText", s5f1.AlarmText },
+                { "AlarmSource", equipmentType },
+                { "AlarmTime", DateTime.Now },
+                { "AlarmSet", s5f1.AlarmSet == "Y" }
+            };
+
             var trans = new RabbitMqTransaction
             {
                 TransactionName = "EquipmentAlarm",
-                Parameters = para,
+                EquipmentID = subEQID,
+                Parameters = para
             };
+
             rabbitMqService.Produce("EAP.Services", trans);
 
         }
