@@ -1,5 +1,6 @@
 using EAP.Client.File;
 using EAP.Client.Forms;
+using EAP.Client.LogFileWatcher;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
 using log4net;
@@ -54,7 +55,8 @@ namespace EAP.Client
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.SetBasePath(AppContext.BaseDirectory)
-                          .AddJsonFile("Machine.json", optional: true, reloadOnChange: true);
+                          .AddJsonFile("Machine.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile("LogConfig.json", optional: true, reloadOnChange: true);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -66,6 +68,7 @@ namespace EAP.Client
 
                     //services.AddHostedService<SecsWorker>();
                     services.AddHostedService<FileSfisWorker>();
+                    services.AddHostedService<LogFileWatcherService>();
 
                     services.AddSingleton<MainForm>();
 
