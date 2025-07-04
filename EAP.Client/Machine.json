@@ -5,6 +5,13 @@
       "1001": "Status",
       "1002": "OEE",
       "1003": "Capacity"
+    },
+    "ProcessStateCodes": {
+      "IDLE": "Idle",
+      "TEST": "Idle",
+      "RUN": "Run",
+      "ALARM": "ALARM",
+      "INIT": "Idle"
     }
   },
   "Others": {

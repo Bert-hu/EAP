@@ -79,7 +79,6 @@ public class NonSecsService
         try
         {
             cts?.Cancel();
-
             if (client != null)
             {
                 client.Dispose();
@@ -106,12 +105,12 @@ public class NonSecsService
             try
             {
                 connectionState = ConnectionState.NotConnnected;
-                client = new TcpClient();
-                await client.ConnectAsync(ipAddress, port, cancellationToken);
+                TcpClient _client = new TcpClient();
+                await _client.ConnectAsync(ipAddress, port, cancellationToken);
                 connectionState = ConnectionState.Connected;
                 nonSecsLog.Info($"已连接到服务器: {ipAddress}:{port}");
                 TraceLog.Info($"已连接到服务器: {ipAddress}:{port}");
-                await ReadMessagesAsync(client.GetStream(), cancellationToken);
+                await ReadMessagesAsync(_client, cancellationToken);
                 //break; // 如果读取完成正常退出循环
             }
             catch (OperationCanceledException)
@@ -149,26 +148,43 @@ public class NonSecsService
             TraceLog.Info($"服务器已启动: {ipAddress}:{port}");
             while (!cancellationToken.IsCancellationRequested)
             {
-                client = await server.AcceptTcpClientAsync(cancellationToken);
+                TcpClient _client = await server.AcceptTcpClientAsync(cancellationToken);
                 connectionState = ConnectionState.Connected;
-                nonSecsLog.Info($"客户端已连接: {((IPEndPoint)client.Client.RemoteEndPoint!).Address}");
-                TraceLog.Info($"客户端已连接: {((IPEndPoint)client.Client.RemoteEndPoint!).Address}");
-                _ = Task.Run(async () =>
+                var newIpAddress = (_client.Client.RemoteEndPoint as IPEndPoint)?.Address.ToString();
+                var oldIpAddress = (this.client?.Client?.LocalEndPoint as IPEndPoint)?.Address.ToString();
+
+                nonSecsLog.Info($"新客户端已连接: {newIpAddress}");
+                TraceLog.Info($"新客户端已连接: {newIpAddress}");
+
+                if (string.IsNullOrEmpty(oldIpAddress) || newIpAddress == oldIpAddress)//未建立连接或连接地址相同
                 {
-                    try
+                    client?.Close();
+                    client?.Dispose();//如果存在旧连接，关闭
+                    _ = Task.Run(async () =>
                     {
-                        await ReadMessagesAsync(client.GetStream(), cancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        nonSecsLog.Error("客户端通信异常", ex);
-                        TraceLog.Info("客户端通信异常", ex);
-                    }
-                    finally
-                    {
-                        client.Dispose();
-                    }
-                }, cancellationToken);
+                        try
+                        {
+                            await ReadMessagesAsync(_client, cancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            nonSecsLog.Error("客户端通信异常", ex);
+                            TraceLog.Info("客户端通信异常", ex);
+                        }
+                        finally
+                        {
+                            //不能关闭client，否则会出错
+                            _client.Dispose();
+                        }
+                    }, cancellationToken);
+                }
+                else 
+                {
+                    nonSecsLog.Info($"新连接IP与老连接不同，忽略");
+                    TraceLog.Info($"新连接IP与老连接不同，忽略");
+                    _client.Close();
+                    _client.Dispose();
+                }
             }
         }
         catch (Exception ex)
@@ -190,10 +206,11 @@ public class NonSecsService
         }
     }
 
-    private async Task ReadMessagesAsync(NetworkStream stream, CancellationToken cancellationToken)
+    private async Task ReadMessagesAsync(TcpClient client, CancellationToken cancellationToken)
     {
+        NetworkStream stream = client.GetStream();
         var buffer = new byte[config.SocketReceiveBufferSize];
-
+        this.client = client;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -270,7 +287,8 @@ public class NonSecsService
             catch (Exception ex)
             {
                 nonSecsLog.Error("读取消息失败", ex);
-                throw;
+                break;
+                //throw;
             }
         }
     }
