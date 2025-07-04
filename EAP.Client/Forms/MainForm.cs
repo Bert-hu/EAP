@@ -22,6 +22,9 @@ using System.Windows.Shapes;
 using System.Configuration;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace EAP.Client.Forms
 {
@@ -35,7 +38,7 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService _rabbitMq;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
-        ConfigManager<SputtereConfig> manager = new ConfigManager<SputtereConfig>();
+        ConfigManager<MoldingConfig> manager = new ConfigManager<MoldingConfig>();
 
         public static MainForm Instance
         {
@@ -71,8 +74,10 @@ namespace EAP.Client.Forms
                     if (value)
                     {
                         uiButton_login.Text = "登出";
-                        uiButton_allowInput.Visible = true;
                         uiTextBox_modelName.ReadOnly = false;
+                        uiTextBox_line.ReadOnly = false;
+                        checkBox_checkrecipe.ReadOnly = false;
+                        uiCheckBox_checkRecipeBody.ReadOnly = false;
                         adminTimer.Start();
                     }
                     else
@@ -80,49 +85,15 @@ namespace EAP.Client.Forms
                         adminTimer.Stop();
                         traLog.Info("用户登出");
                         uiButton_login.Text = "登录";
-                        uiButton_allowInput.Visible = false;
                         uiTextBox_modelName.ReadOnly = true;
+                        uiTextBox_line.ReadOnly = true;
+                        checkBox_checkrecipe.ReadOnly = true;
+                        uiCheckBox_checkRecipeBody.ReadOnly = true;
                     }
                 }));
             }
         }
 
-        public enum InputStatus
-        {
-            Wait = 0,
-            Allow = 1,
-            Reject = 2
-        }
-
-        InputStatus _allowInput = InputStatus.Wait;
-        public InputStatus AllowInput
-        {
-            get { return _allowInput; }
-            set
-            {
-                _allowInput = value;
-                this.Invoke(new Action(() =>
-                {
-                    if (_allowInput == InputStatus.Allow)
-                    {
-                        traLog.Info("允许入料");
-                        uiLabel_inputStatus.Text = "允许入料";
-                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Green;
-                    }
-                    else if (_allowInput == InputStatus.Reject)
-                    {
-                        traLog.Warn("禁止入料");
-                        uiLabel_inputStatus.Text = "禁止入料";
-                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Red;
-                    }
-                    else if (_allowInput == InputStatus.Wait)
-                    {
-                        uiLabel_inputStatus.Text = "等待中";
-                        uiLabel_inputStatus.BackColor = System.Drawing.Color.Orange;
-                    }
-                }));
-            }
-        }
 
         public MainForm(IConfiguration configuration, ISecsConnection secsConnection, CommonLibrary commonLibrary, ISecsGem secsGem, RabbitMq.RabbitMqService rabbitMq)
         {
@@ -273,11 +244,13 @@ namespace EAP.Client.Forms
             timer.Start();
 
             var config = manager.LoadConfig();
-            uiDataGridView_Material.DataSource = config.CathodeSettings;
-            uiDataGridView_Material.Refresh();
             uiTextBox_empNo.Text = config.EmpNo;
             uiTextBox_line.Text = config.Line;
             uiTextBox_modelName.Text = config.ModelName;
+            uiTextBox_groupName.Text = config.GroupName;
+            uiTextBox_reelId.Text = config.ReelId;
+            checkBox_checkrecipe.Checked = config.AutoCheckRecipeName;
+            uiCheckBox_checkRecipeBody.Checked = config.AutoCheckRecipeBody;
         }
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
@@ -375,32 +348,22 @@ namespace EAP.Client.Forms
             }
         }
 
-        public bool isAutoCheckRecipe { get; set; } = true;
+        //public bool isAutoCheckRecipeName { get; set; } = true;
         private void checkBox_checkrecipe_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_checkrecipe.Checked == false)
-            {
-                PasswordForm form = new PasswordForm();
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    if (form.Value == _commonLibrary.CustomSettings["Password"])
-                    {
-                        checkBox_checkrecipe.Checked = false;
-                    }
-                    else
-                    {
-                        UIMessageBox.ShowError("密码错误");
-                        checkBox_checkrecipe.Checked = true;
-                    }
-                }
-                else
-                {
-                    checkBox_checkrecipe.Checked = true;
-                }
-            }
-            isAutoCheckRecipe = checkBox_checkrecipe.Checked;
+            var config = manager.LoadConfig();
+            config.AutoCheckRecipeName = checkBox_checkrecipe.Checked;
+            manager.SaveConfig(config);
         }
+        //public bool isAutoCheckRecipeBody { get; set; } = true;
 
+        private void uiCheckBox_checkRecipeBody_CheckedChanged(object sender, EventArgs e)
+        {           
+            var config = manager.LoadConfig();
+            config.AutoCheckRecipeBody = uiCheckBox_checkRecipeBody.Checked;
+            manager.SaveConfig(config);
+
+        }
         private void button_CompareRecipe_Click(object sender, EventArgs e)
         {
             button_CompareRecipe.Enabled = false;
@@ -409,22 +372,12 @@ namespace EAP.Client.Forms
 
                 try
                 {
-                    var s1f3 = new SecsMessage(1, 3)
-                    {
-                        SecsItem = L(U4(650), U4(651))
-                    };
-                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                    var recipeName = s1f4.SecsItem.Items[0].GetString();
-                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
-                    var fullRecipeName = recipeNum + "_" + recipeName;
+
+                    var recipeName = textBox_machinerecipe.Text;
 
                     string comparemsg = string.Empty;
-                    if (!string.IsNullOrEmpty(fullRecipeName))
+                    if (!string.IsNullOrEmpty(recipeName))
                     {
-                        this.Invoke(() =>
-                        {
-                            this.textBox_machinerecipe.Text = fullRecipeName;
-                        });
                         string equipmentId = _commonLibrary.CustomSettings["EquipmentId"];
 
                         var rabbitTrans = new RabbitMqTransaction()
@@ -434,7 +387,7 @@ namespace EAP.Client.Forms
                             Parameters = new Dictionary<string, object>()
                                         {
                                             {"EquipmentId",equipmentId},
-                                            {"RecipeName",fullRecipeName},
+                                            {"RecipeName",recipeName},
                                         },
                         };
                         var repTrans = _rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);
@@ -506,87 +459,6 @@ namespace EAP.Client.Forms
             }
         }
 
-        private void uiButton_add_Click(object sender, EventArgs e)
-        {
-            if (isAdmin)
-            {
-                RefreshTimer();
-                SputterCathodeSettingForm form = new SputterCathodeSettingForm();
-                DialogResult dr = form.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    //TODO SFIS Step3
-                    if (true)
-                    {
-                        try
-                        {
-                            var config = manager.LoadConfig();
-
-                            if (config.CathodeSettings.Any(it => it.Seq == form.cathodeSetting.Seq))
-                            {
-                                this.ShowWarningDialog("Seq已存在");
-                            }
-                            else
-                            {
-                                config.CathodeSettings.Add(form.cathodeSetting);
-                                manager.SaveConfig(config);
-                                uiDataGridView_Material.DataSource = config.CathodeSettings;
-                                uiDataGridView_Material.Refresh();
-                                traLog.Info($"添加成功{form.cathodeSetting.Seq},{form.cathodeSetting.CathodeId}");
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            this.ShowErrorDialog(ex.Message);
-                        }
-                    }
-                }
-
-            }
-            else
-            {
-                this.ShowErrorDialog("无权限");
-            }
-        }
-        private void uiButton_del_Click(object sender, EventArgs e)
-        {
-            if (isAdmin)
-            {
-                RefreshTimer();
-                var selectRows = uiDataGridView_Material.SelectedRows;
-                if (selectRows.Count == 1)
-                {
-                    var selectRow = (CathodeSetting)selectRows[0].DataBoundItem;
-
-                    var confirm = this.ShowAskDialog("确定删除吗?");
-                    if (confirm)
-                    {
-                        var config = manager.LoadConfig();
-
-                        try
-                        {
-                            config.CathodeSettings = config.CathodeSettings.Where(it => it.Seq != selectRow.Seq && it.CathodeId != selectRow.CathodeId).ToList();
-                            manager.SaveConfig(config);
-                            uiDataGridView_Material.DataSource = config.CathodeSettings;
-                            uiDataGridView_Material.Refresh();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.ShowErrorDialog(ex.Message);
-                        }
-                    }
-                }
-                else
-                {
-                    this.ShowWarningDialog("请选择一行");
-                }
-            }
-            else
-            {
-                this.ShowErrorDialog("无权限");
-            }
-        }
         private void uiButton_login_Click(object sender, EventArgs e)
         {
             if (!isAdmin)
@@ -622,148 +494,6 @@ namespace EAP.Client.Forms
             }
         }
 
-        public List<SnInfo> snInfos { get; set; } = new List<SnInfo>();
-
-        private void uiButton_ScanSn_Click(object sender, EventArgs e)
-        {
-            uiButton_ScanSn.Enabled = false;
-            Task.Run(async () =>
-            {
-                try
-                {
-
-                    ScanBarcodeForm form = new ScanBarcodeForm();
-                    if (form.ShowDialog() == DialogResult.OK)
-                    {
-                        var sn = form.Value;
-                        var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-                        var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
-                        var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
-                        var empNo = uiTextBox_empNo.Text;
-                        var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
-                        BaymaxService baymaxService = new BaymaxService();
-                        var step7Res = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req);
-                        if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
-                        {
-                            Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                     .Where(keyValueArray => keyValueArray.Length == 2)
-                     .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                            var CarrierId = sfisParameters["CARRIER_ID"].Trim();
-                            if (!snInfos.Any(it => it.CarrierId == CarrierId))
-                            {
-                                //TODO Get Model Name
-                                var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
-                                var trans = baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo).Result;
-                                if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
-                                {
-                                    Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                                              .Where(keyValueArray => keyValueArray.Length == 2)
-                                              .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                                    string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
-                                    string projectName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-                                    //string GroupName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
-
-                                    var s1f3 = new SecsMessage(1, 3)
-                                    {
-                                        SecsItem = L(U4(650), U4(651))
-                                    };
-                                    var s1f4 = _secsGem.SendAsync(s1f3).Result;
-                                    var recipeName = s1f4.SecsItem.Items[0].GetString();
-                                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
-                                    var machineRecipeName = recipeNum + "_" + recipeName;
-
-                                    var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
-                                    var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
-                                    var getRecipeNameReq = new
-                                    {
-                                        EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
-                                        RecipeNameAlias = projectName
-                                    };
-                                    var getRecipeNameRes = HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq).Result;
-                                    if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
-                                    {
-                                        if (machineRecipeName == getRecipeNameRes.RecipeName)
-                                        {
-                                            var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
-                                            var compareRecipeBodyReeq = new
-                                            {
-                                                EquipmentId = equipmentId,
-                                                RecipeName = getRecipeNameRes.RecipeName
-                                            };
-                                            var compareRecipeBodyRes = HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq).Result;
-                                            if (compareRecipeBodyRes != null && compareRecipeBodyRes.Result)
-                                            {
-                                                snInfos.Add(new SnInfo
-                                                {
-                                                    SN = sn,
-                                                    CarrierId = CarrierId
-                                                });
-                                                AllowInput = InputStatus.Allow;
-                                                this.Invoke(() =>
-                                                {
-                                                    uiDataGridView_snInfo.DataSource = snInfos.ToList();
-                                                    uiDataGridView_snInfo.Refresh();
-
-                                                    uiTextBox_modelName.Text = modelName;
-                                                });
-                                            }
-                                            else
-                                            {
-                                                var message = $"Recipe Body不一致：{compareRecipeBodyRes.Message}";
-                                                traLog.Error(message);
-                                                UIMessageBox.ShowError2(message);
-                                                AllowInput = InputStatus.Reject;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var message = $"设备当前Recipe {machineRecipeName}与{projectName}绑定的Recipe {getRecipeNameRes.RecipeName}不匹配";
-                                            traLog.Error(message);
-                                            UIMessageBox.ShowError2(message);
-
-                                            AllowInput = InputStatus.Reject;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var message = $"获取'{projectName}'绑定Recipe失败：{getRecipeNameRes?.Message ?? "网络异常"}";
-                                        traLog.Error(message);
-                                        UIMessageBox.ShowError2(message);
-                                        AllowInput = InputStatus.Reject;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var message = $"Carrier ID已存在：{CarrierId}";
-                                traLog.Error(message);
-                                UIMessageBox.ShowError2(message);
-                            }
-                        }
-                        else
-                        {
-                            var message = $"获取Carrier ID失败：{step7Res.BaymaxResponse}";
-                            traLog.Error(message);
-                            UIMessageBox.ShowError2(message);
-                        }
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    traLog.Error(ex.ToString());
-                }
-                finally
-                {
-                    this.Invoke(() =>
-                    {
-                        uiButton_ScanSn.Enabled = true;
-
-                    });
-                }
-            });
-        }
-
 
 
 
@@ -781,10 +511,18 @@ namespace EAP.Client.Forms
             manager.SaveConfig(config);
         }
 
-        private void uiTabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        private void uiTextBox_sn_TextChanged(object sender, EventArgs e)
         {
 
         }
+
+        private void uiTextBox_reelId_TextChanged(object sender, EventArgs e)
+        {
+            var config = manager.LoadConfig();
+            config.ReelId = uiTextBox_reelId.Text;
+            manager.SaveConfig(config);
+        }
+
 
         private void uiTextBox_modelName_TextChanged(object sender, EventArgs e)
         {
@@ -793,273 +531,297 @@ namespace EAP.Client.Forms
             manager.SaveConfig(config);
         }
 
-        private void uiButton_update_Click(object sender, EventArgs e)
+        private void uiTextBox_groupName_TextChanged(object sender, EventArgs e)
         {
-            uiButton_update.Enabled = false;
-            Task.Run(async () =>
-            {
-                try
-                {
-                    var config = manager.LoadConfig();
-
-                    List<CathodeSetting> settings = config.CathodeSettings;
-                    if (settings.Count > 0)
-                    {
-                        var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-                        var empNo = uiTextBox_empNo.Text;
-                        var line = uiTextBox_line.Text;
-                        var modelName = uiTextBox_modelName.Text;
-                        string cathodeStr = string.Join(" ", settings.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
-                        var sfiscommand = $"{equipmentId},{settings.First().CathodeId},3,{empNo},{line},,OK,,,{cathodeStr},,,,,,{modelName}";
-                        BaymaxService baymaxService = new BaymaxService();
-                        var step3Res = await baymaxService.GetBaymaxTrans(_configuration.GetSection("Custom")["SfisIp"], int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347"), sfiscommand);
-                        if (step3Res.Result && step3Res.BaymaxResponse.ToUpper().StartsWith("OK"))
-                        {
-                            UIMessageBox.ShowInfo("更新成功");
-                        }
-                        else
-                        {
-                            UIMessageBox.ShowError2($"更新失败：{step3Res.BaymaxResponse}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    traLog.Error(ex.ToString());
-                }
-                this.Invoke(() =>
-                {
-                    uiButton_update.Enabled = true;
-                });
-            });
+            var config = manager.LoadConfig();
+            config.GroupName = uiTextBox_groupName.Text;
+            manager.SaveConfig(config);
         }
 
-        private void uiButton_clearSn_Click(object sender, EventArgs e)
+        private async void uiButton_downloadRecipe_Click(object sender, EventArgs e)
         {
-            var confirm = this.ShowAskDialog("确定清空吗?");
-            if (confirm)
-            {
-                ClearInfos();
-            }
-
-        }
-
-        public void ClearInfos()
-        {
-            snInfos.Clear();
-            this.Invoke(() =>
-            {
-                uiDataGridView_snInfo.DataSource = snInfos.ToList();
-                uiDataGridView_snInfo.Refresh();
-                AllowInput = InputStatus.Wait;
-                uiTextBox_trayId.Text = string.Empty;
-                uiTextBox_sn.ReadOnly = true;
-            });
-        }
-
-        private void uiButton_scanTray_Click(object sender, EventArgs e)
-        {
-            uiButton_scanTray.Enabled = false;
+            Control control = (Control)sender;
             ScanBarcodeForm form = new ScanBarcodeForm();
-            if (form.ShowDialog() == DialogResult.OK)
+            DialogResult result = form.ShowDialog();
+            if (result == DialogResult.OK)
             {
-                uiTextBox_trayId.Text = form.Value;
-                uiTextBox_sn.ReadOnly = false;
-                uiTextBox_sn.Focus();
-            }
-            uiButton_scanTray.Enabled = true;
-
-        }
-
-        private async void uiTextBox_sn_KeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.KeyCode == Keys.Enter)
+                (string recipeName, string modelName, string errMsg) = await GetRecipeNameBySn(form.Value);
+                if (string.IsNullOrEmpty(recipeName))
                 {
-                    e.SuppressKeyPress = true;
-                    e.Handled = true;
-                    var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-                    var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
-                    var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
-                    var empNo = uiTextBox_empNo.Text;
-                    var sn = uiTextBox_sn.Text;
-                    BaymaxService baymaxService = new BaymaxService();
-
-                    var getLotGrpInfo = $"EQXXXXXX01,{sn},7,M001603,JORDAN,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";
-                    var trans = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, getLotGrpInfo);
-                    if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
-                    {
-                        Dictionary<string, string> sfisParameters1 = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                                  .Where(keyValueArray => keyValueArray.Length == 2)
-                                  .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                        string modelName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
-                        string projectName = sfisParameters1["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-
-
-                        var step7Req = $"{equipmentId},{sn},7,{empNo},JORDAN,,OK,CARRIER_ID=???";
-                        var step7Res = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step7Req);
-                        if (step7Res.Result && step7Res.BaymaxResponse.ToUpper().StartsWith("OK"))
-                        {
-                            Dictionary<string, string> sfisParameters = step7Res.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-      .Where(keyValueArray => keyValueArray.Length == 2)
-      .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-                            var CarrierId = sfisParameters["CARRIER_ID"].Trim();
-                            if (!snInfos.Any(it => it.CarrierId == CarrierId))
-                            {
-                                snInfos.Add(new SnInfo
-                                {
-                                    SN = sn,
-                                    CarrierId = CarrierId,
-                                    ModelName = modelName,
-                                    ProjectName = projectName,
-                                });
-                                uiDataGridView_snInfo.DataSource = snInfos.ToList();
-                                uiDataGridView_snInfo.Refresh();
-                                uiTextBox_modelName.Text = modelName;
-                            }
-                            else
-                            {
-                                var message = $"Carrier ID 重复:{CarrierId}";
-                                traLog.Warn(message);
-                            }
-                        }
-                        else
-                        {
-                            var message = $"无法获取绑定Carrier: {sn}";
-                            traLog.Warn(message);
-                        }
-                    }
-
-                    uiTextBox_sn.Text = string.Empty;
-                    if (snInfos.Count >= 6)
-                    {
-                        uiTextBox_sn.ReadOnly = true;
-
-                        uiButton_endScan_Click(sender, e);
-                    }
-                    else
-                    {
-                        uiTextBox_sn.Focus();
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                traLog.Error(ex.ToString());
-            }
-        }
-
-        private async void uiButton_endScan_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-
-                if (snInfos.Count == 0)
-                {
-                    UIMessageBox.ShowError("请先扫描SN");
+                    traLog.Warn($"Fail, Check Model Name Fail: {errMsg}");
                     return;
                 }
 
-                if (isAutoCheckRecipe)
+                if (UIMessageBox.ShowAsk($"Download Recipe: {recipeName} to Machine?"))
                 {
-                    var s1f3 = new SecsMessage(1, 3)
+                    var (downloadresult, message) = DownloadRecipeToMachine(recipeName);
+                    if (downloadresult)
                     {
-                        SecsItem = L(U4(650), U4(651))
-                    };
-                    var s1f4 = await _secsGem.SendAsync(s1f3);
-                    var recipeName = s1f4.SecsItem.Items[0].GetString();
-                    var recipeNum = s1f4.SecsItem.Items[1].GetString();
-                    var machineRecipeName = recipeNum + "_" + recipeName;
-                    var projectNameList = snInfos.Select(x => x.ProjectName).Distinct().ToList();
-                    var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
-                    var getRecipeNameUrl = rmsUrl.TrimEnd('/') + "/api/GetRecipeName";
-                    foreach (var projectName in projectNameList)
-                    {
-                        var getRecipeNameReq = new
-                        {
-                            EquipmentTypeId = _configuration.GetSection("Custom")["EquipmentType"],
-                            RecipeNameAlias = projectName
-                        };
-                        var getRecipeNameRes = await HttpClientHelper.HttpPostRequestAsync<GetRecipeNameResponse>(getRecipeNameUrl, getRecipeNameReq);
-                        if (getRecipeNameRes != null && getRecipeNameRes.Result && !string.IsNullOrEmpty(getRecipeNameRes.RecipeName))
-                        {
-                            if (machineRecipeName != getRecipeNameRes.RecipeName)
-                            {
-                                AllowInput = InputStatus.Reject;
-                                var sninfo = snInfos.FirstOrDefault(x => x.ProjectName == projectName);
-                                var message = $"该项目找不到匹配的程式，请联系ME。项目名：{projectName},SN:{sninfo.SN},CARRIER_ID:{sninfo.CarrierId},MODEL_NAME:{sninfo.ModelName},PROJECT_NAME:{sninfo.ProjectName}";
-                                traLog.Error(message);
-                                UIMessageBox.ShowError2(message);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            AllowInput = InputStatus.Reject;
-                            var message = $"{projectName}获取绑定Recipe失败，{getRecipeNameRes.Message}";
-                            traLog.Error(message);
-                            UIMessageBox.ShowError2(message);
-                            return;
-                        }
+                        traLog.Info($"Download success. Barcode: {form.Value}, Recipe: {message}");
                     }
-
-                    var compareBodyUrl = rmsUrl.TrimEnd('/') + "/api/CompareRecipeBody";
-                    var compareRecipeBodyReeq = new
+                    else
                     {
-                        EquipmentId = equipmentId,
-                        RecipeName = machineRecipeName
-                    };
-                    var compareRecipeBodyRes = await HttpClientHelper.HttpPostRequestAsync<CompareRecipeBodyResponse>(compareBodyUrl, compareRecipeBodyReeq);
-                    if (compareRecipeBodyRes == null || !compareRecipeBodyRes.Result)
-                    {
-                        AllowInput = InputStatus.Reject;
-                        var message = $"程式{machineRecipeName}内容不匹配，请联系ME/EQ:{compareRecipeBodyRes.Message}";
-                        traLog.Error(message);
-                        UIMessageBox.ShowError2(message);
-                        return;
+                        traLog.Error($"Download fail. Barcode: {form.Value}, Message: {message}");
                     }
                 }
+            }
+        }
 
-                //过站
-                var empno = uiTextBox_empNo.Text;
-                var line = uiTextBox_line.Text;
-                ConfigManager<SputtereConfig> manager = new ConfigManager<SputtereConfig>();
-                var config = manager.LoadConfig().CathodeSettings;
-                var modelName = uiTextBox_modelName.Text;
-                var trayId = uiTextBox_trayId.Text;
-                var baymaxIp = _configuration.GetSection("Custom")["SfisIp"];
-                var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
 
-                string cathodeStr = string.Join(" ", config.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
-                string step2Req = $@"{equipmentId},{snInfos.First().CarrierId},2,{empno},{line},,OK,,,ACTUAL_GROUP=SPUTTER {cathodeStr} ,,,{string.Join(";", snInfos.Select(it => it.CarrierId))},{trayId},,{modelName}";
-                BaymaxService baymaxService = new BaymaxService();
-                var trans = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step2Req);
-                if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
+
+        private async Task<(string recipeName, string modelname, string errMsg)> GetRecipeNameBySn(string panelid)
+        {
+            var site = _configuration.GetSection("Custom")["Site"] ?? "HPH";
+            var sfisIp = _configuration.GetSection("Custom")["SfisIp"];
+            var sfisPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+            var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+            var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+            var getModelnameReq = string.Empty;
+            if (site == "JQ")
+            {
+                getModelnameReq = $"SMD_SPC_QUERY,{panelid},7,M090696,JQ01-3FAP-12,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";//JQ
+            }
+            else
+            {
+                getModelnameReq = $"EQXXXXXX01,{panelid},7,M001603,V98,,OK,SN_MODEL_NAME_INFO=???";//HPH
+            }
+
+            //var getModelnameRes = string.Empty;
+            //var getModelnameErr = string.Empty;
+            string recipeName = null;
+            string modelname = null;
+            string errMsg = null;
+
+            BaymaxService baymax = new BaymaxService();
+            var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelnameReq);
+
+            if (trans.Result)
+            {
+                if (trans.BaymaxResponse.ToUpper().StartsWith("OK"))
                 {
-                    AllowInput = InputStatus.Allow;
+                    Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
+                                  .Where(keyValueArray => keyValueArray.Length == 2)
+                                  .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
+
+                    if (site == "JQ")
+                    {
+                        //JQ
+                        modelname = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
+                        string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
+                        string groupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
+                    }
+                    else
+                    {
+                        //HPH
+                        modelname = sfisParameters["SN_MODEL_NAME_INFO"];
+                    }
+                    uiTextBox_modelName.Text = modelname;
+
+
+                    (recipeName, errMsg) = CheckRecipeGroup(rmsUrl, equipmentId, modelname);
+                    return (recipeName, modelname, errMsg);
                 }
                 else
                 {
-                    AllowInput = InputStatus.Reject;
-                    var message = $"SFIS过站失败：{trans.BaymaxResponse}";
-                    traLog.Error(message);
-                    UIMessageBox.ShowError2(message);
+                    return (recipeName, modelname, "SFIS Fail: " + trans.BaymaxResponse);
+                }
+            }
+            else
+            {
+                return (recipeName, modelname, trans.BaymaxResponse);
+            }
+        }
+
+        private (string recipeName, string errMsg) CheckRecipeGroup(string rmsUrl, string equipmentId, string recipeGroupName)
+        {
+            string recipeName = null;
+            string errMsg = string.Empty;
+
+            try
+            {
+                string url = rmsUrl.TrimEnd('/') + "/api/checkrecipegroup";
+                var req = new
+                {
+                    EquipmentId = equipmentId,
+                    RecipeGroupName = recipeGroupName,
+                    CheckLastRecipe = false //不检查最后一次使用的Recipe
+                };
+                var reqstr = JsonConvert.SerializeObject(req);
+                using (var httpClient = new HttpClient())
+                {
+                    var httpResponse = httpClient.PostAsync(url, new StringContent(reqstr, Encoding.UTF8, "application/json")).Result;
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        var responseContent = httpResponse.Content.ReadAsStringAsync().Result;
+                        var repobj = JObject.Parse(responseContent);
+                        if ((bool)repobj["Result"])
+                        {
+                            recipeName = repobj["RecipeName"].ToString();
+                            return (recipeName, errMsg);
+                        }
+                        else
+                        {
+                            errMsg = repobj["Message"].ToString();
+                        }
+                    }
+                    else
+                    {
+                        errMsg = $"HTTP请求失败，状态码：{httpResponse.StatusCode}";
+                    }
                 }
             }
             catch (Exception ex)
             {
-                traLog.Error(ex.ToString());
+                errMsg = $"发生异常：{ex.Message}";
+            }
+
+            return (recipeName, errMsg);
+        }
+
+        private (bool result, string message) DownloadRecipeToMachine(string recipeName)
+        {
+            try
+            {
+                var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+
+                string url = rmsUrl.TrimEnd('/') + "/api/downloadeffectiverecipetomachine";
+                var reqstr = JsonConvert.SerializeObject(new { TrueName = uiTextBox_empNo.Text, EquipmentId = equipmentId, RecipeName = recipeName });
+                using (var httpClient = new HttpClient())
+                {
+                    var httpResponse = httpClient.PostAsync(url, new StringContent(reqstr, Encoding.UTF8, "application/json")).Result;
+                    if (httpResponse.IsSuccessStatusCode)
+                    {
+                        var responseContent = httpResponse.Content.ReadAsStringAsync().Result;
+                        var reply = JsonConvert.DeserializeObject<DownloadEffectiveRecipeToMachineResponse>(responseContent);
+                        return (reply.Result, reply.Result ? reply.RecipeName : reply.Message);
+                    }
+                    else
+                    {
+                        return (false, $"EAP Error: HTTP request fail：{httpResponse.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, $"EAP Error: HTTP request fail：{ex.Message}");
+            }
+
+        }
+
+        private async void uiSymbolButton_changeReel_Click(object sender, EventArgs e)
+        {
+            ScanBarcodeForm form = new ScanBarcodeForm(uiTextBox_reelId.Text);
+            DialogResult result = form.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                if (form.Value == uiTextBox_reelId.Text)
+                {
+                    traLog.Error("NEW REEL_ID = OLD REEL_ID, Please scan new REEL_ID  again.");
+                }
+                // ask sfis
+                var sfisresult = false;
+
+                var sfisIp = _configuration.GetSection("Custom")["SfisIp"];
+                var sfisPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+                var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
+                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
+
+
+                var checkreel = $"{equipmentId},{form.Value},1,{uiTextBox_empNo.Text},{uiTextBox_line.Text},,OK,,,ACTUAL_GROUP={uiTextBox_groupName.Text},,,,,,{uiTextBox_modelName.Text},{form.Value}";
+
+                BaymaxService baymax = new BaymaxService();
+                var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, checkreel);
+                if (trans.Result)
+                {
+                    if (trans.BaymaxResponse.StartsWith("OK"))
+                    {
+                        uiTextBox_reelId.Text = form.Value;
+
+                        traLog.Info("OK, open the tank.");
+
+                        Task.Run(() => ControlTank(true));
+                        return;
+                    }
+                    else
+                    {
+                        traLog.Error("Check Reel ID Fail, do not open the tank.");
+                    }
+                }
+                else
+                {
+                    traLog.Error(trans.BaymaxResponse);
+                }
+                // Task.Run(() => ControlTank(false));
+            }
+
+        }
+
+
+        [DllImport("inpoutx64.dll", EntryPoint = "Inp32")]
+        private static extern int Input(int address);
+        [DllImport("inpoutx64.dll")]
+        private static extern void Out32(int address, int value);
+
+        [DllImport("inpoutx64.dll", EntryPoint = "Out32")]
+        private static extern void Out32_x64(int address, int value);
+        private const short LPT1_Port = 0x378;
+        private const byte LPT_Pin7 = 0x80;
+        //private const byte LPT_Pin7 = 0x00;
+
+        private async Task ControlTank(bool openorclose)
+        {
+            try
+            {
+                var readpin = Input(LPT1_Port);
+                traLog.Debug("Read value:" + Convert.ToString(readpin, 2));
+                //var writedata = int.Parse(Math.Pow(2, variables.PinNum).ToString());
+                var writedata = int.Parse(Math.Pow(2, 5).ToString());
+                // var writedata = int.Parse(Math.Pow(2,int.Parse( textBox1.Text)).ToString());
+                // 写入data 6
+                Out32(LPT1_Port, writedata);
+                traLog.Debug("Write value:" + Convert.ToString(writedata, 2));
+                readpin = Input(LPT1_Port);
+                traLog.Debug("Read value:" + Convert.ToString(readpin, 2));
+                Thread.Sleep(300);
+                //Thread.Sleep(int.Parse(textBox2.Text));
+                // 写入data 0
+                writedata = 0;//拉低
+                traLog.Debug("Write value:" + Convert.ToString(writedata, 2));
+                Out32(LPT1_Port, writedata);
+
+                readpin = Input(LPT1_Port);
+                traLog.Debug("Read value:" + Convert.ToString(readpin, 2));
+                await Task.Delay(3000);
+            }
+            catch (Exception ex)
+
+            {
+                traLog.Error(ex);
+            }
+            finally
+            {
             }
         }
 
-        private void uiButton1_Click(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
-            traLog.Warn("强制允许入料");
-            RefreshTimer();
-            AllowInput = InputStatus.Allow;
+            if (!IsRunAsAdmin()) { traLog.Error($"Do not run as administrator, program can not control tank."); }
+        }
+
+        bool IsRunAsAdmin()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            var isadmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            string compatLayer = Environment.GetEnvironmentVariable("__COMPAT_LAYER");
+            bool isRUNASINVOKER = false;
+            if (compatLayer != null && compatLayer.ToUpper().Equals("RUNASINVOKER"))
+            {
+                isRUNASINVOKER = true;
+            }
+            traLog.Debug("Current Program Role: " + compatLayer?.ToString());
+            return isadmin || isRUNASINVOKER;
         }
     }
 }

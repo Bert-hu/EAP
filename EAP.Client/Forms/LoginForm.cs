@@ -16,7 +16,7 @@ namespace EAP.Client.Forms
 {
     public partial class LoginForm : UILoginForm
     {
-        ConfigManager<SputtereConfig> manager = new ConfigManager<SputtereConfig>();
+        ConfigManager<MoldingConfig> manager = new ConfigManager<MoldingConfig>();
 
         public LoginForm()
         {

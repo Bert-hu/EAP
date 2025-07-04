@@ -13,18 +13,16 @@ namespace EAP.Client.Models
         public string ModelName { get; set; }
         public string ProjectName { get; set; }
     }
-    public class SputtereConfig
+    public class MoldingConfig
     {
         public string EmpNo { get; set; } = string.Empty;
         public string Line { get; set; } = string.Empty;
         public string ModelName { get; set; } = string.Empty;
-        public List<CathodeSetting> CathodeSettings { get; set; } = new List<CathodeSetting>();
+        public string GroupName { get; set; } = string.Empty;
+        public string ReelId { get; set; } = string.Empty;
+        public bool AutoCheckRecipeName { get; set; } = true;
+        public bool AutoCheckRecipeBody { get; set; } = true;
         public Dictionary<string, string> UserPassword { get; set; } = new Dictionary<string, string>() { };
     }
 
-    public class CathodeSetting
-    {
-        public int Seq { get; set; }
-        public string CathodeId { get; set; }
-    }
 }

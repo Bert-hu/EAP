@@ -21,6 +21,12 @@ namespace EAP.Client.Forms
             InitializeComponent();
         }
 
+        public ScanBarcodeForm(string oldValue)
+        {
+            InitializeComponent();
+            textBox1.Text = oldValue;
+        }
+
         private void button_confirm_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBox1.Text))
@@ -33,6 +39,12 @@ namespace EAP.Client.Forms
                 Value = textBox1.Text;
                 this.Close();
             }
+        }
+
+        private void ScanBarcodeForm_Shown(object sender, EventArgs e)
+        {
+            textBox1.Focus();
+            textBox1.SelectAll();
         }
     }
 }

@@ -57,6 +57,7 @@ namespace EAP.Client.Forms
             button_confirm.Size = new Size(118, 30);
             button_confirm.TabIndex = 1;
             button_confirm.Text = "OK";
+            button_confirm.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             button_confirm.Click += button_confirm_Click;
             // 
             // ScanBarcodeForm
@@ -73,6 +74,7 @@ namespace EAP.Client.Forms
             Text = "扫码";
             TopMost = true;
             ZoomScaleRect = new Rectangle(15, 15, 448, 109);
+            Shown += ScanBarcodeForm_Shown;
             ResumeLayout(false);
         }
 
