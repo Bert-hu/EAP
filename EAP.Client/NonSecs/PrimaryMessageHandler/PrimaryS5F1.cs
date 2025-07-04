@@ -35,11 +35,13 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
 
             string subEQID = subEQIndex switch
             {
-                "1" => "EQPPR00010",
-                "2" => "EQCAS00001",
-                "3" => "EQPRE00030",
-                "4" => "EQCIS00002",
-                "5" => "EQPPR00011",
+                "1" => "EQASM00010",
+                "2" => "EQASM00011",
+                "3" => "EQASM00012",
+                "4" => "EQTBU00007",
+                "5" => "EQASM00013",
+                "6" => "EQASM00014",
+                "7" => "EQTBU00008",
                 _ => "Unknown",
                 //Load, Unload 尚无
             };

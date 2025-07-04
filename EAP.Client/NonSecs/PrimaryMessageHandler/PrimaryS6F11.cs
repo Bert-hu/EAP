@@ -46,11 +46,13 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                     string index = reportId.Substring(0, 1);
                     subEQID = index switch
                     {
-                        "1" => "EQPPR00010",
-                        "2" => "EQCAS00001",
-                        "3" => "EQPRE00030",
-                        "4" => "EQCIS00002",
-                        "5" => "EQPPR00011",
+                        "1" => "EQASM00010",
+                        "2" => "EQASM00011",
+                        "3" => "EQASM00012",
+                        "4" => "EQTBU00007",
+                        "5" => "EQASM00013",
+                        "6" => "EQASM00014",
+                        "7" => "EQTBU00008",
                         _ => "Unknown",
                         //Load, Unload 尚无
                     };
@@ -66,7 +68,7 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                         if (vidInt < 100)
                         {
                             // 每台设备都上传
-                            foreach (var subIndex in new[] { "EQPPR00010", "EQCAS00001", "EQPRE00030", "EQCIS00002", "EQPPR00011" })
+                            foreach (var subIndex in new[] { "EQASM00010", "EQASM00011", "EQASM00012", "EQTBU00007", "EQASM00013", "EQASM00014", "EQTBU00008" })
                             {
                                 UploadParameter(subIndex, name, vidStr, item.Value);
                             }
@@ -77,12 +79,15 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                             string index = vidStr.Substring(0, 1);
                             subEQID = index switch
                             {
-                                "1" => "EQPPR00010",
-                                "2" => "EQCAS00001",
-                                "3" => "EQPRE00030",
-                                "4" => "EQCIS00002",
-                                "5" => "EQPPR00011",
+                                "1" => "EQASM00010",
+                                "2" => "EQASM00011",
+                                "3" => "EQASM00012",
+                                "4" => "EQTBU00007",
+                                "5" => "EQASM00013",
+                                "6" => "EQASM00014",
+                                "7" => "EQTBU00008",
                                 _ => "Unknown",
+                                //Load, Unload 尚无
                             };
 
                             UploadParameter(subEQID, name, vidStr, item.Value);
