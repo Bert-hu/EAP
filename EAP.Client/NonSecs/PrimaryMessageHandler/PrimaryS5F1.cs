@@ -1,5 +1,6 @@
 ﻿using EAP.Client.NonSecs.Message;
 using EAP.Client.RabbitMq;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Secs4Net;
@@ -14,6 +15,7 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
 {
     public class PrimaryS5F1 : IPrimaryMessageHandler
     {
+        private readonly ILog dbgLog = LogManager.GetLogger("Debug");
         private readonly RabbitMqService rabbitMqService;
         private readonly IConfiguration configuration;
 
@@ -24,31 +26,23 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
         }
         public async Task HandlePrimaryMessage(NonSecsMessageWrapper wrapper)
         {
-            var s5f2 = new NonSecsMessage(5, 2);
-            await wrapper.TryReplyAsync(s5f2);
-
-            var s5f1 = JsonConvert.DeserializeObject<S5F1>(wrapper.PrimaryMessageString);
-
-            // 根据AlarmID首位映射subEQID
-            string alarmIdStr = s5f1.AlarmID ?? string.Empty;
-            string subEQIndex = alarmIdStr.Length > 0 ? alarmIdStr[..1] : "0";
-
-            string subEQID = subEQIndex switch
+            try
             {
-                "1" => "EQASM00010",
-                "2" => "EQASM00011",
-                "3" => "EQASM00012",
-                "4" => "EQTBU00007",
-                "5" => "EQASM00013",
-                "6" => "EQASM00014",
-                "7" => "EQTBU00008",
-                _ => "Unknown",
-                //Load, Unload 尚无
-            };
+                var s5f2 = new NonSecsMessage(5, 2);
+                await wrapper.TryReplyAsync(s5f2);
 
-            var equipmentType = configuration.GetSection("Custom")["EquipmentType"];
+                var s5f1 = JsonConvert.DeserializeObject<S5F1>(wrapper.PrimaryMessageString);
 
-            var para = new Dictionary<string, object>
+                // 根据AlarmID首位映射subEQID
+                string alarmIdStr = s5f1.AlarmID ?? string.Empty;
+                string subEQIndex = alarmIdStr.Length > 0 ? alarmIdStr[..1] : "0";
+                var subEqDict = configuration.GetSection("NonSecs:SubEquipment").Get<Dictionary<string, string>>();
+
+                string subEQID = subEqDict.TryGetValue(subEQIndex, out var eqid) ? eqid : "Unknown";
+
+                var equipmentType = configuration.GetSection("Custom")["EquipmentType"];
+
+                var para = new Dictionary<string, object>
             {
                 { "AlarmEqp", subEQID },
                 { "AlarmCode", s5f1.AlarmID },
@@ -58,14 +52,20 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                 { "AlarmSet", s5f1.AlarmSet == "Y" }
             };
 
-            var trans = new RabbitMqTransaction
-            {
-                TransactionName = "EquipmentAlarm",
-                EquipmentID = subEQID,
-                Parameters = para
-            };
+                var trans = new RabbitMqTransaction
+                {
+                    TransactionName = "EquipmentAlarm",
+                    EquipmentID = subEQID,
+                    Parameters = para
+                };
 
-            rabbitMqService.Produce("EAP.Services", trans);
+                rabbitMqService.Produce("EAP.Services", trans);
+
+            }
+            catch (Exception ex) {
+                dbgLog.Error(ex);
+            }
+          
 
         }
     }

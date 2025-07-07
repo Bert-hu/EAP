@@ -2,6 +2,8 @@
 using EAP.Client.NonSecs.Message;
 using log4net;
 using Microsoft.Extensions.Configuration;
+using System.Windows.Controls.Primitives;
+using System.Xml.Linq;
 
 namespace EAP.Client.RabbitMq
 {
@@ -27,7 +29,7 @@ namespace EAP.Client.RabbitMq
             {
                 var reptrans = trans?.GetReplyTransaction();
                 //string Status = "Offline";
-
+                var subEqDict = configuration.GetSection("NonSecs:SubEquipment").Get<Dictionary<string, string>>();
                 try
                 {
                     //TODO get status svid
@@ -35,6 +37,8 @@ namespace EAP.Client.RabbitMq
 
                     var paramsVid = configuration.GetSection("NonSecs:ParamsVid").Get<List<string>>();
                     var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
+                    // 获取SubEquipment映射
+                   
 
                     // 加载Status映射字典
                     var statusDict = configuration.GetSection("NonSecs:ProcessStateCodes").Get<Dictionary<string, string>>();
@@ -50,29 +54,20 @@ namespace EAP.Client.RabbitMq
                         var s1f4 = reply.SecondaryMessage as S1F4;
 
                         // 遍历所有包含Status的字段
-                        foreach (var kvp in vidDict.Where(it => it.Value == "Status"))
+                        foreach (var kvp in vidDict.Where(it => it.Value.Contains("Status")))
                         {
                             var statusVid = kvp.Key;       // VID编号
                             var subEQIndex = statusVid[..1];  // 取VID第一位数字，区分子设备
 
                             // 获取对应subEQID（示例映射关系，实际可用配置或字典控制）
-                            string subEQID = subEQIndex switch
-                            {
-                                "1" => "EQASM00010",
-                                "2" => "EQASM00011",
-                                "3" => "EQASM00012",
-                                "4" => "EQTBU00007",
-                                "5" => "EQASM00013",
-                                "6" => "EQASM00014",
-                                "7" => "EQTBU00008",
-                                _ => "Unknown",
-                                //Load, Unload 尚无
-                            };
+                            // 取第一位映射
+                            string subEQID = subEqDict.TryGetValue(subEQIndex, out var eqid) ? eqid : "Unknown";
+
                             string statusString = string.Empty;
                             // 提取状态值
                             if (s1f4?.List?.TryGetValue(statusVid, out statusString) == true)
                             {
-                                var mappedStatus = statusDict.ContainsKey(statusString) ? statusDict[statusString] : "Unknown";
+                                var mappedStatus = statusDict.ContainsKey(statusString.ToUpper()) ? statusDict[statusString.ToUpper()] : "Unknown";
 
                                 // 存入字典
                                 statusMap[subEQID] = mappedStatus;
@@ -93,11 +88,15 @@ namespace EAP.Client.RabbitMq
                         try
                         {
                             reptrans?.Parameters.Add("Status", Status);
-                            reptrans.EquipmentID = subEQID;
+                            
                             //reptrans?.Parameters.Add("EquipmentID", subEQID);
 
                             if (reptrans != null && reptrans.NeedReply)
+                            {
+                                reptrans.EquipmentID = subEQID;
                                 rabbitMq.Produce(trans!.ReplyChannel, reptrans);
+                            }
+                                
 
                             UpdateEquipmentStatus(Status, subEQID); // 传入对应子设备
                             MainForm.Instance?.UpdateState(Status, subEQID);
@@ -163,11 +162,19 @@ namespace EAP.Client.RabbitMq
                     //reptrans?.Parameters.Add("Result", false);
                     //reptrans?.Parameters.Add("Message", $"EAP Error {ex.Message}");
                     dbgLog.Error(ex.Message, ex);
+
+                    var Status = "Offline";
+
+                    foreach (var subEQID in subEqDict.Values)
+                    {
+                        UpdateEquipmentStatus(Status, subEQID);
+                    }
+                    MainForm.Instance?.UpdateState(Status);
+
                 }
                 //reptrans?.Parameters?.Add("Status", Status);
                 //if (reptrans != null && reptrans.NeedReply) rabbitMq.Produce(trans!.ReplyChannel, reptrans);
-                //UpdateEquipmentStatus(Status);
-                //MainForm.Instance?.UpdateState(Status);
+               
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
 {
   "NonSecs": {
-    "ParamsVid": [ "101", "201","301","401","501" ],
+    "ParamsVid": [ "101", "201", "301", "401", "501" ],
     "VidDict": {
       "1": "Clock",
       "14": "MDLN",
@@ -52,6 +52,13 @@
       "506": "OP50 Count QTY",
       "507": "OP50 Number of input",
       "508": "OP50 Number of defects"
+    },
+    "SubEquipment": {
+      "1": "EQPPR00010",
+      "2": "EQCAS00001",
+      "3": "EQPRE00030",
+      "4": "EQCIS00002",
+      "5": "EQPPR00011"
     },
     "ProcessStateCodes": {
       "IDLE": "Idle",

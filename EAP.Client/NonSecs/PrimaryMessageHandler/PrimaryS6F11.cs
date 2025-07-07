@@ -1,5 +1,6 @@
 ﻿using EAP.Client.NonSecs.Message;
 using EAP.Client.RabbitMq;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Secs4Net;
@@ -9,11 +10,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EAP.Client.NonSecs.PrimaryMessageHandler
 {
     public class PrimaryS6F11 : IPrimaryMessageHandler
     {
+        private readonly ILog dbgLog = LogManager.GetLogger("Debug");
         private readonly RabbitMqService rabbitMqService;
         private readonly IConfiguration configuration;
 
@@ -24,77 +27,66 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
         }
         public async Task HandlePrimaryMessage(NonSecsMessageWrapper wrapper)
         {
-            var s6f12 = new NonSecsMessage(6, 12);
-            await wrapper.TryReplyAsync(s6f12);
-
-            var s6f11 = JsonConvert.DeserializeObject<S6F11>(wrapper.PrimaryMessageString);
-            var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
-
-            foreach (var item in s6f11.Reports) // 遍历参数
+            try
             {
-                if (!vidDict.TryGetValue(item.Key, out var name) || string.IsNullOrEmpty(name))
-                    continue;
+                var s6f12 = new NonSecsMessage(6, 12);
+                await wrapper.TryReplyAsync(s6f12);
 
-                string vidStr = item.Key;
-                string subEQID = "Unknown";
-                string reportId = s6f11.EventID;
-
-                // 判断ReportID
-                if (reportId.Length == 2)
+                var s6f11 = JsonConvert.DeserializeObject<S6F11>(wrapper.PrimaryMessageString);
+                var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
+                var subEqDict = configuration.GetSection("NonSecs:SubEquipment").Get<Dictionary<string, string>>();
+                foreach (var item in s6f11.Reports) // 遍历参数
                 {
-                    // 两位数ReportID，取第一位
-                    string index = reportId.Substring(0, 1);
-                    subEQID = index switch
-                    {
-                        "1" => "EQASM00010",
-                        "2" => "EQASM00011",
-                        "3" => "EQASM00012",
-                        "4" => "EQTBU00007",
-                        "5" => "EQASM00013",
-                        "6" => "EQASM00014",
-                        "7" => "EQTBU00008",
-                        _ => "Unknown",
-                        //Load, Unload 尚无
-                    };
+                    if (!vidDict.TryGetValue(item.Key, out var name) || string.IsNullOrEmpty(name))
+                        continue;
 
-                    // by subEQID上传
-                    UploadParameter(subEQID, name, vidStr, item.Value);
-                }
-                else if (reportId.Length == 1)
-                {
-                    // 一位数ReportID，检查VID
-                    if (int.TryParse(vidStr, out int vidInt))
+                    string vidStr = item.Key;
+                    string subEQID = "Unknown";
+                    string reportId = s6f11.EventID;
+
+                    // 判断ReportID
+                    if (reportId.Length == 2)
                     {
-                        if (vidInt < 100)
+                        // 两位数ReportID，取第一位
+                        string index = reportId.Substring(0, 1);
+                        subEQID = subEqDict.TryGetValue(index, out var eqid) ? eqid : "Unknown";
+
+                        // by subEQID上传
+                        UploadParameter(subEQID, name, vidStr, item.Value);
+                    }
+                    else if (reportId.Length == 1)
+                    {
+                        // 一位数ReportID，检查VID
+                        if (int.TryParse(vidStr, out int vidInt))
                         {
-                            // 每台设备都上传
-                            foreach (var subIndex in new[] { "EQASM00010", "EQASM00011", "EQASM00012", "EQTBU00007", "EQASM00013", "EQASM00014", "EQTBU00008" })
+                            if (vidInt < 100)
                             {
-                                UploadParameter(subIndex, name, vidStr, item.Value);
+                                // 每台设备都上传
+                                foreach (var eqid in subEqDict.Values)
+                                {
+                                    UploadParameter(eqid, name, vidStr, item.Value);
+                                }
+                                //foreach (var subIndex in new[] { "EQPPR00010", "EQCAS00001", "EQPRE00030", "EQCIS00002", "EQPPR00011" })
+                                //{
+                                //    UploadParameter(subIndex, name, vidStr, item.Value);
+                                //}
                             }
-                        }
-                        else
-                        {
-                            // 根据VID第一位
-                            string index = vidStr.Substring(0, 1);
-                            subEQID = index switch
+                            else
                             {
-                                "1" => "EQASM00010",
-                                "2" => "EQASM00011",
-                                "3" => "EQASM00012",
-                                "4" => "EQTBU00007",
-                                "5" => "EQASM00013",
-                                "6" => "EQASM00014",
-                                "7" => "EQTBU00008",
-                                _ => "Unknown",
-                                //Load, Unload 尚无
-                            };
+                                // 根据VID第一位
+                                string index = vidStr.Substring(0, 1);
+                                subEQID = subEqDict.TryGetValue(index, out var eqid) ? eqid : "Unknown";
 
-                            UploadParameter(subEQID, name, vidStr, item.Value);
+                                UploadParameter(subEQID, name, vidStr, item.Value);
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex) {
+                dbgLog.Error(ex);
+            }
+           
 
 
         }
