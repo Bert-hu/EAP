@@ -1,7 +1,10 @@
-﻿using Sunny.UI;
+﻿using EAP.Client.NonSecs.Message;
+using Microsoft.Extensions.Configuration;
+using Sunny.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -14,15 +17,17 @@ namespace EAP.Client.Forms
     public partial class MessageTestForm : UIForm
     {
         private readonly NonSecsService nonSecsService;
+        private readonly IConfiguration configuration;
 
         public MessageTestForm()
         {
             InitializeComponent();
         }
 
-        public MessageTestForm(NonSecsService nonSecsService)
+        public MessageTestForm(IConfiguration configuration,NonSecsService nonSecsService)
         {
             this.nonSecsService = nonSecsService;
+            this.configuration = configuration;
             InitializeComponent();
         }
 
@@ -39,5 +44,52 @@ namespace EAP.Client.Forms
                 uiRichTextBox_receiveMessage.Text = ex.ToString();
             }
         }
+
+        private async void QuickTestS1F11_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var s1f11 = new NonSecsMessage() { Stream = 1, Function = 11 };
+                var reply = await nonSecsService.SendMessage(s1f11);
+                uiRichTextBox_receiveMessage.Text = reply.SecondaryMessageString;
+            }
+            catch (Exception ex)
+            {
+                uiRichTextBox_receiveMessage.Text = ex.ToString();
+            }
+
+        }
+
+        private async void QuickTestS5F11_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var s5f11 = new NonSecsMessage() { Stream = 5, Function = 11 };
+                var reply = await nonSecsService.SendMessage(s5f11);
+                uiRichTextBox_receiveMessage.Text = reply.SecondaryMessageString;
+            }
+            catch (Exception ex)
+            {
+                uiRichTextBox_receiveMessage.Text = ex.ToString();
+            }
+
+        }
+
+        private async void QuickTestS1F3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var paramsVid = configuration.GetSection("NonSecs:ParamsVid").Get<List<string>>();
+                var s1f3 = new S1F3() { List = paramsVid };
+                var reply = await nonSecsService.SendMessage(s1f3);
+                uiRichTextBox_receiveMessage.Text = reply.SecondaryMessageString;
+            }
+            catch (Exception ex)
+            {
+                uiRichTextBox_receiveMessage.Text = ex.ToString();
+            }
+
+        }
     }
 }
+

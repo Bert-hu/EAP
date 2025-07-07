@@ -4,6 +4,7 @@ using EAP.Client.Sfis;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Sunny.UI;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
@@ -313,8 +314,33 @@ namespace EAP.Client.Forms
 
         private void uiButton_messageTest_Click(object sender, EventArgs e)
         {
-            MessageTestForm messageTest = new MessageTestForm(nonSecsService);
+            MessageTestForm messageTest = new MessageTestForm(configuration,nonSecsService);
             messageTest.Show();
+        }
+        
+        // Check Log
+
+        private void uiButton1_Click(object sender, EventArgs e)
+        {
+            // 获取程序所在目录
+            string programDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // 要打开的文件夹名称
+            string folderName = "Logs";
+
+            string folderPath = Path.Combine(programDirectory, folderName);
+
+            // 确保文件夹存在
+            if (Directory.Exists(folderPath))
+            {
+                // 调用explorer.exe打开
+                Process.Start("explorer.exe", folderPath);
+            }
+            else
+            {
+                MessageBox.Show($"目录不存在：{folderPath}");
+            }
+
         }
     }
 }

@@ -44,6 +44,7 @@ namespace EAP.Client.Forms
             uiButton_Test = new UIButton();
             uiNavBar1 = new UINavBar();
             uiButton_messageTest = new UIButton();
+            uiButton1 = new UIButton();
             groupBox_1.SuspendLayout();
             uiNavBar1.SuspendLayout();
             SuspendLayout();
@@ -178,6 +179,7 @@ namespace EAP.Client.Forms
             // uiNavBar1
             // 
             uiNavBar1.BackColor = Color.White;
+            uiNavBar1.Controls.Add(uiButton1);
             uiNavBar1.Controls.Add(uiButton_messageTest);
             uiNavBar1.Dock = DockStyle.Top;
             uiNavBar1.DropMenuFont = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
@@ -202,6 +204,18 @@ namespace EAP.Client.Forms
             uiButton_messageTest.Text = "消息测试";
             uiButton_messageTest.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_messageTest.Click += uiButton_messageTest_Click;
+            // 
+            // uiButton1
+            // 
+            uiButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Location = new Point(133, 5);
+            uiButton1.MinimumSize = new Size(1, 1);
+            uiButton1.Name = "uiButton1";
+            uiButton1.Size = new Size(100, 25);
+            uiButton1.TabIndex = 1;
+            uiButton1.Text = "查看日志";
+            uiButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton1.Click += uiButton1_Click;
             // 
             // MainForm
             // 
@@ -244,5 +258,6 @@ namespace EAP.Client.Forms
         private UIButton uiButton_Test;
         private UINavBar uiNavBar1;
         private UIButton uiButton_messageTest;
+        private UIButton uiButton1;
     }
 }
