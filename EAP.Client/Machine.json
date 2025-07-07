@@ -2,8 +2,8 @@
   "Secs": {
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
-    "EnableDynamicEvent": false,
-    "EnableAllEvent": false,
+    "EnableDynamicEvent": true,
+    "EnableAllEvent": true,
     "SVIDList": [
       {
         "Name": "ControlState",
@@ -12,36 +12,96 @@
       {
         "Name": "ProcessState",
         "ID": 15
+      },
+      {
+        "Name": "LOADINGSTRIPID",
+        "ID": 150
+      },
+      {
+        "Name": "SELECTEDRECIPE",
+        "ID": 3001
+      },
+      {
+        "Name": "PRESS1_STRIPINLEFTMOLD",
+        "ID": 3900
+      },
+      {
+        "Name": "PRESS1_STRIPINRIGHTMOLD",
+        "ID": 3901
+      },
+      {
+        "Name": "PRESS2_STRIPINLEFTMOLD",
+        "ID": 3902
+      },
+      {
+        "Name": "PRESS2_STRIPINRIGHTMOLD",
+        "ID": 3903
+      },
+      {
+        "Name": "PRESS3_STRIPINLEFTMOLD",
+        "ID": 3904
+      },
+      {
+        "Name": "PRESS3_STRIPINRIGHTMOLD",
+        "ID": 3905
       }
-
     ],
     "ReportList": [
-      //{
-      //  "ID": 100,
-      //  "SvidNames": [ "ControlState", "ProcessState" ]
-      //},
+      {
+        "ID": 101,
+        "SvidNames": [ "PRESS1_STRIPINLEFTMOLD", "PRESS1_STRIPINRIGHTMOLD" ]
+      },
+      {
+        "ID": 102,
+        "SvidNames": [ "PRESS2_STRIPINLEFTMOLD", "PRESS2_STRIPINRIGHTMOLD" ]
+      },
+      {
+        "ID": 103,
+        "SvidNames": [ "PRESS3_STRIPINLEFTMOLD", "PRESS3_STRIPINRIGHTMOLD" ]
+      },
+      {
+        "ID": 104,
+        "SvidNames": [ "LOADINGSTRIPID", "SELECTEDRECIPE" ]
+      }
 
     ],
     "CEIDList": [
       {
         "Name": "ProcessStateChanged",
-        "ID": 10150,
+        "ID": 10,
         "ReportIds": []
-      }
-      ,
+      },
       {
-        "Name": "InButtonPressed",
-        "ID": 111,
-        "ReportIds": []
-
+        "Name": "Press1EndCurning",
+        "ID": 1553,
+        "ReportIds": [ 101 ]
+      },
+      {
+        "Name": "Press2EndCurning",
+        "ID": 1557,
+        "ReportIds": [ 102 ]
+      },
+      {
+        "Name": "Press3EndCurning",
+        "ID": 1561,
+        "ReportIds": [ 103 ]
+      },
+      {
+        "Name": "StripValidationRequest",
+        "ID": 1830,
+        "ReportIds": [ 104 ]
       }
-
     ],
     "ProcessStateCodes": {
-      "0": "Idle",
       "1": "Idle",
-      "2": "Run",
-      "4": "Idle"
+      "2": "Unknown",
+      "3": "Idle",
+      "4": "Idle",
+      "5": "Idle",
+      "6": "Run",
+      "7": "Unknown",
+      "8": "Idle",
+      "13": "Alarm"
     }
   },
   "Others": {

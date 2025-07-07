@@ -39,10 +39,8 @@ namespace EAP.Client.Forms
             groupBox_1 = new UIGroupBox();
             uiSymbolButton_changeReel = new UISymbolButton();
             uiTextBox_reelId = new UITextBox();
-            uiTextBox_sn = new UITextBox();
             uiTextBox_modelName = new UITextBox();
             uiLabel1 = new UILabel();
-            uiLabel5 = new UILabel();
             uiLabel4 = new UILabel();
             snInfoBindingSource = new BindingSource(components);
             checkBox_checkrecipe = new UICheckBox();
@@ -67,14 +65,14 @@ namespace EAP.Client.Forms
             // textBox_machinerecipe
             // 
             textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            textBox_machinerecipe.Location = new Point(103, 33);
+            textBox_machinerecipe.Location = new Point(147, 33);
             textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
             textBox_machinerecipe.MinimumSize = new Size(1, 16);
             textBox_machinerecipe.Name = "textBox_machinerecipe";
             textBox_machinerecipe.Padding = new Padding(5);
             textBox_machinerecipe.ReadOnly = true;
             textBox_machinerecipe.ShowText = false;
-            textBox_machinerecipe.Size = new Size(578, 29);
+            textBox_machinerecipe.Size = new Size(534, 29);
             textBox_machinerecipe.TabIndex = 0;
             textBox_machinerecipe.TextAlignment = ContentAlignment.MiddleLeft;
             textBox_machinerecipe.Watermark = "";
@@ -106,11 +104,9 @@ namespace EAP.Client.Forms
             // 
             groupBox_1.Controls.Add(uiSymbolButton_changeReel);
             groupBox_1.Controls.Add(uiTextBox_reelId);
-            groupBox_1.Controls.Add(uiTextBox_sn);
             groupBox_1.Controls.Add(uiTextBox_modelName);
             groupBox_1.Controls.Add(textBox_machinerecipe);
             groupBox_1.Controls.Add(uiLabel1);
-            groupBox_1.Controls.Add(uiLabel5);
             groupBox_1.Controls.Add(uiLabel4);
             groupBox_1.Controls.Add(label2);
             groupBox_1.Font = new Font("宋体", 12F);
@@ -128,7 +124,7 @@ namespace EAP.Client.Forms
             // uiSymbolButton_changeReel
             // 
             uiSymbolButton_changeReel.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiSymbolButton_changeReel.Location = new Point(321, 106);
+            uiSymbolButton_changeReel.Location = new Point(365, 106);
             uiSymbolButton_changeReel.MinimumSize = new Size(1, 1);
             uiSymbolButton_changeReel.Name = "uiSymbolButton_changeReel";
             uiSymbolButton_changeReel.Size = new Size(53, 29);
@@ -141,7 +137,7 @@ namespace EAP.Client.Forms
             // uiTextBox_reelId
             // 
             uiTextBox_reelId.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox_reelId.Location = new Point(103, 106);
+            uiTextBox_reelId.Location = new Point(147, 106);
             uiTextBox_reelId.Margin = new Padding(4, 5, 4, 5);
             uiTextBox_reelId.MinimumSize = new Size(1, 16);
             uiTextBox_reelId.Name = "uiTextBox_reelId";
@@ -154,33 +150,17 @@ namespace EAP.Client.Forms
             uiTextBox_reelId.Watermark = "";
             uiTextBox_reelId.TextChanged += uiTextBox_reelId_TextChanged;
             // 
-            // uiTextBox_sn
-            // 
-            uiTextBox_sn.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox_sn.Location = new Point(103, 67);
-            uiTextBox_sn.Margin = new Padding(4, 5, 4, 5);
-            uiTextBox_sn.MinimumSize = new Size(1, 16);
-            uiTextBox_sn.Name = "uiTextBox_sn";
-            uiTextBox_sn.Padding = new Padding(5);
-            uiTextBox_sn.ReadOnly = true;
-            uiTextBox_sn.ShowText = false;
-            uiTextBox_sn.Size = new Size(200, 29);
-            uiTextBox_sn.TabIndex = 0;
-            uiTextBox_sn.TextAlignment = ContentAlignment.MiddleLeft;
-            uiTextBox_sn.Watermark = "";
-            uiTextBox_sn.TextChanged += uiTextBox_sn_TextChanged;
-            // 
             // uiTextBox_modelName
             // 
             uiTextBox_modelName.Font = new Font("Microsoft YaHei UI", 11F);
-            uiTextBox_modelName.Location = new Point(481, 67);
+            uiTextBox_modelName.Location = new Point(147, 67);
             uiTextBox_modelName.Margin = new Padding(4, 5, 4, 5);
             uiTextBox_modelName.MinimumSize = new Size(1, 16);
             uiTextBox_modelName.Name = "uiTextBox_modelName";
             uiTextBox_modelName.Padding = new Padding(5);
             uiTextBox_modelName.ReadOnly = true;
             uiTextBox_modelName.ShowText = false;
-            uiTextBox_modelName.Size = new Size(200, 29);
+            uiTextBox_modelName.Size = new Size(534, 29);
             uiTextBox_modelName.TabIndex = 0;
             uiTextBox_modelName.TextAlignment = ContentAlignment.MiddleLeft;
             uiTextBox_modelName.Watermark = "";
@@ -197,23 +177,12 @@ namespace EAP.Client.Forms
             uiLabel1.TabIndex = 1;
             uiLabel1.Text = "ReelID";
             // 
-            // uiLabel5
-            // 
-            uiLabel5.AutoSize = true;
-            uiLabel5.Font = new Font("Microsoft YaHei UI", 11F);
-            uiLabel5.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel5.Location = new Point(10, 67);
-            uiLabel5.Name = "uiLabel5";
-            uiLabel5.Size = new Size(73, 20);
-            uiLabel5.TabIndex = 1;
-            uiLabel5.Text = "Panel SN";
-            // 
             // uiLabel4
             // 
             uiLabel4.AutoSize = true;
             uiLabel4.Font = new Font("Microsoft YaHei UI", 11F);
             uiLabel4.ForeColor = Color.FromArgb(48, 48, 48);
-            uiLabel4.Location = new Point(344, 67);
+            uiLabel4.Location = new Point(10, 67);
             uiLabel4.Name = "uiLabel4";
             uiLabel4.Size = new Size(104, 20);
             uiLabel4.TabIndex = 1;
@@ -458,7 +427,7 @@ namespace EAP.Client.Forms
         }
 
         #endregion
-        private UITextBox textBox_machinerecipe;
+        public UITextBox textBox_machinerecipe;
         private UILabel label2;
         private UILabel label3;
         private UILabel label4;
@@ -468,7 +437,7 @@ namespace EAP.Client.Forms
         private UIGroupBox groupBox1;
         private UIGroupBox groupBox_1;
         private UILabel label_ProcessState;
-        private UICheckBox checkBox_checkrecipe;
+        public UICheckBox checkBox_checkrecipe;
         private UIRichTextBox richTextBox1;
         private UIButton button_CompareRecipe;
         private NotifyIcon notifyIcon;
@@ -485,14 +454,12 @@ namespace EAP.Client.Forms
         public UITextBox uiTextBox_line;
         public UITextBox uiTextBox_modelName;
         private UILabel uiLabel4;
-        public UITextBox uiTextBox_sn;
-        private UILabel uiLabel5;
         private UIButton uiButton_downloadRecipe;
         public UITextBox uiTextBox_reelId;
         private UILabel uiLabel1;
         private UISymbolButton uiSymbolButton_changeReel;
         private UILabel uiLabel6;
         public UITextBox uiTextBox_groupName;
-        private UICheckBox uiCheckBox_checkRecipeBody;
+        public UICheckBox uiCheckBox_checkRecipeBody;
     }
 }

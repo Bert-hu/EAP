@@ -26,6 +26,7 @@ namespace EAP.Client.RabbitMq
             {
                 var reptrans = trans?.GetReplyTransaction();
                 string Status = "Offline";
+                string SelectedRecipe = string.Empty;
                 var secs = secsGem as SecsGem;
                 if (secs._hsmsConnector != null && secs._hsmsConnector.State == ConnectionState.Selected)
                 {
@@ -33,16 +34,20 @@ namespace EAP.Client.RabbitMq
                     {
                         var controlStateVID = commonLibrary.GetGemSvid("ControlState");
                         var processStateVID = commonLibrary.GetGemSvid("ProcessState");
+                        var selectedRecipeVID = commonLibrary.GetGemSvid("SELECTEDRECIPE");
                         SecsMessage s1f3 = new(1, 3, true)
                         {
                             SecsItem = L(
                                 U4((byte)controlStateVID.ID),
-                                U4((byte)processStateVID.ID)
+                                U4((byte)processStateVID.ID),
+                                U4((byte)selectedRecipeVID.ID)
                                 )
                         };
                         var s1f4 = await secsGem.SendAsync(s1f3);
+                        SelectedRecipe = s1f4.SecsItem[2].GetString();
                         var controlStateCode = s1f4.SecsItem[0].FirstValue<byte>();
                         var processStateCode = s1f4.SecsItem[1].FirstValue<byte>();
+
                         string controlState = "Unknown";
                         string processState = "Unknown";
                         switch (controlStateCode)
@@ -92,6 +97,7 @@ namespace EAP.Client.RabbitMq
                 if (reptrans != null) rabbitMq.Produce(trans.ReplyChannel, reptrans);
                 UpdateEquipmentStatus(Status);
                 MainForm.Instance?.UpdateState(Status);
+                MainForm.Instance?.UpdateMachineRecipe(SelectedRecipe);
             }
             catch (Exception ex)
             {

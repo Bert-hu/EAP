@@ -76,6 +76,7 @@ namespace EAP.Client.Forms
                         uiButton_login.Text = "登出";
                         uiTextBox_modelName.ReadOnly = false;
                         uiTextBox_line.ReadOnly = false;
+                        uiTextBox_groupName.ReadOnly = false;
                         checkBox_checkrecipe.ReadOnly = false;
                         uiCheckBox_checkRecipeBody.ReadOnly = false;
                         adminTimer.Start();
@@ -87,6 +88,7 @@ namespace EAP.Client.Forms
                         uiButton_login.Text = "登录";
                         uiTextBox_modelName.ReadOnly = true;
                         uiTextBox_line.ReadOnly = true;
+                        uiTextBox_groupName.ReadOnly = true;
                         checkBox_checkrecipe.ReadOnly = true;
                         uiCheckBox_checkRecipeBody.ReadOnly = true;
                     }
@@ -569,7 +571,7 @@ namespace EAP.Client.Forms
 
 
 
-        private async Task<(string recipeName, string modelname, string errMsg)> GetRecipeNameBySn(string panelid)
+        public async Task<(string recipeName, string modelname, string errMsg)> GetRecipeNameBySn(string panelid)
         {
             var site = _configuration.GetSection("Custom")["Site"] ?? "HPH";
             var sfisIp = _configuration.GetSection("Custom")["SfisIp"];
@@ -615,8 +617,10 @@ namespace EAP.Client.Forms
                         //HPH
                         modelname = sfisParameters["SN_MODEL_NAME_INFO"];
                     }
-                    uiTextBox_modelName.Text = modelname;
-
+                    this.Invoke(() =>
+                    {
+                        uiTextBox_modelName.Text = modelname;
+                    });
 
                     (recipeName, errMsg) = CheckRecipeGroup(rmsUrl, equipmentId, modelname);
                     return (recipeName, modelname, errMsg);
