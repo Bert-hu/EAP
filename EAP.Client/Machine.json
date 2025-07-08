@@ -1,16 +1,29 @@
 {
   "NonSecs": {
-    "ParamsVid": [ "1001", "1002" ],
+    "ParamsVid": [ "1001", "1002", "1004" ],
     "VidDict": {
       "1001": "Status",
-      "1002": "OEE",
-      "1003": "Capacity"
+      "1002": "Output",
+      "1003": "Yield",
+      "1004": "XY Table Speed - Pack",
+      "1005": "Line",
+      "1006": "Product",
+      "1007": "WO",
+      "1008": "PartNumber",
+      "1009": "PartName",
+      "1010": "StartFlag"
+    },
+    "RptDict": {
+      "6001": "EquipmentStart",
+      "6002": "AssembleComplete",
+      "6003": "ShortageWarning",
+      "6004": "ShortageAlarming"
     },
     "ProcessStateCodes": {
       "IDLE": "Idle",
       "TEST": "Idle",
       "RUN": "Run",
-      "ALARM": "ALARM",
+      "ALARM": "Alarm",
       "INIT": "Idle"
     }
   },
