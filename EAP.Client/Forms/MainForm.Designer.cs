@@ -58,6 +58,7 @@ namespace EAP.Client.Forms
             uiLabel6 = new UILabel();
             uiTextBox_groupName = new UITextBox();
             uiCheckBox_checkRecipeBody = new UICheckBox();
+            uiSymbolButton1 = new UISymbolButton();
             groupBox_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).BeginInit();
             SuspendLayout();
@@ -102,6 +103,7 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiSymbolButton1);
             groupBox_1.Controls.Add(uiSymbolButton_changeReel);
             groupBox_1.Controls.Add(uiTextBox_reelId);
             groupBox_1.Controls.Add(uiTextBox_modelName);
@@ -124,10 +126,10 @@ namespace EAP.Client.Forms
             // uiSymbolButton_changeReel
             // 
             uiSymbolButton_changeReel.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiSymbolButton_changeReel.Location = new Point(365, 106);
+            uiSymbolButton_changeReel.Location = new Point(354, 106);
             uiSymbolButton_changeReel.MinimumSize = new Size(1, 1);
             uiSymbolButton_changeReel.Name = "uiSymbolButton_changeReel";
-            uiSymbolButton_changeReel.Size = new Size(53, 29);
+            uiSymbolButton_changeReel.Size = new Size(43, 29);
             uiSymbolButton_changeReel.Style = UIStyle.Custom;
             uiSymbolButton_changeReel.Symbol = 61561;
             uiSymbolButton_changeReel.TabIndex = 12;
@@ -173,9 +175,9 @@ namespace EAP.Client.Forms
             uiLabel1.ForeColor = Color.FromArgb(48, 48, 48);
             uiLabel1.Location = new Point(10, 106);
             uiLabel1.Name = "uiLabel1";
-            uiLabel1.Size = new Size(56, 20);
+            uiLabel1.Size = new Size(41, 20);
             uiLabel1.TabIndex = 1;
-            uiLabel1.Text = "ReelID";
+            uiLabel1.Text = "Reel";
             // 
             // uiLabel4
             // 
@@ -390,6 +392,19 @@ namespace EAP.Client.Forms
             uiCheckBox_checkRecipeBody.Text = "Auto Check Recipe Body";
             uiCheckBox_checkRecipeBody.CheckedChanged += uiCheckBox_checkRecipeBody_CheckedChanged;
             // 
+            // uiSymbolButton1
+            // 
+            uiSymbolButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton1.Location = new Point(403, 106);
+            uiSymbolButton1.MinimumSize = new Size(1, 1);
+            uiSymbolButton1.Name = "uiSymbolButton1";
+            uiSymbolButton1.Size = new Size(43, 29);
+            uiSymbolButton1.Style = UIStyle.Custom;
+            uiSymbolButton1.Symbol = 61459;
+            uiSymbolButton1.TabIndex = 12;
+            uiSymbolButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiSymbolButton1.Click += uiSymbolButton_changeReel_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -461,5 +476,6 @@ namespace EAP.Client.Forms
         private UILabel uiLabel6;
         public UITextBox uiTextBox_groupName;
         public UICheckBox uiCheckBox_checkRecipeBody;
+        private UISymbolButton uiSymbolButton1;
     }
 }
