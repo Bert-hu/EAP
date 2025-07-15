@@ -228,42 +228,53 @@ namespace EAP.Client.Forms
             timer.Start();
 
             DispatcherTimer locktimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };//定时去检测更新根据自己业务需求
+            bool isrunning = false;
             locktimer.Tick += delegate
             {
-
-                try
+                if(isrunning) return;
+                isrunning = true;
+                Task.Run(() =>
                 {
-                    var trans = new RabbitMqTransaction()
+                    try
                     {
-                        TransactionName = "GetAllConfiguration",
-                        EquipmentID = equipmentId,
-                        NeedReply = true,
-                        ReplyChannel = $"EAP.SecsClient.{equipmentId}",
-                    };
-                    var repTrans = _rabbitMq.ProduceWaitReply("EAP.Services", trans);
-                    var message = string.Empty;
-                    if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
-
-                    string isheld = string.Empty;
-                    if (repTrans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = _isheld?.ToString();
-                    MainForm.Instance.UpdateMachineLock(isheld.ToUpper() == "TRUE", message);
-
-                    if (MainForm.Instance.machineLocked)
-                    {
-                        var s2f41 = new SecsMessage(2, 41)
+                        var trans = new RabbitMqTransaction()
                         {
-                            SecsItem = L(
-                         A("STOP"),
-                         L()
-                   )
+                            TransactionName = "GetAllConfiguration",
+                            EquipmentID = equipmentId,
+                            ExpireSecond = 3,
+                            NeedReply = true,
+                            ReplyChannel = $"EAP.SecsClient.{equipmentId}",
                         };
-                        _secsGem.SendAsync(s2f41);
+                        var repTrans = _rabbitMq.ProduceWaitReply("EAP.Services", trans);
+                        var message = string.Empty;
+                        if (repTrans.Parameters.TryGetValue("Message", out object _message)) message = _message?.ToString();
+
+                        string isheld = string.Empty;
+                        if (repTrans.Parameters.TryGetValue("IsHeld", out object _isheld)) isheld = _isheld?.ToString();
+                        MainForm.Instance.UpdateMachineLock(isheld.ToUpper() == "TRUE", message);
+
+                        if (MainForm.Instance.machineLocked)
+                        {
+                            var s2f41 = new SecsMessage(2, 41)
+                            {
+                                SecsItem = L(
+                             A("STOP"),
+                             L()
+                       )
+                            };
+                            _secsGem.SendAsync(s2f41);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    dbgLog.Error(ex.ToString());
-                }
+                    catch (Exception ex)
+                    {
+                        dbgLog.Error(ex.ToString());
+                    }
+                    finally
+                    {
+                        isrunning = false;
+                    }
+                } );
+          
             };
             locktimer.Start();
 
