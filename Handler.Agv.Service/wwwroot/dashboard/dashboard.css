@@ -1,0 +1,247 @@
+﻿@font-face {
+    font-family: electronicFont;
+    src: url(../font/DS-DIGIT.TTF);
+}
+
+html, body {
+    background: #000d4a url('../images/dashboard/bg.jpg') center top;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Cambria';
+    font-weight: bold;
+    color: rgba(255, 255, 255, .7);
+    cursor: move;
+    overflow: hidden;
+}
+
+.header {
+    top: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 7%; /* 使用视口高度 */
+    background: url(../images/dashboard/head_bg.png) no-repeat center center;
+    background-size: cover;
+    position: relative;
+}
+
+    .header .logo {
+        background-image: url('../images/Logo/Logo_W_SMDi4_400x65_简.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 100%; /* 使用视口宽度 */
+        height: 100%;
+        float: left;
+        margin-top: 1vh; /* 使用视口高度 */
+        margin-left: 1vw; /* 使用视口宽度 */
+    }
+
+    .header .title {
+        position: absolute;
+        width: 100%;
+        color: #fff;
+        text-align: center;
+        line-height: 8vh; /* 使其居中 */
+        font-size: 3vw; /* 使用视口宽度 */
+    }
+
+    .header .controlbox {
+        position: absolute;
+        font-size: 1.5vw; /* 使用视口宽度 */
+        right: 1vw; /* 使用视口宽度 */
+        top: 1vh; /* 使用视口高度 */
+        cursor: default;
+        color: rgba(64, 95, 168, 0.6);
+    }
+
+.item-line {
+    border: 1.3px solid rgba(25, 186, 139, 0.37);
+    background: rgba(255, 255, 255, 0.18) url('../images/dashboard/line.png');
+    background-size: 100% auto;
+    margin: 1vh 0.5vw; /* 使用视口单位 */
+    border-radius: 3%;
+    background-repeat: no-repeat;
+}
+
+
+    .item-line .item-line-subline {
+        font-size: 2.0vh;
+        font-weight: bold;
+        text-align: center;
+        opacity: 0.9;
+        height: 10vh;
+    }
+
+        .item-line .item-line-subline .traynum {
+            font-size: 2.3vh;
+            color: #ffeb7b;
+            font-family: electronicFont;
+            font-weight: bold;
+        }
+
+    .item-line .item-line-subline-head {
+        border: 1px solid rgba(25,186,139,.07);
+        background: rgba(255,255,255,.18) url('../images/dashboard/line.png');
+        height: 20%;
+        font-size: 2.0vh;
+        font-weight: bold;
+        text-align: center;
+        opacity: 0.9;
+    }
+
+        .item-line .item-line-subline-head .machine-id {
+            font-size: 2.3vh;
+        }
+
+        .item-line .item-line-subline-head .machine-status {
+            margin-left: 2%;
+            border: 1px solid rgba(255,186,255,.07);
+            padding: 0.1%;
+            border-radius: 3%; /* 圆角效果 */
+        }
+
+        .item-line .item-line-subline-head .agv-status {
+            margin-left: 5%;
+            border: 1px solid rgba(255,186,255,.07);
+            padding: 0.2%;
+            border-radius: 3%; /* 圆角效果 */
+        }
+    .item-line .x1estimatedTime,
+    .item-line .x3estimatedTime {
+        font-family: electronicFont;
+        font-size: 2.1vh;
+        text-align: center;
+        color: #ffeb7b;
+    }
+
+    .item-line .x1countdown,
+    .item-line .x3countdown {
+        font-family: electronicFont;
+        font-size: 2.1vh;
+        text-align: center;
+        color: #ffeb7b;
+    }
+
+/*.box {
+    border: 1px solid rgba(25,186,139,.17);
+    background: rgba(255,255,255,.04) url(../images/dashboard/line.png);
+    background-size: 100% auto;
+    position: relative;
+    z-index: 10;
+    border-radius: 3%;*/ /* 圆角效果 */
+    /*justify-content: inherit;
+    margin-left: 0.3vw;
+    width: 49%;
+}*/
+
+.box {
+    border: 1px solid rgba(25,186,139,.17);
+    /*             background: rgba(255,255,255,.04) url('../images/dashboard/line.png'); */
+    background-size: 100% auto;
+    height: 32vh;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+}
+
+.machine-info {
+    border: 1px solid rgba(25,186,139,.17);
+    background: #000d4a url(../images/dashboard/line.png);
+    background-size: 100% auto;
+    position: relative;
+    z-index: 10;
+    border-radius: 3%; /* 圆角效果 */
+    justify-content: inherit;
+    margin-left: .3%;
+    font-size: 2.0vh;
+}
+
+.x1head {
+    border: 1px solid rgba(255,186,255,.07);
+    background-color: rgba(25,186,139,0.27);
+    border-radius: 3%; /* 圆角效果 */
+    font-size: 1.2vh;
+}
+
+.x3head {
+    border: 1px solid rgba(255,186,255,.07);
+    background-color: rgb(210, 224, 28, 0.27);
+    border-radius: 3%; /* 圆角效果 */
+    font-size: 1.2vh;
+}
+
+.boxall {
+    border: 1px solid rgba(25,186,139,.17);
+    background: rgba(255,255,255,.04) url(../images/dashboard/line.png);
+    font-size: 1.5vh;
+    background-size: contain; /* 背景图片覆盖整个元素 */
+    background-repeat: no-repeat;
+    width: 33.3vw; /* 使用视口宽度 */
+    height: 42vh;
+    margin-top: 0.6vw;
+}
+
+    .boxall h2 {
+      
+        color: white;
+        text-align: center;
+        font-size: 3.2vh;
+    }
+
+    .boxall table {
+        width: 100%;
+        text-align: center;
+        position: relative;
+        font-size: 2vh
+    }
+
+    .boxall:before, .boxall:after {
+        position: absolute;
+        width: 0.8vw;
+        height: 1.8vh;
+        content: "";
+        margin-top: 0.9vh;
+        border-top: 0.3vh solid #02a6b5;
+        top: 0;
+    }
+
+    .boxall:before, .boxfoot:before {
+        border-left: 0.15vw solid #02a6b5;
+        left: 0;
+    }
+
+    .boxall:after, .boxfoot:after {
+        border-right: 0.15vw solid #02a6b5;
+        right: 0;
+    }
+
+.boxfoot {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+}
+
+    .boxfoot:before,
+    .boxfoot:after {
+        position: absolute;
+        width: 0.8vw;
+        height: 1.8vh;
+        content: "";
+        border-bottom: 2px solid #02a6b5;
+        bottom: 0;
+    }
+
+
+.boxalltask {
+    border: 1px solid rgba(25,186,139,.17);
+    background: rgba(255,255,255,.04) url(../images/dashboard/line.png);
+    font-size: 0.8vh;
+    background-size: contain; /* 背景图片覆盖整个元素 */
+    background-repeat: no-repeat;
+    width: 33.3vw; /* 使用视口宽度 */
+    height: 15vh;
+    margin-top: 1vh;
+}

@@ -1,0 +1,6 @@
+@LaserMonitor.Service_HostAddress = http://localhost:5237
+
+GET {{LaserMonitor.Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -2,7 +2,7 @@
   "Secs": {
     "HeartBeatInterval": 0,
     "EnableAllAlarm": true,
-    "EnableDynamicEvent": false,
+    "EnableDynamicEvent": true,
     "EnableAllEvent": true,
     "SVIDList": [
       {

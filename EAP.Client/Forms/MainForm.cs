@@ -208,15 +208,15 @@ namespace EAP.Client.Forms
                 {
                     var eqpType = _commonLibrary.CustomSettings["EquipmentType"];
                     this.Text = _commonLibrary.CustomSettings["EquipmentId"] + " " + _commonLibrary.CustomSettings["EquipmentType"] + " Version: " + args.InstalledVersion + " 需要更新";
-                    bool dialogResult =
-                            UIMessageBox.ShowAsk2(
-                                $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
+                    //bool dialogResult =
+                    //        UIMessageBox.ShowAsk2(
+                    //            $@"新版本 {eqpType + ":" + args.CurrentVersion} 可用. 当前版本 {eqpType + ":" + args.InstalledVersion}. 如果设备空闲请点击确认更新并重启，否则点击取消");
 
 
                     // Uncomment the following line if you want to show standard update dialog instead.
                     //AutoUpdater.ShowUpdateForm(args);
 
-                    if (dialogResult)
+                    if (true)
                     {
                         try
                         {

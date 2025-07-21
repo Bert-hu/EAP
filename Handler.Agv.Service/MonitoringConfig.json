@@ -1,0 +1,97 @@
+{
+  "UpperLimit": 20.0,
+  "LowerLimit": 0.0,
+  "EmailList": [
+    "bert_hu@usiglobal.com"
+  ],
+  "PhoneList": [],
+  "EquipmentMonitorTime": {
+    "EQLMK00138": "2025-05-26T15:39:58.049",
+    "EQLAS00179": "2025-05-26T04:58:29.588",
+    "EQLAS00181": "2025-05-26T07:23:05.9",
+    "EQLAS00191": "2025-05-26T14:42:08.467",
+    "EQLAS00198": "2025-04-22T09:31:10.773",
+    "EQLAS00199": "2025-05-26T14:39:43.69",
+    "EQLAS00197": "2025-05-26T14:38:37.947",
+    "EQLAS00194": "2025-05-26T15:47:05.873",
+    "EQLAS00196": "2025-05-04T01:49:21.079",
+    "EQLAS00195": "2025-05-26T15:47:10.054",
+    "EQLMK00137": "2025-05-26T15:01:02.937",
+    "EQLMK00136": "2025-05-26T09:25:32.933",
+    "EQLMK00135": "2025-05-26T09:22:54.579",
+    "EQLMK00134": "2025-05-26T10:41:44.837",
+    "EQLAS00122": "2025-05-26T15:33:48.484",
+    "EQLAS00086": "2025-05-26T10:48:09.95",
+    "EQLAS00095": "2025-05-26T15:52:50.281"
+  },
+  "EquipmentConfig": {
+    "EQLAS00179": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00181": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00191": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00198": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00199": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00197": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00194": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00196": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLAS00195": {
+      "UpperLimit": 31.0,
+      "LowerLimit": 29.0
+    },
+    "EQLMK00138": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLMK00137": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLMK00136": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLMK00135": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLMK00134": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLAS00122": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLAS00086": {
+      "UpperLimit": 18.0,
+      "LowerLimit": 17.0
+    },
+    "EQLAS00095": {
+      "UpperLimit": 7.0,
+      "LowerLimit": 5.0
+    }
+  }
+}
