@@ -4,7 +4,7 @@ using System.Linq;
 
 using SqlSugar;
 
-namespace LaserMonitor.Service.Services
+namespace HandlerAgv.Service.Services
 {
     [SugarTable("USI_PUBLIC.MSG_SEND")]
 

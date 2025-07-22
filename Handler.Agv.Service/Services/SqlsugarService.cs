@@ -1,6 +1,7 @@
 ﻿using SqlSugar;
+using System.Reflection;
 
-namespace LaserMonitor.Service.Services
+namespace HandlerAgv.Service.Services
 {
     public class SqlsugarService
     {
@@ -76,6 +77,10 @@ namespace LaserMonitor.Service.Services
             {
                 db.Aop.OnLogExecuting = onLogExecuting;
             });
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var types = assembly.GetTypes();
+            sqlSugar.CodeFirst.InitTables(types.Where(t => t.Namespace != null && t.IsClass == true && t.Namespace.StartsWith("LogFileWatcher.Models.Database")).ToArray());
 
             return sqlSugar;
         }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LaserMonitor.Service.Services
+namespace HandlerAgv.Service.Services
 {
     public class ConfigManager<T> where T : new()
     {

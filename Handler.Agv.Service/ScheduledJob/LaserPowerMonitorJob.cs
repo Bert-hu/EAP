@@ -1,12 +1,12 @@
-﻿using LaserMonitor.Service.Models;
-using LaserMonitor.Service.Services;
+﻿using HandlerAgv.Service.Models;
+using HandlerAgv.Service.Services;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Quartz;
 using System.Configuration;
 using System.Text;
 
-namespace LaserMonitor.Service.ScheduledJob
+namespace HandlerAgv.Service.ScheduledJob
 {
     public class LaserPowerMonitorJob : IJob
     {

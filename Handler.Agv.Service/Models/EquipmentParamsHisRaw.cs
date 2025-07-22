@@ -1,5 +1,5 @@
 ﻿using SqlSugar;
-namespace LaserMonitor.Service.Models
+namespace HandlerAgv.Service.Models
 {
     [SugarTable("EQUIPMENTPARAMSHISRAW")]
     public class EquipmentParamsHisRaw

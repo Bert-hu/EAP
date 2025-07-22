@@ -2,7 +2,7 @@
 using Quartz.Impl;
 using Quartz;
 
-namespace LaserMonitor.Service.Services
+namespace HandlerAgv.Service.Services
 {
     public class QuartzUtil
     {

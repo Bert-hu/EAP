@@ -1,4 +1,4 @@
-﻿namespace LaserMonitor.Service.Models
+﻿namespace HandlerAgv.Service.Models
 {
     public class MonitoringConfig
     {

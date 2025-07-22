@@ -1,10 +1,10 @@
-﻿using LaserMonitor.Service.ScheduledJob;
+﻿using HandlerAgv.Service.ScheduledJob;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
 using System.Configuration;
 
-namespace LaserMonitor.Service.Services
+namespace HandlerAgv.Service.Services
 {
     public class CommonWorker : BackgroundService
     {

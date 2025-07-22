@@ -1,8 +1,8 @@
 
-using LaserMonitor.Service.Services;
+using HandlerAgv.Service.Services;
 using log4net.Config;
 
-namespace LaserMonitor.Service
+namespace HandlerAgv.Service
 {
     public class Program
     {

@@ -1,5 +1,5 @@
-﻿using LaserMonitor.Service.Models;
-using LaserMonitor.Service.Services;
+﻿using HandlerAgv.Service.Models;
+using HandlerAgv.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SqlServer.Server;
 using Newtonsoft.Json.Linq;
@@ -7,7 +7,7 @@ using OfficeOpenXml;
 using SqlSugar;
 using System.Drawing;
 
-namespace LaserMonitor.Service.Controllers
+namespace HandlerAgv.Service.Controllers
 {
     public class DashboardController : Controller
     {
