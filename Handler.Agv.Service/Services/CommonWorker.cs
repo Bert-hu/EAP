@@ -12,7 +12,7 @@ namespace HandlerAgv.Service.Services
         private bool _isDevelopment;
         private static log4net.ILog Log = LogManager.GetLogger("Debug");
 
-        public CommonWorker(IConfiguration configuration, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        public CommonWorker(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.configuration = configuration;
             _isDevelopment = env.IsDevelopment();
@@ -28,12 +28,12 @@ namespace HandlerAgv.Service.Services
                 jobDataMap.Add("configuration", configuration);
                 if (_isDevelopment)
                 {
-                    _ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 600000, jobDataMap);
+                    //_ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 600000, jobDataMap);
 
                 }
                 else
                 {
-                    _ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
+                    //_ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
 
                 }
             }

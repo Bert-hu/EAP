@@ -9,6 +9,9 @@ using System.Drawing;
 
 namespace HandlerAgv.Service.Controllers
 {
+    [HiddenApi]
+    [Route("[controller]/[action]")]
+
     public class DashboardController : Controller
     {
         private readonly ISqlSugarClient sqlSugarClient;
@@ -41,6 +44,7 @@ namespace HandlerAgv.Service.Controllers
 
             return Json(new { eqids = eqids, lowerlimit = config.LowerLimit, upperlimit = config.UpperLimit });
         }
+        [HttpPost]
 
         public JsonResult SetLimits(string equipmentid, string lowerlimit, string upperlimit)
         {
