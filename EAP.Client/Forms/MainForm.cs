@@ -226,7 +226,6 @@ namespace EAP.Client.Forms
                 AutoUpdater.Start(updateUrl);
             };
             timer.Start();
-
             DispatcherTimer locktimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };//定时去检测更新根据自己业务需求
             bool isrunning = false;
             locktimer.Tick += delegate
