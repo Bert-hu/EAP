@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35431.28
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EAP.Client", "EAP.Client\EAP.Client.csproj", "{87F08BC5-AF1D-4C4F-A8D3-AC6D7477AF86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Handler.Agv.Service", "Handler.Agv.Service\Handler.Agv.Service.csproj", "{18E839DA-1973-DE3E-E8D5-0DBC237B0F70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandlerAgv.Service", "Handler.Agv.Service\HandlerAgv.Service.csproj", "{C744944B-09A4-B545-EED0-1758F0B2227B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{87F08BC5-AF1D-4C4F-A8D3-AC6D7477AF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87F08BC5-AF1D-4C4F-A8D3-AC6D7477AF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87F08BC5-AF1D-4C4F-A8D3-AC6D7477AF86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{18E839DA-1973-DE3E-E8D5-0DBC237B0F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18E839DA-1973-DE3E-E8D5-0DBC237B0F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18E839DA-1973-DE3E-E8D5-0DBC237B0F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18E839DA-1973-DE3E-E8D5-0DBC237B0F70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C744944B-09A4-B545-EED0-1758F0B2227B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C744944B-09A4-B545-EED0-1758F0B2227B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C744944B-09A4-B545-EED0-1758F0B2227B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C744944B-09A4-B545-EED0-1758F0B2227B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
