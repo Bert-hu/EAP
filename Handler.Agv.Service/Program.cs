@@ -65,6 +65,7 @@ namespace HandlerAgv.Service
                 #endregion
 
             });
+            builder.Services.AddSqlSugarService();
 
             builder.Services.AddSingleton<RabbitMqService>();
             builder.Services.AddHostedService<RabbitMqWorker>();

@@ -35,14 +35,20 @@ namespace HandlerAgv.Service.RabbitMq
             factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
             factory.RequestedHeartbeat = TimeSpan.FromSeconds(10);
 
-            if (!env.IsDevelopment())//测试环境不启用rabiitmq
+            if (!env.IsDevelopment())//正式环境
             {
-                connection = factory.CreateConnectionAsync().Result;
-                channel = connection.CreateChannelAsync().Result;
+                consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"];
+                consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
+            }
+            else //测试环境
+            {
+                consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"] + ".Test";
+                consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
             }
 
-            consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"];
-            consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
+            connection = factory.CreateConnectionAsync().Result;
+            channel = connection.CreateChannelAsync().Result;
+
         }
         public void Produce(string routingKey, RabbitMqTransaction trans)
         {

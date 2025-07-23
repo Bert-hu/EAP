@@ -41,7 +41,7 @@ namespace HandlerAgv.Service.RabbitMq
             Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
 
 
-            rabbitMqService.channel?.QueueDeclareAsync(rabbitMqService.consumeQueue, true, false, true, arguments);
+            rabbitMqService.channel?.QueueDeclareAsync(rabbitMqService.consumeQueue, true, false, false, arguments);
             rabbitMqService.channel?.BasicConsumeAsync(rabbitMqService.consumeQueue, autoAck: true, consumer: consumer);
 
             rabbitMqService.channel?.QueueDeclareAsync(rabbitMqService.consumeSubQueue, true, false, true, arguments);

@@ -12,6 +12,10 @@
       {
         "Name": "ProcessState",
         "ID": 43
+      },
+      {
+        "Name": "RecipeName",
+        "ID": 24
       }
 
     ],
@@ -20,12 +24,20 @@
       //  "ID": 100,
       //  "SvidNames": [ "ControlState", "ProcessState" ]
       //},
-
+      {
+        "ID": 100,
+        "SvidNames": [ "ControlState", "ProcessState" ]
+      }
     ],
     "CEIDList": [
       {
         "Name": "ProcessStateChanged",
         "ID": 5,
+        "ReportIds": []
+      },
+      {
+        "Name": "ProcessProgramChanged",
+        "ID": 4,
         "ReportIds": []
       },
       {

@@ -78,9 +78,30 @@ namespace HandlerAgv.Service.Services
                 db.Aop.OnLogExecuting = onLogExecuting;
             });
 
-            var assembly = Assembly.GetExecutingAssembly();
-            var types = assembly.GetTypes();
-            sqlSugar.CodeFirst.InitTables(types.Where(t => t.Namespace != null && t.IsClass == true && t.Namespace.StartsWith("LogFileWatcher.Models.Database")).ToArray());
+
+            //Code First 生成表
+            var assembly = Assembly.GetExecutingAssembly();           
+            //Assembly wrsmodels = Assembly.Load("Rms.Models");
+            var typesInNamespace = assembly.GetTypes()
+               .Where(t => t.Namespace != null && t.IsClass && t.Namespace.StartsWith("HandlerAgv.Service.Models.Database"))
+               .ToList();
+
+            foreach (var type in typesInNamespace)
+            {
+                try
+                {
+                    if (type.Name == "RecipeBody")
+                    {
+                        continue;
+                    }
+
+                    sqlSugar.CodeFirst.InitTables(type);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
 
             return sqlSugar;
         }

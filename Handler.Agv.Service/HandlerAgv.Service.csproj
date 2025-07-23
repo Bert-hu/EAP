@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Database\" />
     <Folder Include="RabbitMq\TransactionHandler\" />
   </ItemGroup>
 
