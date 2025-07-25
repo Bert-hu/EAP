@@ -25,7 +25,7 @@
       //  "SvidNames": [ "ControlState", "ProcessState" ]
       //},
       {
-        "ID": 100,
+        "ID": 101,
         "SvidNames": [ "ControlState", "ProcessState" ]
       }
     ],
@@ -33,32 +33,32 @@
       {
         "Name": "ProcessStateChanged",
         "ID": 5,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       },
       {
         "Name": "ProcessProgramChanged",
         "ID": 4,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       },
       {
         "Name": "LoadTrayIn",
         "ID": 107,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       },
       {
         "Name": "LoadTrayEmpty",
         "ID": 108,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       },
       {
         "Name": "OffloadTrayIn",
         "ID": 109,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       },
       {
         "Name": "OffloadTrayEmpty",
         "ID": 110,
-        "ReportIds": []
+        "ReportIds": [ 101 ]
       }
     ],
     "ProcessStateCodes": {
