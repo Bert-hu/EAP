@@ -24,17 +24,29 @@ namespace EAP.Client.RabbitMq
             var reptrans = trans.GetReplyTransaction();
             try
             {
-                var recipename = string.Empty;
-                if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipename = _rec?.ToString();
+                var recipeName = string.Empty;
+                if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipeName = _rec?.ToString();
+
+                //TODO: Get current recipe name and get SIVD value 
 
                 SecsMessage s7f5 = new(7, 5, true)
                 {
-                    SecsItem = A(recipename)
+                    SecsItem = A(recipeName)
                 };
                 var rep = await secsGem.SendAsync(s7f5);
                 rep.Name = null;
                 var reprecipename = rep.SecsItem[0].GetString();
                 var data = rep.SecsItem[1].GetMemory<byte>().ToArray();
+
+                var guid = Guid.NewGuid().ToString();   
+                var machineRecipeFile = $"{guid}\\Machine\\{recipeName}";
+                Directory.CreateDirectory(Path.GetDirectoryName(machineRecipeFile));
+                using(FileStream fs = new FileStream(machineRecipeFile, FileMode.Create, FileAccess.Write))
+                {
+                    await fs.WriteAsync(data, 0, data.Length);
+                }
+
+                //TODO: Get Parameters from the recipe
 
                 var strbody = Convert.ToBase64String(data);
                 reptrans.Parameters.Add("Result", true);
