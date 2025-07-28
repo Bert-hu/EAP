@@ -25,40 +25,40 @@
       //  "SvidNames": [ "ControlState", "ProcessState" ]
       //},
       {
-        "ID": 101,
-        "SvidNames": [ "ControlState", "ProcessState" ]
+        "ID": 1001,
+        "SvidNames": [ "RecipeName", "ProcessState" ]
       }
     ],
     "CEIDList": [
       {
         "Name": "ProcessStateChanged",
         "ID": 5,
-        "ReportIds": [ 101 ]
+        "ReportIds": [ 1001 ]
       },
       {
         "Name": "ProcessProgramChanged",
         "ID": 4,
-        "ReportIds": [ 101 ]
+        "ReportIds": [ 1001 ]
       },
       {
         "Name": "LoadTrayIn",
-        "ID": 107,
-        "ReportIds": [ 101 ]
+        "ID": 1000001,
+        "ReportIds": [ 1001 ]
       },
       {
         "Name": "LoadTrayEmpty",
-        "ID": 108,
-        "ReportIds": [ 101 ]
+        "ID": 1000002,
+        "ReportIds": [ 1001 ]
       },
       {
-        "Name": "OffloadTrayIn",
-        "ID": 109,
-        "ReportIds": [ 101 ]
+        "Name": "Auto1TrayOut",
+        "ID": 1000003,
+        "ReportIds": [ 1001 ]
       },
       {
-        "Name": "OffloadTrayEmpty",
-        "ID": 110,
-        "ReportIds": [ 101 ]
+        "Name": "Auto1TrayEmpty",
+        "ID": 1000004,
+        "ReportIds": [ 1001 ]
       }
     ],
     "ProcessStateCodes": {

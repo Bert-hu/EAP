@@ -1,4 +1,5 @@
 ﻿using HandlerAgv.Service.Models;
+using HandlerAgv.Service.Models.Database;
 using HandlerAgv.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SqlServer.Server;
@@ -22,15 +23,23 @@ namespace HandlerAgv.Service.Controllers
         }
 
         /// <summary>
-        /// 获取设备清单
+        /// 查询各个机种Handler设备开机数量
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
-        public JsonResult GetMachineList()
+        [HttpGet]
+        public JsonResult GetMachineCountByMaterial()
         {
-            ConfigManager<MonitoringConfig> manager = new ConfigManager<MonitoringConfig>();
-            var config = manager.LoadConfig();
-            var eqids = config.EquipmentMonitorTime.Keys.ToList();
+            var eq = sqlSugarClient.Queryable<HandlerEquipmentStatus>().ToList();
+
+            var eqids = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
+                .Where(it => it.AgvEnabled == true)
+                .GroupBy(it => new { it.MaterialName, it.GroupName })
+                .Select(it => new
+                {
+                    MaterialName = it.MaterialName,
+                    GroupName = it.GroupName,
+                    Count = SqlFunc.AggregateCount(it.Id)
+                }).ToList();
             return Json(eqids);
         }
 
