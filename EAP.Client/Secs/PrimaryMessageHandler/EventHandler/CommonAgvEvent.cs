@@ -17,28 +17,15 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         internal static ILog traLog = LogManager.GetLogger("Trace");
         public static Dictionary<string, string> StatusDict = new Dictionary<string, string>
         {
-            { "1", "IDLE" },
-            { "2", "READY" },
-            { "3", "INITIALIZING" },
-            { "4", "RUNNING" },
-            { "5", "PAUSE" },
-            { "6", "STOP" },
-            { "7", "LOCKED" },
-            { "8", "TEACHING" },
-            { "9", "WARNING" },
-            { "10", "ERROR" },
-            { "11", "ENDING_LOT" },
-            { "12", "HOMING" },
-            { "13", "MOTOR_TUNING" },
-            { "14", "DRY_RUN_RUNNING" },
-            { "15", "DRY_RUN_PAUSE" },
-            { "16", "DRY_RUN_WARNING" },
-            { "17", "DRY_RUN_ERROR" },
-            { "18", "EXERCISE_RUNNING" },
-            { "19", "EXERCISE_PAUSE" },
-            { "20", "EXERCISE_WARNING" },
-            { "21", "EXERCISE_ERROR" },
-            { "22", "SEPARATE_COLOR_TRAY_RUNNING" }
+            { "1", "INIT" },
+            { "2", "IDLE" },
+            { "3", "SETUP" },
+            { "4", "READY" },
+            { "5", "EXECUTING" },
+            { "6", "PAUSE" },
+            { "7", "ALARM_PAUSE" },
+            { "8", "IDLE_WITH_ALARMS" },
+            { "9", "EXIT" }
         };
         internal void HandleCommonAgvEvent(GemCeid ceid, PrimaryMessageWrapper wrapper, RabbitMqService rabbitMq, CommonLibrary commonLibrary)
         {

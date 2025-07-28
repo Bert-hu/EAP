@@ -57,7 +57,7 @@
       },
       {
         "Name": "UnloadEmpty",
-        "ID": 1000004,
+        "ID": 158,
         "ReportIds": [ 1001 ]
       }
     ],
@@ -65,25 +65,12 @@
       "1": "Idle",
       "2": "Idle",
       "3": "Idle",
-      "4": "Run",
-      "5": "Idle",
+      "4": "Idle",
+      "5": "Run",
       "6": "Idle",
-      "7": "Idle",
-      "8": "Idle",
-      "9": "Alarm",
-      "10": "Alarm",
-      "11": "Idle",
-      "12": "Idle",
-      "13": "Idle",
-      "14": "Run",
-      "15": "Idle",
-      "16": "Alarm",
-      "17": "Alarm",
-      "18": "Run",
-      "19": "Idle",
-      "20": "Alarm",
-      "21": "Alarm",
-      "22": "Run"
+      "7": "Alarm",
+      "8": "Alarm",
+      "9": "Idle"
     }
   },
   "Others": {

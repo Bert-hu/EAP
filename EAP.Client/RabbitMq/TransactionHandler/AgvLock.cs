@@ -27,24 +27,23 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             var reptrans = trans.GetReplyTransaction();
             try
             {
-                var recipeName = string.Empty;
-                if (trans.Parameters.TryGetValue("RecipeName", out object _rec)) recipeName = _rec?.ToString();
                 var s2f41 = new SecsMessage(2, 41)
                 {
                     SecsItem = L(
-                        A("LOCKAGV"),
-                        L(
-                            L(
+        A("LOCKAGV"),
+        L(
+            L(
 
-                                )
-                            ))
+                )
+            ))
                 };
                 var s2f42 = await secsGem.SendAsync(s2f41);
-                if (s2f42.SecsItem.FirstValue<byte>() == 0)
+                if (s2f42.SecsItem[0].FirstValue<byte>() == 0)
                 {
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("Message", "Success!");
-                }else
+                }
+                else
                 {
                     reptrans.Parameters.Add("Result", false);
                     reptrans.Parameters.Add("Message", $"AGV Lock Failed, Error Code: {s2f42.SecsItem.FirstValue<byte>()}");
