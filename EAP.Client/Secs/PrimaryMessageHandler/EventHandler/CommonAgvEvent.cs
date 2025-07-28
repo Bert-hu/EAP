@@ -51,7 +51,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 string processState = "Unknown";
 
                 recipeName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
-                processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][1].FirstValue<byte>().ToString();
+                processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][1].GetString();
                 StatusDict.TryGetValue(processStateCode, out processState);
 
 

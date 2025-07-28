@@ -42,21 +42,21 @@
       },
       {
         "Name": "LoadTrayIn",
-        "ID": 1000001,
+        "ID": 151,
         "ReportIds": [ 1001 ]
       },
       {
-        "Name": "LoadTrayEmpty",
-        "ID": 1000002,
+        "Name": "UnloadTrayOut",
+        "ID": 156,
         "ReportIds": [ 1001 ]
       },
       {
-        "Name": "Auto1TrayOut",
-        "ID": 1000003,
+        "Name": "LoadLastPanel",
+        "ID": 157,
         "ReportIds": [ 1001 ]
       },
       {
-        "Name": "Auto1TrayEmpty",
+        "Name": "UnloadEmpty",
         "ID": 1000004,
         "ReportIds": [ 1001 ]
       }

@@ -4,7 +4,7 @@ using Secs4Net;
 
 namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 {
-    internal class LoadTrayEmpty : CommonAgvEvent, IEventHandler
+    internal class LoadLastPanel : CommonAgvEvent, IEventHandler
     {
 
         private RabbitMqService rabbitMqService;
@@ -12,7 +12,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         private readonly CommonLibrary commonLibrary;
         private readonly IServiceProvider serviceProvider;
 
-        public LoadTrayEmpty(RabbitMqService rabbitMqService, ISecsGem secsGem, CommonLibrary commonLibrary, IServiceProvider serviceProvider)
+        public LoadLastPanel(RabbitMqService rabbitMqService, ISecsGem secsGem, CommonLibrary commonLibrary, IServiceProvider serviceProvider)
         {
             this.rabbitMqService = rabbitMqService;
             this.secsGem = secsGem;
