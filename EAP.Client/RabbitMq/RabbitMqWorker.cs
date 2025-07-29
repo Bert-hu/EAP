@@ -99,7 +99,7 @@ namespace EAP.Client.RabbitMq
                             handler.HandleTransaction(trans);
                         }
                         //ITransactionHandler obj = (ITransactionHandler)Activator.CreateInstance(type);
-                        //obj.HandleTransaction(trans, _rabbitMqService, _secsGem, _hsmsConnection, commonLibrary);
+                        //obj.HandleTransaction(trans, _rabbitMqService, secsGem, _hsmsConnection, commonLibrary);
                     }
                     else
                     {

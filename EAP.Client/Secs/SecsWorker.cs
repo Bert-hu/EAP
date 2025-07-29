@@ -107,7 +107,7 @@ namespace EAP.Client.Secs
             if (type != null)
             {
                 //IPrimaryMessageHandler obj = (IPrimaryMessageHandler)Activator.CreateInstance(type);
-                //await obj.HandlePrimaryMessage(wrapper, _rabbitMqService, _secsGem, commonLibrary);
+                //await obj.HandlePrimaryMessage(wrapper, _rabbitMqService, secsGem, commonLibrary);
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     var handler = (IPrimaryMessageHandler)scope.ServiceProvider.GetRequiredService(type);

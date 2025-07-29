@@ -15,8 +15,12 @@ namespace HandlerAgv.Service.Models.Database
         public string? GroupName { get; set; }
         [SugarColumn(ColumnDescription = "入料口Tray盘数")]
         public int InputTrayNumber { get; set; } = 0;
+        [SugarColumn(ColumnDescription = "入料口Tray盘数更新时间")]
+        public DateTime InputTrayUpdateTime { get; set; } = DateTime.Now;
         [SugarColumn(ColumnDescription = "出料口Tray盘数")]
         public int OutputTrayNumber { get; set; } = 0;
+        [SugarColumn(ColumnDescription = "出料口Tray盘数更新时间")]
+        public DateTime OutputTrayUpdateTime { get; set; } = DateTime.Now;
         public bool AgvEnabled { get; set; } = false;
         public string IP { get; set; } = string.Empty;
         public int InputTrayCT { get; set; }

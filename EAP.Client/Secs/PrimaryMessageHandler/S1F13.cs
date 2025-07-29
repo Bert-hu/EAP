@@ -29,10 +29,10 @@ namespace EAP.Client.Secs.PrimaryMessageHandler
                 await wrapper.TryReplyAsync(secondaryMessage);
             }
             //var s1f13 =  commonLibrary.GetSecsMessageByName("S1F13");
-            //_  = _secsGem.SendAsync(s1f13);
+            //_  = secsGem.SendAsync(s1f13);
             //if (rep.F == 14)
             //{
-            //    await Task.Run(() => SecsInitialization.Initialization(_secsGem, commonLibrary));
+            //    await Task.Run(() => SecsInitialization.Initialization(secsGem, commonLibrary));
             //}
         }
 
