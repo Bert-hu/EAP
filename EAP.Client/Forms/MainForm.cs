@@ -11,6 +11,7 @@ using Sunny.UI;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Windows.Threading;
 using static Secs4Net.Item;
@@ -27,6 +28,32 @@ namespace EAP.Client.Forms
         private readonly RabbitMq.RabbitMqService rabbitMqservice;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
+        int inputTrayCount = 0;
+        int outputTrayCount = 0;
+        public int InputTrayCount
+        {
+            get { return inputTrayCount; }
+            set
+            {
+                inputTrayCount = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLedLabel_inputTrayCount.Text = inputTrayCount.ToString();
+                }));
+            }
+        }
+        public int OutputTrayCount
+        {
+            get { return outputTrayCount; }
+            set
+            {
+                outputTrayCount = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLedLabel_outputTrayCount.Text = outputTrayCount.ToString();
+                }));
+            }
+        }
 
         public static MainForm Instance
         {
@@ -39,11 +66,6 @@ namespace EAP.Client.Forms
                 return instance;
             }
         }
-        //public MainForm()
-        //{
-        //    InitializeComponent();
-        //}
-
 
         public MainForm(IConfiguration configuration, ISecsConnection secsConnection, CommonLibrary commonLibrary, ISecsGem secsGem, RabbitMq.RabbitMqService rabbitMq)
         {
@@ -181,11 +203,13 @@ namespace EAP.Client.Forms
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
             AutoUpdater.Start(updateUrl);
+            UpdateMachineIP(); //更新机器IP
 
             DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };//定时去检测更新根据自己业务需求
             timer.Tick += delegate
             {
                 AutoUpdater.Start(updateUrl);
+                UpdateMachineIP(); //更新机器IP
             };
             timer.Start();
         }
@@ -256,32 +280,6 @@ namespace EAP.Client.Forms
         }
 
 
-        private void button_CompareRecipe_Click(object sender, EventArgs e)
-        {
-            button_CompareRecipe.Enabled = false;
-            Task.Run(() =>
-            {
-
-                try
-                {
-
-
-                }
-                catch (Exception ex)
-                {
-                    traLog.Error(ex);
-                }
-
-
-                this.Invoke(() =>
-                {
-                    button_CompareRecipe.Enabled = true;
-                });
-            });
-
-
-        }
-
 
         private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
@@ -315,7 +313,6 @@ namespace EAP.Client.Forms
         {
             try
             {
-                //TODO rabbit mq get machine info
                 var trans = new RabbitMqTransaction
                 {
                     EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
@@ -327,8 +324,10 @@ namespace EAP.Client.Forms
 
                 var info = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
                 if (info != null)
-                { 
+                {
                     //AGV Enabled, Loader Count, Unloader Count
+                    InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
+                    OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
 
                 }
                 else
@@ -340,6 +339,165 @@ namespace EAP.Client.Forms
             catch (Exception ex)
             {
                 traLog.Error($"获取设备信息失败： {ex.ToString()}");
+            }
+        }
+
+        public void UpdateMachineIP()
+        {
+            var ips = Dns.GetHostAddresses(Dns.GetHostName());
+            // 过滤测试网段的Ipv4地址
+            var ipv4 = ips.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork &&
+                    ip.ToString().StartsWith("10.6"));
+            if (ipv4 != null)
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = "UpdateMachineIP",
+                    NeedReply = true,
+                    ExpireSecond = 5,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "MachineIP", ipv4.ToString() }
+                    }
+                };
+                rabbitMqservice.Produce("HandlerAgv.Service", trans);
+            }
+        }
+
+        public bool UpdateMachineInputTrayCount(int count)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = "UpdateMachineInputTrayCount",
+                    NeedReply = true,
+                    ExpireSecond = 5,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "InputTrayCount", count }
+                    }
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
+                    if (result)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        traLog.Warn($"更新入料口盘数失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
+                        return false;
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"更新入料口盘数超时。");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"更新入料口盘数失败: {ex.ToString()}");
+                return false;
+            }
+        }
+
+        public bool UpdateMachineOutputTrayCount(int count)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = "UpdateMachineOutputTrayCount",
+                    NeedReply = true,
+                    ExpireSecond = 5,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "OutputTrayCount", count }
+                    }
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
+                    if (result)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        traLog.Warn($"更新出料口盘数失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
+                        return false;
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"更新出料口盘数超时。");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"更新出料口盘数失败: {ex.ToString()}");
+                return false;
+            }
+
+        }
+
+        private void uiButton_inputTrayCount_Click(object sender, EventArgs e)
+        {
+            EditValueForm editValueForm = new EditValueForm("修改入料口盘数", InputTrayCount.ToString());
+            if (editValueForm.ShowDialog() == DialogResult.OK)
+            {
+                if (int.TryParse(editValueForm.Value, out int newCount) && newCount >= 0)
+                {
+                    if (UpdateMachineInputTrayCount(newCount))
+                    {
+                        InputTrayCount = newCount;
+                        traLog.Info("入料口盘数更新成功");
+                    }
+                    else
+                    {
+                        traLog.Warn("入料口盘数更新失败");
+                    }
+                }
+                else
+                {
+                    UIMessageBox.ShowWarning("请输入有效的盘数");
+                }
+            }
+        }
+
+        private void uiButton_outputTrayCount_Click(object sender, EventArgs e)
+        {
+            EditValueForm editValueForm = new EditValueForm("修改出料口盘数", OutputTrayCount.ToString());
+            if (editValueForm.ShowDialog() == DialogResult.OK)
+            {
+                if (int.TryParse(editValueForm.Value, out int newCount) && newCount >= 0)
+                {
+                    if (UpdateMachineOutputTrayCount(newCount))
+                    {
+                        OutputTrayCount = newCount;
+                        traLog.Info("出料口盘数更新成功");
+                    }
+                    else
+                    {
+                        traLog.Warn("出料口盘数更新失败");
+                    }
+                }
+                else
+                {
+                    UIMessageBox.ShowWarning("请输入有效的盘数");
+                }
             }
         }
     }

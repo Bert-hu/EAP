@@ -37,10 +37,13 @@ namespace EAP.Client.Forms
             label_updatetime_aoi = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_outputTrayCount = new UIButton();
+            uiButton_inputTrayCount = new UIButton();
+            uiLedLabel_outputTrayCount = new UILedLabel();
+            uiLedLabel_inputTrayCount = new UILedLabel();
             uiCheckBox1 = new UICheckBox();
             uiCheckBox_agvEnabled = new UICheckBox();
             label_ProcessState = new UILabel();
-            button_CompareRecipe = new UIButton();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
             groupBox_1.SuspendLayout();
@@ -96,6 +99,10 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_outputTrayCount);
+            groupBox_1.Controls.Add(uiButton_inputTrayCount);
+            groupBox_1.Controls.Add(uiLedLabel_outputTrayCount);
+            groupBox_1.Controls.Add(uiLedLabel_inputTrayCount);
             groupBox_1.Controls.Add(uiCheckBox1);
             groupBox_1.Controls.Add(uiCheckBox_agvEnabled);
             groupBox_1.Controls.Add(label_ProcessState);
@@ -109,11 +116,67 @@ namespace EAP.Client.Forms
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(471, 306);
+            groupBox_1.Size = new Size(590, 306);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
+            // 
+            // uiButton_outputTrayCount
+            // 
+            uiButton_outputTrayCount.FillColor = Color.FromArgb(110, 190, 40);
+            uiButton_outputTrayCount.FillColor2 = Color.FromArgb(110, 190, 40);
+            uiButton_outputTrayCount.FillHoverColor = Color.FromArgb(139, 203, 83);
+            uiButton_outputTrayCount.FillPressColor = Color.FromArgb(88, 152, 32);
+            uiButton_outputTrayCount.FillSelectedColor = Color.FromArgb(88, 152, 32);
+            uiButton_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_outputTrayCount.LightColor = Color.FromArgb(245, 251, 241);
+            uiButton_outputTrayCount.Location = new Point(238, 215);
+            uiButton_outputTrayCount.MinimumSize = new Size(1, 1);
+            uiButton_outputTrayCount.Name = "uiButton_outputTrayCount";
+            uiButton_outputTrayCount.RectColor = Color.FromArgb(110, 190, 40);
+            uiButton_outputTrayCount.RectHoverColor = Color.FromArgb(139, 203, 83);
+            uiButton_outputTrayCount.RectPressColor = Color.FromArgb(88, 152, 32);
+            uiButton_outputTrayCount.RectSelectedColor = Color.FromArgb(88, 152, 32);
+            uiButton_outputTrayCount.Size = new Size(100, 23);
+            uiButton_outputTrayCount.Style = UIStyle.Custom;
+            uiButton_outputTrayCount.TabIndex = 6;
+            uiButton_outputTrayCount.Text = "出料口盘数";
+            uiButton_outputTrayCount.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_outputTrayCount.Click += uiButton_outputTrayCount_Click;
+            // 
+            // uiButton_inputTrayCount
+            // 
+            uiButton_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_inputTrayCount.Location = new Point(21, 215);
+            uiButton_inputTrayCount.MinimumSize = new Size(1, 1);
+            uiButton_inputTrayCount.Name = "uiButton_inputTrayCount";
+            uiButton_inputTrayCount.Size = new Size(100, 23);
+            uiButton_inputTrayCount.TabIndex = 6;
+            uiButton_inputTrayCount.Text = "入料口盘数";
+            uiButton_inputTrayCount.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_inputTrayCount.Click += uiButton_inputTrayCount_Click;
+            // 
+            // uiLedLabel_outputTrayCount
+            // 
+            uiLedLabel_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLedLabel_outputTrayCount.ForeColor = Color.Lime;
+            uiLedLabel_outputTrayCount.Location = new Point(238, 244);
+            uiLedLabel_outputTrayCount.MinimumSize = new Size(1, 1);
+            uiLedLabel_outputTrayCount.Name = "uiLedLabel_outputTrayCount";
+            uiLedLabel_outputTrayCount.Size = new Size(100, 35);
+            uiLedLabel_outputTrayCount.TabIndex = 5;
+            uiLedLabel_outputTrayCount.Text = "0";
+            // 
+            // uiLedLabel_inputTrayCount
+            // 
+            uiLedLabel_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiLedLabel_inputTrayCount.Location = new Point(21, 244);
+            uiLedLabel_inputTrayCount.MinimumSize = new Size(1, 1);
+            uiLedLabel_inputTrayCount.Name = "uiLedLabel_inputTrayCount";
+            uiLedLabel_inputTrayCount.Size = new Size(100, 35);
+            uiLedLabel_inputTrayCount.TabIndex = 5;
+            uiLedLabel_inputTrayCount.Text = "0";
             // 
             // uiCheckBox1
             // 
@@ -152,18 +215,6 @@ namespace EAP.Client.Forms
             label_ProcessState.Text = "Unknown";
             label_ProcessState.Visible = false;
             // 
-            // button_CompareRecipe
-            // 
-            button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
-            button_CompareRecipe.MinimumSize = new Size(1, 1);
-            button_CompareRecipe.Name = "button_CompareRecipe";
-            button_CompareRecipe.Size = new Size(108, 33);
-            button_CompareRecipe.TabIndex = 5;
-            button_CompareRecipe.Text = "比较参数";
-            button_CompareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            button_CompareRecipe.Click += button_CompareRecipe_Click;
-            // 
             // richTextBox1
             // 
             richTextBox1.FillColor = Color.White;
@@ -191,7 +242,6 @@ namespace EAP.Client.Forms
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
             Controls.Add(richTextBox1);
-            Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -220,9 +270,12 @@ namespace EAP.Client.Forms
         private UIGroupBox groupBox_1;
         private UILabel label_ProcessState;
         private UIRichTextBox richTextBox1;
-        private UIButton button_CompareRecipe;
         private NotifyIcon notifyIcon;
         private UICheckBox uiCheckBox_agvEnabled;
         private UICheckBox uiCheckBox1;
+        private UILedLabel uiLedLabel_outputTrayCount;
+        private UILedLabel uiLedLabel_inputTrayCount;
+        private UIButton uiButton_outputTrayCount;
+        private UIButton uiButton_inputTrayCount;
     }
 }
