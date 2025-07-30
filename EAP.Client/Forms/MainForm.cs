@@ -378,8 +378,14 @@ namespace EAP.Client.Forms
         {
             var ips = Dns.GetHostAddresses(Dns.GetHostName());
             // 过滤测试网段的Ipv4地址
-            var ipv4 = ips.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork &&
-                    ip.ToString().StartsWith("10.6"));
+            var ipv4ips = ips.Where(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToList();
+            var ipv4 = ipv4ips.FirstOrDefault(ip => ip.ToString().StartsWith("10.6"));
+            if(ipv4 == null)
+            {
+                // 如果没有找到10.6开头的IP，取第一个IPv4地址
+                ipv4 = ipv4ips.FirstOrDefault();
+            }
+
             if (ipv4 != null)
             {
                 var trans = new RabbitMqTransaction
