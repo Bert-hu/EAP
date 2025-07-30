@@ -380,7 +380,7 @@ namespace EAP.Client.Forms
             // 过滤测试网段的Ipv4地址
             var ipv4ips = ips.Where(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToList();
             var ipv4 = ipv4ips.FirstOrDefault(ip => ip.ToString().StartsWith("10.6"));
-            if(ipv4 == null)
+            if (ipv4 == null)
             {
                 // 如果没有找到10.6开头的IP，取第一个IPv4地址
                 ipv4 = ipv4ips.FirstOrDefault();
@@ -492,7 +492,45 @@ namespace EAP.Client.Forms
         }
         public bool UpdateAgvEnabled(bool enabled)
         {
-            return false;
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = "UpdateAgvEnabled",
+                    NeedReply = true,
+                    ExpireSecond = 5,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "AgvEnabled", enabled }
+                    }
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
+                    if (result)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        traLog.Warn($"更新AGV模式失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
+                        return false;
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"更新AGV模式超时。");
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         private void uiButton_inputTrayCount_Click(object sender, EventArgs e)
@@ -545,7 +583,36 @@ namespace EAP.Client.Forms
 
         private void uiButton_swichAgvMode_Click(object sender, EventArgs e)
         {
-
+            if (AgvEnabled)
+            {
+                if (ConfirmMessageBox("确定要关闭AGV模式吗？"))
+                {
+                    if(UpdateAgvEnabled(false))
+                    {
+                        AgvEnabled = false;
+                        traLog.Info("AGV模式已关闭");
+                    }
+                    else
+                    {
+                       traLog.Error("关闭AGV模式失败，请稍后重试。");
+                    }
+                }
+            }
+            else
+            {
+                if (ConfirmMessageBox($"确定要开启AGV模式吗？当前入料口盘数{InputTrayCount},出料口盘数{OutputTrayCount}，请确盘数正确。"))
+                {
+                    if (UpdateAgvEnabled(true))
+                    {
+                        AgvEnabled = true;
+                        traLog.Info("AGV模式已开启");
+                    }
+                    else
+                    {
+                        traLog.Error("开启AGV模式失败，请稍后重试。");
+                    }
+                }
+            }
         }
     }
 }

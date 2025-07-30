@@ -5,13 +5,13 @@ using SqlSugar;
 
 namespace HandlerAgv.Service.RabbitMq.TransactionHandler
 {
-    public class UpdateMachineInputTrayCount : ITransactionHandler
+    public class UpdateAgvEnabled : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         private ISqlSugarClient sqlSugarClient;
         private readonly RabbitMqService rabbitMqService;
-        public UpdateMachineInputTrayCount(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
+        public UpdateAgvEnabled(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.rabbitMqService = rabbitMqService;
@@ -23,27 +23,26 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
             try
             {
                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
-                if (machine != null)
-                {
-                    var inputTrayCount = int.Parse(trans.Parameters["InputTrayCount"].ToString());
-                    machine.InputTrayNumber = inputTrayCount;
-                    machine.InputTrayUpdateTime = DateTime.Now;
-                    await sqlSugarClient.Updateable(machine)
-                        .UpdateColumns(it => new { it.InputTrayNumber, it.InputTrayUpdateTime })
-                        .ExecuteCommandAsync();
-                    repTrans.Parameters.Add("Result", true);
-                }
-                else
+                if (machine == null)
                 {
                     repTrans.Parameters.Add("Result", false);
                     repTrans.Parameters.Add("Message", "Machine not found");
+                }
+                else
+                {
+                    machine.AgvEnabled = bool.Parse(trans.Parameters["AgvEnabled"].ToString());
+                    sqlSugarClient.Updateable(machine)
+                        .UpdateColumns(it => new { it.AgvEnabled })
+                        .ExecuteCommand();
+                    repTrans.Parameters.Add("Result", true);
+
                 }
             }
             catch (Exception ex)
             {
                 dbgLog.Error(ex.Message, ex);
                 repTrans.Parameters.Add("Result", false);
-                repTrans.Parameters.Add("Message", "Error occurred while updating input tray count");
+                repTrans.Parameters.Add("Message", "Error occurred while updating AGV enabled status");
             }
             rabbitMqService.Produce(trans.ReplyChannel, repTrans);
         }
