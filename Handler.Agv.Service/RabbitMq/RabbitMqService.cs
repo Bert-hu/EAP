@@ -17,6 +17,7 @@ namespace HandlerAgv.Service.RabbitMq
         public IConnection connection;
         public IChannel channel;
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
+        internal static ILog rabbitMqLog = LogManager.GetLogger("RabbitMq");
 
         public readonly string consumeQueue;
         public readonly string consumeSubQueue;
@@ -69,7 +70,7 @@ namespace HandlerAgv.Service.RabbitMq
         {
             try
             {
-                dbgLog.Info($"RabbitMqService Send message to {routingKey}: " + message);
+                rabbitMqLog.Info($"RabbitMqService Send message to {routingKey}: " + message);
                 Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
                 //channel.QueueDeclare(routingKey, false, false, true, arguments);
                 var properties = new BasicProperties();

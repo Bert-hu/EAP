@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
@@ -40,6 +41,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 recipeName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
                 processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][1].GetString();
                 StatusDict.TryGetValue(processStateCode, out processState);
+
+                MainForm.Instance?.UpdateState(processState);
 
 
                 traLog.Debug($"{ceidint} {eventname}: {processState},{recipeName}");

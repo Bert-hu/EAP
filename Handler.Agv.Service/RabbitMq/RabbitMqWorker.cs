@@ -10,8 +10,7 @@ namespace HandlerAgv.Service.RabbitMq
     internal class RabbitMqWorker : BackgroundService
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-        private readonly ILog eqpLog = LogManager.GetLogger("Secs");
-        private readonly ILog traLog = LogManager.GetLogger("Trace");
+        private readonly ILog rabbitMqLog = LogManager.GetLogger("RabbitMq");
 
         private readonly IConfiguration configuration;
         private RabbitMqService rabbitMqService;
@@ -34,7 +33,7 @@ namespace HandlerAgv.Service.RabbitMq
                 var message = Encoding.UTF8.GetString(args.Body.ToArray());
 
                 // Process the received message
-                dbgLog.Info("RabbitMqService Received message: " + message);
+                rabbitMqLog.Info("RabbitMqService Received message: " + message);
 
                 return Task.Run(() => HandleRecivedTrans(message));
             };
@@ -101,7 +100,7 @@ namespace HandlerAgv.Service.RabbitMq
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            traLog.Info("RabbitMqService Start");
+            dbgLog.Info("RabbitMqService Start");
             return base.StartAsync(cancellationToken);
         }
     }

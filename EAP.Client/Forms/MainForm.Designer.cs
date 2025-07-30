@@ -32,9 +32,9 @@ namespace EAP.Client.Forms
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            label_updatetime_aoi = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_swichAgvMode = new UIButton();
             uiButton_outputTrayCount = new UIButton();
             uiButton_inputTrayCount = new UIButton();
             uiLedLabel_outputTrayCount = new UILedLabel();
@@ -44,20 +44,8 @@ namespace EAP.Client.Forms
             label_ProcessState = new UILabel();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
-            uiButton_swichAgvMode = new UIButton();
             groupBox_1.SuspendLayout();
             SuspendLayout();
-            // 
-            // label_updatetime_aoi
-            // 
-            label_updatetime_aoi.AutoSize = true;
-            label_updatetime_aoi.Font = new Font("宋体", 12F);
-            label_updatetime_aoi.ForeColor = Color.FromArgb(48, 48, 48);
-            label_updatetime_aoi.Location = new Point(296, 40);
-            label_updatetime_aoi.Name = "label_updatetime_aoi";
-            label_updatetime_aoi.Size = new Size(103, 16);
-            label_updatetime_aoi.TabIndex = 2;
-            label_updatetime_aoi.Text = "Update Time:";
             // 
             // label_conn_status
             // 
@@ -82,7 +70,6 @@ namespace EAP.Client.Forms
             groupBox_1.Controls.Add(uiCheckBox_agvEnabled);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
-            groupBox_1.Controls.Add(label_updatetime_aoi);
             groupBox_1.Font = new Font("宋体", 12F);
             groupBox_1.Location = new Point(12, 40);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
@@ -94,6 +81,19 @@ namespace EAP.Client.Forms
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
+            // 
+            // uiButton_swichAgvMode
+            // 
+            uiButton_swichAgvMode.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_swichAgvMode.Location = new Point(15, 74);
+            uiButton_swichAgvMode.MinimumSize = new Size(1, 1);
+            uiButton_swichAgvMode.Name = "uiButton_swichAgvMode";
+            uiButton_swichAgvMode.Size = new Size(100, 35);
+            uiButton_swichAgvMode.Style = UIStyle.Custom;
+            uiButton_swichAgvMode.TabIndex = 7;
+            uiButton_swichAgvMode.Text = "开启AGV模式";
+            uiButton_swichAgvMode.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_swichAgvMode.Click += uiButton_swichAgvMode_Click;
             // 
             // uiButton_outputTrayCount
             // 
@@ -186,7 +186,6 @@ namespace EAP.Client.Forms
             label_ProcessState.Size = new Size(103, 27);
             label_ProcessState.TabIndex = 3;
             label_ProcessState.Text = "Unknown";
-            label_ProcessState.Visible = false;
             // 
             // richTextBox1
             // 
@@ -209,19 +208,6 @@ namespace EAP.Client.Forms
             notifyIcon.Text = "EAP.Client";
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
-            // 
-            // uiButton_swichAgvMode
-            // 
-            uiButton_swichAgvMode.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_swichAgvMode.Location = new Point(15, 74);
-            uiButton_swichAgvMode.MinimumSize = new Size(1, 1);
-            uiButton_swichAgvMode.Name = "uiButton_swichAgvMode";
-            uiButton_swichAgvMode.Size = new Size(100, 35);
-            uiButton_swichAgvMode.Style = UIStyle.Custom;
-            uiButton_swichAgvMode.TabIndex = 7;
-            uiButton_swichAgvMode.Text = "开启AGV模式";
-            uiButton_swichAgvMode.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_swichAgvMode.Click += uiButton_swichAgvMode_Click;
             // 
             // MainForm
             // 
@@ -246,7 +232,6 @@ namespace EAP.Client.Forms
         #endregion
         private UILabel label3;
         private UILabel label4;
-        private UILabel label_updatetime_aoi;
         private UILabel label_conn_status;
         private UIButton button1;
         private UIButton button_getModelName;

@@ -141,14 +141,6 @@ namespace EAP.Client.Forms
             }));
         }
 
-        public void UpdateAoiPanelAndModelname(string panelid, string modelname)
-        {
-            this.Invoke(new Action(() =>
-            {
-
-                this.label_updatetime_aoi.Text = "Update Time: " + DateTime.Now.ToString("MM-dd HH:mm:ss");
-            }));
-        }
 
         public void UpdateState(string state)
         {
@@ -512,6 +504,7 @@ namespace EAP.Client.Forms
                     var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
                     if (result)
                     {
+                        traLog.Info($"更新AGV模式成功: {(enabled ? "开启" : "关闭")}");
                         return true;
                     }
                     else
@@ -639,17 +632,7 @@ namespace EAP.Client.Forms
                 {
                     bool updateResult = await Task.Run(() => UpdateAgvEnabled(newState));
 
-                    if (updateResult)
-                    {
-                        AgvEnabled = newState;
-                        traLog.Info(newState ? "AGV模式已开启" : "AGV模式已关闭");
-                    }
-                    else
-                    {
-                        traLog.Error(newState
-                            ? "开启AGV模式失败，请稍后重试。"
-                            : "关闭AGV模式失败，请稍后重试。");
-                    }
+                    await Task.Run(() => GetMachineInfo());
                 }
             }
             catch (Exception ex)
