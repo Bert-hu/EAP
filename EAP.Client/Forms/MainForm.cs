@@ -329,9 +329,9 @@ namespace EAP.Client.Forms
             //}
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
+        private async void MainForm_Shown(object sender, EventArgs e)
         {
-            GetMachineInfo();
+            await Task.Run(() => GetMachineInfo());
         }
 
         public void GetMachineInfo()
@@ -499,7 +499,7 @@ namespace EAP.Client.Forms
                     EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
                     TransactionName = "UpdateAgvEnabled",
                     NeedReply = true,
-                    ExpireSecond = 5,
+                    ExpireSecond = 3,
                     ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
                     Parameters = new Dictionary<string, object>
                     {
@@ -533,21 +533,42 @@ namespace EAP.Client.Forms
             }
         }
 
-        private void uiButton_inputTrayCount_Click(object sender, EventArgs e)
+        private async void uiButton_inputTrayCount_Click(object sender, EventArgs e)
         {
             EditValueForm editValueForm = new EditValueForm("修改入料口盘数", InputTrayCount.ToString());
             if (editValueForm.ShowDialog() == DialogResult.OK)
             {
                 if (int.TryParse(editValueForm.Value, out int newCount) && newCount >= 0)
                 {
-                    if (UpdateMachineInputTrayCount(newCount))
+                    // 显示等待状态
+                    Cursor = Cursors.WaitCursor;
+                    uiButton_inputTrayCount.Enabled = false;
+
+                    try
                     {
-                        InputTrayCount = newCount;
-                        traLog.Info("入料口盘数更新成功");
+                        // 在后台线程执行耗时操作
+                        bool updateResult = await Task.Run(() => UpdateMachineInputTrayCount(newCount));
+
+                        if (updateResult)
+                        {
+                            InputTrayCount = newCount;
+                            traLog.Info("入料口盘数更新成功");
+                        }
+                        else
+                        {
+                            traLog.Warn("入料口盘数更新失败");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        traLog.Warn("入料口盘数更新失败");
+                        traLog.Error($"更新入料口盘数时发生异常: {ex.Message}");
+                        UIMessageBox.ShowError("更新过程中发生错误");
+                    }
+                    finally
+                    {
+                        // 恢复界面状态
+                        Cursor = Cursors.Default;
+                        uiButton_inputTrayCount.Enabled = true;
                     }
                 }
                 else
@@ -557,21 +578,42 @@ namespace EAP.Client.Forms
             }
         }
 
-        private void uiButton_outputTrayCount_Click(object sender, EventArgs e)
+        private async void uiButton_outputTrayCount_Click(object sender, EventArgs e)
         {
             EditValueForm editValueForm = new EditValueForm("修改出料口盘数", OutputTrayCount.ToString());
             if (editValueForm.ShowDialog() == DialogResult.OK)
             {
                 if (int.TryParse(editValueForm.Value, out int newCount) && newCount >= 0)
                 {
-                    if (UpdateMachineOutputTrayCount(newCount))
+                    // 显示等待状态
+                    Cursor = Cursors.WaitCursor;
+                    uiButton_outputTrayCount.Enabled = false;
+
+                    try
                     {
-                        OutputTrayCount = newCount;
-                        traLog.Info("出料口盘数更新成功");
+                        // 在后台线程执行耗时操作
+                        bool updateResult = await Task.Run(() => UpdateMachineOutputTrayCount(newCount));
+
+                        if (updateResult)
+                        {
+                            OutputTrayCount = newCount;
+                            traLog.Info("出料口盘数更新成功");
+                        }
+                        else
+                        {
+                            traLog.Warn("出料口盘数更新失败");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        traLog.Warn("出料口盘数更新失败");
+                        traLog.Error($"更新出料口盘数时发生异常: {ex.Message}");
+                        UIMessageBox.ShowError("更新过程中发生错误");
+                    }
+                    finally
+                    {
+                        // 恢复界面状态
+                        Cursor = Cursors.Default;
+                        uiButton_outputTrayCount.Enabled = true;
                     }
                 }
                 else
@@ -581,37 +623,43 @@ namespace EAP.Client.Forms
             }
         }
 
-        private void uiButton_swichAgvMode_Click(object sender, EventArgs e)
+        private async void uiButton_swichAgvMode_Click(object sender, EventArgs e)
         {
-            if (AgvEnabled)
+            Cursor = Cursors.WaitCursor;
+            uiButton_swichAgvMode.Enabled = false;
+
+            try
             {
-                if (ConfirmMessageBox("确定要关闭AGV模式吗？"))
+                bool newState = !AgvEnabled;
+                string confirmMsg = newState
+                    ? $"确定要开启AGV模式吗？当前入料口盘数{InputTrayCount}，出料口盘数{OutputTrayCount}，请确认盘数正确。"
+                    : "确定要关闭AGV模式吗？";
+
+                if (ConfirmMessageBox(confirmMsg))
                 {
-                    if(UpdateAgvEnabled(false))
+                    bool updateResult = await Task.Run(() => UpdateAgvEnabled(newState));
+
+                    if (updateResult)
                     {
-                        AgvEnabled = false;
-                        traLog.Info("AGV模式已关闭");
+                        AgvEnabled = newState;
+                        traLog.Info(newState ? "AGV模式已开启" : "AGV模式已关闭");
                     }
                     else
                     {
-                       traLog.Error("关闭AGV模式失败，请稍后重试。");
+                        traLog.Error(newState
+                            ? "开启AGV模式失败，请稍后重试。"
+                            : "关闭AGV模式失败，请稍后重试。");
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (ConfirmMessageBox($"确定要开启AGV模式吗？当前入料口盘数{InputTrayCount},出料口盘数{OutputTrayCount}，请确盘数正确。"))
-                {
-                    if (UpdateAgvEnabled(true))
-                    {
-                        AgvEnabled = true;
-                        traLog.Info("AGV模式已开启");
-                    }
-                    else
-                    {
-                        traLog.Error("开启AGV模式失败，请稍后重试。");
-                    }
-                }
+                traLog.Error($"切换AGV模式时发生异常: {ex.Message}");
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                uiButton_swichAgvMode.Enabled = true;
             }
         }
     }
