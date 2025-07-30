@@ -10,16 +10,18 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         private ISqlSugarClient sqlSugarClient;
-        public GetMachineInfo(ISqlSugarClient sqlSugarClient)
+        private readonly RabbitMqService rabbitMqService;
+        public GetMachineInfo(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
         {
             this.sqlSugarClient = sqlSugarClient;
+            this.rabbitMqService = rabbitMqService;
         }
 
         public async Task HandleTransaction(RabbitMqTransaction trans)
         {
+            var repTrans = trans.GetReplyTransaction();
             try
             {
-                var repTrans = trans.GetReplyTransaction();
                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
                 if (machine != null)
                 {
@@ -37,7 +39,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
             catch (Exception ex)
             {
                 dbgLog.Error(ex.Message, ex);
+                repTrans.Parameters.Add("Result", false);
+                repTrans.Parameters.Add("Message", "Error occurred while retrieving machine info");
             }
+            rabbitMqService.Produce(trans.ReplyChannel, repTrans);
         }
     }
 }
