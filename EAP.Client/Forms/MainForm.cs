@@ -30,6 +30,8 @@ namespace EAP.Client.Forms
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
         int inputTrayCount = 0;
         int outputTrayCount = 0;
+        bool agvEnabled = false;
+        bool agvLocked = false;
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -51,6 +53,35 @@ namespace EAP.Client.Forms
                 this.Invoke(new Action(() =>
                 {
                     uiLedLabel_outputTrayCount.Text = outputTrayCount.ToString();
+                }));
+            }
+        }
+        public bool AgvEnabled
+        {
+            get { return agvEnabled; }
+            set
+            {
+                agvEnabled = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiCheckBox_agvEnabled.Checked = agvEnabled;
+                    uiButton_swichAgvMode.Text = agvEnabled ? "关闭AGV模式" : "开启AGV模式";
+                    uiButton_swichAgvMode.Style = agvEnabled ? UIStyle.Orange : UIStyle.Blue;
+                }));
+            }
+        }
+        /// <summary>
+        /// 通过SVID查询设备是否AGV锁定
+        /// </summary>
+        public bool AgvLocked
+        {
+            get { return agvLocked; }
+            set
+            {
+                agvLocked = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiCheckBox_agvLocked.Checked = agvLocked;
                 }));
             }
         }
@@ -109,13 +140,7 @@ namespace EAP.Client.Forms
                 label_conn_status.BackColor = backcolor;
             }));
         }
-        public void UpdateMachineRecipe(string recipename)
-        {
-            this.Invoke(new Action(() =>
-            {
-                this.textBox_machinerecipe.Text = recipename;
-            }));
-        }
+
         public void UpdateAoiPanelAndModelname(string panelid, string modelname)
         {
             this.Invoke(new Action(() =>
@@ -325,10 +350,17 @@ namespace EAP.Client.Forms
                 var info = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
                 if (info != null)
                 {
-                    //AGV Enabled, Loader Count, Unloader Count
-                    InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
-                    OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
-
+                    if (info.Parameters.ContainsKey("Result") && !Convert.ToBoolean(info.Parameters["Result"]))
+                    {
+                        traLog.Warn($"获取设备信息失败: {(info.Parameters.ContainsKey("Message") ? info.Parameters["Message"].ToString() : "未知错误")}");
+                    }
+                    else
+                    {
+                        //AGV Enabled, Loader Count, Unloader Count
+                        AgvEnabled = info.Parameters.ContainsKey("AgvEnabled") ? Convert.ToBoolean(info.Parameters["AgvEnabled"]) : false;
+                        InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
+                        OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
+                    }
                 }
                 else
                 {
@@ -452,6 +484,10 @@ namespace EAP.Client.Forms
             }
 
         }
+        public bool UpdateAgvEnabled(bool enabled)
+        {
+            return false;
+        }
 
         private void uiButton_inputTrayCount_Click(object sender, EventArgs e)
         {
@@ -499,6 +535,11 @@ namespace EAP.Client.Forms
                     UIMessageBox.ShowWarning("请输入有效的盘数");
                 }
             }
+        }
+
+        private void uiButton_swichAgvMode_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

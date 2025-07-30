@@ -32,8 +32,6 @@ namespace EAP.Client.Forms
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            textBox_machinerecipe = new UITextBox();
-            label2 = new UILabel();
             label_updatetime_aoi = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
@@ -41,38 +39,14 @@ namespace EAP.Client.Forms
             uiButton_inputTrayCount = new UIButton();
             uiLedLabel_outputTrayCount = new UILedLabel();
             uiLedLabel_inputTrayCount = new UILedLabel();
-            uiCheckBox1 = new UICheckBox();
+            uiCheckBox_agvLocked = new UICheckBox();
             uiCheckBox_agvEnabled = new UICheckBox();
             label_ProcessState = new UILabel();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
+            uiButton_swichAgvMode = new UIButton();
             groupBox_1.SuspendLayout();
             SuspendLayout();
-            // 
-            // textBox_machinerecipe
-            // 
-            textBox_machinerecipe.Font = new Font("Microsoft YaHei UI", 15F);
-            textBox_machinerecipe.Location = new Point(202, 69);
-            textBox_machinerecipe.Margin = new Padding(4, 5, 4, 5);
-            textBox_machinerecipe.MinimumSize = new Size(1, 16);
-            textBox_machinerecipe.Name = "textBox_machinerecipe";
-            textBox_machinerecipe.Padding = new Padding(5);
-            textBox_machinerecipe.ShowText = false;
-            textBox_machinerecipe.Size = new Size(256, 33);
-            textBox_machinerecipe.TabIndex = 0;
-            textBox_machinerecipe.TextAlignment = ContentAlignment.MiddleLeft;
-            textBox_machinerecipe.Watermark = "";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Microsoft YaHei UI", 15F);
-            label2.ForeColor = Color.FromArgb(48, 48, 48);
-            label2.Location = new Point(15, 72);
-            label2.Name = "label2";
-            label2.Size = new Size(162, 27);
-            label2.TabIndex = 1;
-            label2.Text = "Machine Recipe";
             // 
             // label_updatetime_aoi
             // 
@@ -99,17 +73,16 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_swichAgvMode);
             groupBox_1.Controls.Add(uiButton_outputTrayCount);
             groupBox_1.Controls.Add(uiButton_inputTrayCount);
             groupBox_1.Controls.Add(uiLedLabel_outputTrayCount);
             groupBox_1.Controls.Add(uiLedLabel_inputTrayCount);
-            groupBox_1.Controls.Add(uiCheckBox1);
+            groupBox_1.Controls.Add(uiCheckBox_agvLocked);
             groupBox_1.Controls.Add(uiCheckBox_agvEnabled);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
             groupBox_1.Controls.Add(label_updatetime_aoi);
-            groupBox_1.Controls.Add(textBox_machinerecipe);
-            groupBox_1.Controls.Add(label2);
             groupBox_1.Font = new Font("宋体", 12F);
             groupBox_1.Location = new Point(12, 40);
             groupBox_1.Margin = new Padding(4, 5, 4, 5);
@@ -131,7 +104,7 @@ namespace EAP.Client.Forms
             uiButton_outputTrayCount.FillSelectedColor = Color.FromArgb(88, 152, 32);
             uiButton_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_outputTrayCount.LightColor = Color.FromArgb(245, 251, 241);
-            uiButton_outputTrayCount.Location = new Point(238, 215);
+            uiButton_outputTrayCount.Location = new Point(238, 161);
             uiButton_outputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_outputTrayCount.Name = "uiButton_outputTrayCount";
             uiButton_outputTrayCount.RectColor = Color.FromArgb(110, 190, 40);
@@ -148,7 +121,7 @@ namespace EAP.Client.Forms
             // uiButton_inputTrayCount
             // 
             uiButton_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_inputTrayCount.Location = new Point(21, 215);
+            uiButton_inputTrayCount.Location = new Point(15, 161);
             uiButton_inputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_inputTrayCount.Name = "uiButton_inputTrayCount";
             uiButton_inputTrayCount.Size = new Size(100, 23);
@@ -161,7 +134,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiLedLabel_outputTrayCount.ForeColor = Color.Lime;
-            uiLedLabel_outputTrayCount.Location = new Point(238, 244);
+            uiLedLabel_outputTrayCount.Location = new Point(238, 190);
             uiLedLabel_outputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_outputTrayCount.Name = "uiLedLabel_outputTrayCount";
             uiLedLabel_outputTrayCount.Size = new Size(100, 35);
@@ -171,24 +144,24 @@ namespace EAP.Client.Forms
             // uiLedLabel_inputTrayCount
             // 
             uiLedLabel_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiLedLabel_inputTrayCount.Location = new Point(21, 244);
+            uiLedLabel_inputTrayCount.Location = new Point(15, 190);
             uiLedLabel_inputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_inputTrayCount.Name = "uiLedLabel_inputTrayCount";
             uiLedLabel_inputTrayCount.Size = new Size(100, 35);
             uiLedLabel_inputTrayCount.TabIndex = 5;
             uiLedLabel_inputTrayCount.Text = "0";
             // 
-            // uiCheckBox1
+            // uiCheckBox_agvLocked
             // 
-            uiCheckBox1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiCheckBox1.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox1.Location = new Point(15, 150);
-            uiCheckBox1.MinimumSize = new Size(1, 1);
-            uiCheckBox1.Name = "uiCheckBox1";
-            uiCheckBox1.ReadOnly = true;
-            uiCheckBox1.Size = new Size(203, 29);
-            uiCheckBox1.TabIndex = 4;
-            uiCheckBox1.Text = "AGV锁定(禁止进出盘)";
+            uiCheckBox_agvLocked.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiCheckBox_agvLocked.ForeColor = Color.FromArgb(48, 48, 48);
+            uiCheckBox_agvLocked.Location = new Point(238, 115);
+            uiCheckBox_agvLocked.MinimumSize = new Size(1, 1);
+            uiCheckBox_agvLocked.Name = "uiCheckBox_agvLocked";
+            uiCheckBox_agvLocked.ReadOnly = true;
+            uiCheckBox_agvLocked.Size = new Size(203, 29);
+            uiCheckBox_agvLocked.TabIndex = 4;
+            uiCheckBox_agvLocked.Text = "AGV锁定(禁止进出盘)";
             // 
             // uiCheckBox_agvEnabled
             // 
@@ -237,6 +210,19 @@ namespace EAP.Client.Forms
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
             // 
+            // uiButton_swichAgvMode
+            // 
+            uiButton_swichAgvMode.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_swichAgvMode.Location = new Point(15, 74);
+            uiButton_swichAgvMode.MinimumSize = new Size(1, 1);
+            uiButton_swichAgvMode.Name = "uiButton_swichAgvMode";
+            uiButton_swichAgvMode.Size = new Size(100, 35);
+            uiButton_swichAgvMode.Style = UIStyle.Custom;
+            uiButton_swichAgvMode.TabIndex = 7;
+            uiButton_swichAgvMode.Text = "开启AGV模式";
+            uiButton_swichAgvMode.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_swichAgvMode.Click += uiButton_swichAgvMode_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -258,8 +244,6 @@ namespace EAP.Client.Forms
         }
 
         #endregion
-        private UITextBox textBox_machinerecipe;
-        private UILabel label2;
         private UILabel label3;
         private UILabel label4;
         private UILabel label_updatetime_aoi;
@@ -272,10 +256,11 @@ namespace EAP.Client.Forms
         private UIRichTextBox richTextBox1;
         private NotifyIcon notifyIcon;
         private UICheckBox uiCheckBox_agvEnabled;
-        private UICheckBox uiCheckBox1;
+        private UICheckBox uiCheckBox_agvLocked;
         private UILedLabel uiLedLabel_outputTrayCount;
         private UILedLabel uiLedLabel_inputTrayCount;
         private UIButton uiButton_outputTrayCount;
         private UIButton uiButton_inputTrayCount;
+        private UIButton uiButton_swichAgvMode;
     }
 }
