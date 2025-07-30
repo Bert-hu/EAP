@@ -6,9 +6,12 @@ namespace HandlerAgv.Service.Models.Database
         [SugarColumn(IsPrimaryKey = true)]
         public string Id { get; set; } = string.Empty;
         public DateTime UpdateTime { get; set; } = DateTime.Now;
-        public string ProcessState { get; set; } = string.Empty;
-        public string ProcessStateCode { get; set; } = string.Empty;
-        public string RecipeName { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true, ColumnDescription = "Process状态")]
+        public string? ProcessState { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true, ColumnDescription = "Process状态码")]
+        public string? ProcessStateCode { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true, ColumnDescription = "Recipe名称")]
+        public string? RecipeName { get; set; } = string.Empty;
         [SugarColumn(IsNullable = true, ColumnDescription = "AGV送料机种")]
         public string? MaterialName { get; set; }
         [SugarColumn(IsNullable = true, ColumnDescription = "AGV送料站别")]
@@ -23,7 +26,7 @@ namespace HandlerAgv.Service.Models.Database
         public DateTime OutputTrayUpdateTime { get; set; } = DateTime.Now;
         public bool AgvEnabled { get; set; } = false;
         public string IP { get; set; } = string.Empty;
-        public int InputTrayCT { get; set; }
-        public int OutputTrayCT { get; set; }
+        public int InputTrayCT { get; set; } = 120;
+        public int OutputTrayCT { get; set; } = 120;
     }
 }

@@ -34,6 +34,18 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     RecipeName = recipeName,
                 };
                 sqlSugarClient.Insertable<HandlerEventHist>(eventHist).ExecuteCommand();
+
+                var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
+                if (machine != null)
+                {
+                    machine.ProcessState = processState;
+                    machine.ProcessStateCode = processStateCode;
+                    machine.RecipeName = recipeName;
+                    machine.UpdateTime = eventTime;
+                    await sqlSugarClient.Updateable(machine)
+                        .UpdateColumns(it => new { it.ProcessState, it.ProcessStateCode, it.RecipeName, it.UpdateTime })
+                        .ExecuteCommandAsync();
+                }
                 switch (eventName)
                 {               
                     default:
