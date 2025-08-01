@@ -26,19 +26,23 @@ namespace HandlerAgv.Service.ScheduledJob
             var sqlSugarClient = SqlsugarService.GetSqlSugarClient(configuration);
 
             try
+
             {
-                var outputBuffer = int.Parse(dbConfiguration.GetConfigurations("OutputBuffer") ?? "180");
-
-
+                var bufferTrayCount = int.Parse(dbConfiguration.GetConfigurations("BufferTrayCount") ?? "2");
+                var bufferTime = int.Parse(dbConfiguration.GetConfigurations("BufferTime") ?? "180");
 
                 var enableMachines = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
-                    //.Where(x => x.AgvEnabled && x.IsValiad && string.IsNullOrEmpty(x.CurrentTaskId))
+                    .Where(x => x.AgvEnabled && x.IsValiad)
                     .ToList();
                 MachineEstimatedService machineEstimatedService = new MachineEstimatedService(sqlSugarClient, mapper);
                 var machines = machineEstimatedService.GetEquipmentVmData(enableMachines);
 
+                machines = machines.Where(it => it.InputTrayNumber <= bufferTrayCount 
+                && it.LoadEstimatedTime < DateTime.Now.AddSeconds(bufferTime)
+                && string.IsNullOrEmpty(it.CurrentTaskId)).ToList();
+
                 foreach (var machine in enableMachines)
-                { 
+                {
 
                 }
             }
