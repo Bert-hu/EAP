@@ -15,9 +15,9 @@ namespace HandlerAgv.Service.Models.Database
         public string? ProcessStateCode { get; set; } = string.Empty;
         [SugarColumn(IsNullable = true, ColumnDescription = "Recipe名称")]
         public string? RecipeName { get; set; } = string.Empty;
-        [SugarColumn(IsNullable = true, ColumnDescription = "AGV送料机种")]
+        [SugarColumn(IsNullable = true, ColumnDescription = "物料机种,用UPN前11码")]
         public string? MaterialName { get; set; }
-        [SugarColumn(IsNullable = true, ColumnDescription = "AGV送料站别")]
+        [SugarColumn(IsNullable = true, ColumnDescription = "物料站别")]
         public string? GroupName { get; set; }
         [SugarColumn(ColumnDescription = "入料口Tray盘数")]
         public int InputTrayNumber { get; set; } = 0;
@@ -28,6 +28,8 @@ namespace HandlerAgv.Service.Models.Database
         [SugarColumn(ColumnDescription = "出料口Tray盘数更新时间", ColumnName = "OutputTrayUpdateTime")]
         public DateTime OutputTrayUpdateTime { get; set; } = DateTime.Now;
         public bool AgvEnabled { get; set; } = false;
+        [SugarColumn(IsNullable = true, ColumnDescription = "当前任务Id")]
+        public string? CurrentTaskId { get; set; } = null;
         public string IP { get; set; } = string.Empty;
         public int InputTrayCT { get; set; } = 120;
         public int OutputTrayCT { get; set; } = 120;

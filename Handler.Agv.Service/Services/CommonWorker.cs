@@ -1,4 +1,6 @@
-﻿using HandlerAgv.Service.ScheduledJob;
+﻿using AutoMapper;
+using HandlerAgv.Service.RabbitMq;
+using HandlerAgv.Service.ScheduledJob;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
@@ -9,12 +11,18 @@ namespace HandlerAgv.Service.Services
     public class CommonWorker : BackgroundService
     {
         private readonly IConfiguration configuration;
+        private readonly RabbitMqService rabbitMqService;
+        private readonly DbConfigurationService dbConfigurationService;
+        private readonly IMapper mapper;
         private bool _isDevelopment;
         private static log4net.ILog Log = LogManager.GetLogger("Debug");
 
-        public CommonWorker(IConfiguration configuration, IWebHostEnvironment env)
+        public CommonWorker(IConfiguration configuration, RabbitMqService rabbitMqService, IWebHostEnvironment env, DbConfigurationService dbConfigurationService, IMapper mapper)
         {
             this.configuration = configuration;
+            this.rabbitMqService = rabbitMqService;
+            this.dbConfigurationService = dbConfigurationService;
+            this.mapper = mapper; 
             _isDevelopment = env.IsDevelopment();
         }
 
@@ -26,15 +34,22 @@ namespace HandlerAgv.Service.Services
                 var jobDataMap = new Dictionary<string, object>();
                 //jobDataMap.Add("sqlSugarClient", sqlSugarClient);
                 jobDataMap.Add("configuration", configuration);
+                jobDataMap.Add("rabbitMqService", rabbitMqService);
+                jobDataMap.Add("dbConfiguration", dbConfigurationService);
+                jobDataMap.Add("mapper", mapper);
+
                 if (_isDevelopment)
                 {
-                    //_ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 600000, jobDataMap);
+                    _ = QuartzUtil.AddJob<AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
+
+                    _ = QuartzUtil.AddJob<AgvCycleTimeUpdateJob>("AgvCycleTimeUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
 
                 }
                 else
                 {
-                    //_ = QuartzUtil.AddJob<LaserPowerMonitorJob>("LaserPowerMonitorJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
+                    _ = QuartzUtil.AddJob<AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
 
+                    _ = QuartzUtil.AddJob<AgvCycleTimeUpdateJob>("AgvCycleTimeUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
                 }
             }
             catch (Exception ex)

@@ -181,7 +181,7 @@ namespace EAP.Client.Forms
             label_ProcessState.BackColor = Color.Gray;
             label_ProcessState.Font = new Font("Microsoft YaHei UI", 15F);
             label_ProcessState.ForeColor = Color.White;
-            label_ProcessState.Location = new Point(178, 32);
+            label_ProcessState.Location = new Point(177, 32);
             label_ProcessState.Name = "label_ProcessState";
             label_ProcessState.Size = new Size(103, 27);
             label_ProcessState.TabIndex = 3;

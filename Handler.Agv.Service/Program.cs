@@ -1,4 +1,5 @@
 
+using HandlerAgv.Service.Extension;
 using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.Services;
 using log4net.Config;
@@ -20,7 +21,9 @@ namespace HandlerAgv.Service
 
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddSqlSugarService();
+            builder.Services.AddDbConfigurationService();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation(); ;

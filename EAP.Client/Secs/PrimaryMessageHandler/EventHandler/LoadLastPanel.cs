@@ -1,4 +1,5 @@
-﻿using EAP.Client.RabbitMq;
+﻿using EAP.Client.Forms;
+using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
 using Secs4Net;
 
@@ -20,11 +21,12 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             this.serviceProvider = serviceProvider;
         }
 
-        public Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
+        public async Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
         {
             HandleCommonAgvEvent(ceid, wrapper, rabbitMqService, commonLibrary);
 
-            return Task.CompletedTask;
+            MainForm.Instance.InputTrayCount = 0;
+            await Task.Run(() => MainForm.Instance.UpdateMachineInputTrayCount(MainForm.Instance.InputTrayCount));
         }
     }
 }
