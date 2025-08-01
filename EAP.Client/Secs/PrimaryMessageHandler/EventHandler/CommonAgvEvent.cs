@@ -18,15 +18,15 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         internal static ILog traLog = LogManager.GetLogger("Trace");
         public static Dictionary<string, string> StatusDict = new Dictionary<string, string>
         {
-            { "1", "INIT" },
-            { "2", "IDLE" },
-            { "3", "SETUP" },
-            { "4", "READY" },
-            { "5", "EXECUTING" },
-            { "6", "PAUSE" },
-            { "7", "ALARM_PAUSE" },
-            { "8", "IDLE_WITH_ALARMS" },
-            { "9", "EXIT" }
+            { "0", "INIT" },
+            { "1", "IDLE" },
+            { "2", "SETUP" },
+            { "3", "READY" },
+            { "4", "EXECUTING" },
+            { "5", "PAUSE" },
+            { "6", "ALARM_PAUSE" },
+            { "7", "IDLE_WITH_ALARMS" },
+            { "8", "EXIT" }
         };
         internal void HandleCommonAgvEvent(GemCeid ceid, PrimaryMessageWrapper wrapper, RabbitMqService rabbitMq, CommonLibrary commonLibrary)
         {
