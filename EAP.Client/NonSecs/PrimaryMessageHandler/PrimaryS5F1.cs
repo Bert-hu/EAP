@@ -36,7 +36,7 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                             { "AlarmEqp", equipmentId},
                             { "AlarmCode",s5f1.AlarmID},
                             { "AlarmText",s5f1.AlarmText},
-                            { "AlarmSource", "EAP"},
+                            { "AlarmSource", equipmentType },
                             { "AlarmTime",DateTime.Now},
                             { "AlarmSet",s5f1.AlarmSet =="Y"}
                         };
