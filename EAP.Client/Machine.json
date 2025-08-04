@@ -3,8 +3,19 @@
     "ParamsVid": [ "1001", "1002" ],
     "VidDict": {
       "1001": "Status",
-      "1002": "OEE",
-      "1003": "Capacity"
+      "1002": "utilization",
+      "1003": "recipe",
+      "1004": "workOrder",
+      "1005": "materialID",
+      "1007": "2to1",
+      "1008": "3to1",
+      "1009": "4to1"
+    },
+    "RptDict": {
+      "6001": "EquipmentStart",
+      "6002": "AssembleComplete",
+      "6003": "ShortageWarning",
+      "6004": "ShortageAlarming"
     },
     "ProcessStateCodes": {
       "IDLE": "Idle",
