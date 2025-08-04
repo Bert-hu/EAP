@@ -32,6 +32,7 @@ namespace EAP.Client.Forms
         int outputTrayCount = 0;
         bool agvEnabled = false;
         bool agvLocked = false;
+        string currentTaskState = "无AGV任务";
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -85,6 +86,21 @@ namespace EAP.Client.Forms
                 }));
             }
         }
+
+        public string CurrentTaskState
+        {
+            get { return currentTaskState; }
+            set
+            {
+                currentTaskState = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLabel_currenttaskState.Text = currentTaskState;
+                }));
+            }
+        }
+
+
 
         public static MainForm Instance
         {
@@ -352,6 +368,7 @@ namespace EAP.Client.Forms
                         AgvEnabled = info.Parameters.ContainsKey("AgvEnabled") ? Convert.ToBoolean(info.Parameters["AgvEnabled"]) : false;
                         InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
                         OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
+                        CurrentTaskState = info.Parameters.ContainsKey("CurrentTaskState") ? info.Parameters["CurrentTaskState"].ToString() : "无AGV任务";
                     }
                 }
                 else
@@ -526,6 +543,46 @@ namespace EAP.Client.Forms
             }
         }
 
+        public (bool, string) SemdAgvTask(string taskType)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = $"Send{taskType}Task",
+                    NeedReply = true,
+                    ExpireSecond = 6,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"]
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    if (reply.Parameters.ContainsKey("Result") && Convert.ToBoolean(reply.Parameters["Result"]))
+                    {
+                        traLog.Info($"{taskType}任务发送成功");
+                        return (true, $"{taskType}任务发送成功");
+                    }
+                    else
+                    {
+                        string message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误";
+                        traLog.Warn($"{taskType}任务发送失败: {message}");
+                        return (false, $"{taskType}任务发送失败: {message}");
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"{taskType}任务发送超时。");
+                    return (false, $"{taskType}任务发送超时");
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送AGV任务失败: {ex.ToString()}");
+                return (false, "发送AGV任务失败");
+            }
+        }
+
         private async void uiButton_inputTrayCount_Click(object sender, EventArgs e)
         {
             EditValueForm editValueForm = new EditValueForm("修改入料口盘数", InputTrayCount.ToString());
@@ -631,8 +688,6 @@ namespace EAP.Client.Forms
                 if (ConfirmMessageBox(confirmMsg))
                 {
                     bool updateResult = await Task.Run(() => UpdateAgvEnabled(newState));
-
-                    await Task.Run(() => GetMachineInfo());
                 }
             }
             catch (Exception ex)
@@ -643,6 +698,106 @@ namespace EAP.Client.Forms
             {
                 Cursor = Cursors.Default;
                 uiButton_swichAgvMode.Enabled = true;
+            }
+        }
+
+        private async void uiButton_sendInputTask_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_sendInputTask.Enabled = false;
+
+            try
+            {
+                string confirmMsg = "确定要发送Input任务吗？请确认入料口盘数正确。";
+                if (ConfirmMessageBox(confirmMsg))
+                {
+                    var (result, message) = await Task.Run(() => SemdAgvTask("Input"));
+                    if (result)
+                    {
+                        UIMessageBox.ShowSuccess(message);
+                    }
+                    else
+                    {
+                        UIMessageBox.ShowError(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送Input任务时发生异常: {ex.Message}");
+                UIMessageBox.ShowError("发送Input任务时发生错误");
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                uiButton_sendInputTask.Enabled = true;
+            }
+        }
+
+        private async void uiButton_sendOutputTask_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_sendOutputTask.Enabled = false;
+
+            try
+            {
+                string confirmMsg = "确定要发送Output任务吗？请确认出料口盘数正确。";
+                if (ConfirmMessageBox(confirmMsg))
+                {
+                    var (result, message) = await Task.Run(() => SemdAgvTask("Output"));
+                    if (result)
+                    {
+                        UIMessageBox.ShowSuccess(message);
+                    }
+                    else
+                    {
+                        UIMessageBox.ShowError(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送Output任务时发生异常: {ex.Message}");
+                UIMessageBox.ShowError("发送Output任务时发生错误");
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                uiButton_sendOutputTask.Enabled = true;
+            }
+
+        }
+
+        private async void uiButton_sendInputOutputTask_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_sendInputOutputTask.Enabled = false;
+
+            try
+            {
+                string confirmMsg = "确定要发送InputOutput任务吗？请确认入料口盘数和出料口盘数正确。";
+                if (ConfirmMessageBox(confirmMsg))
+                {
+                    var (result, message) = await Task.Run(() => SemdAgvTask("InputOutput"));
+                    if (result)
+                    {
+                        UIMessageBox.ShowSuccess(message);
+                    }
+                    else
+                    {
+                        UIMessageBox.ShowError(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送InputOutput任务时发生异常: {ex.Message}");
+                UIMessageBox.ShowError("发送InputOutput任务时发生错误");
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                uiButton_sendInputOutputTask.Enabled = true;
             }
         }
     }

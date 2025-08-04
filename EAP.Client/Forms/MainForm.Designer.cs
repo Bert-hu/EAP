@@ -34,6 +34,10 @@ namespace EAP.Client.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiLabel_currenttaskState = new UILabel();
+            uiButton_sendInputOutputTask = new UIButton();
+            uiButton_sendOutputTask = new UIButton();
+            uiButton_sendInputTask = new UIButton();
             uiButton_swichAgvMode = new UIButton();
             uiButton_outputTrayCount = new UIButton();
             uiButton_inputTrayCount = new UIButton();
@@ -61,6 +65,10 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiLabel_currenttaskState);
+            groupBox_1.Controls.Add(uiButton_sendInputOutputTask);
+            groupBox_1.Controls.Add(uiButton_sendOutputTask);
+            groupBox_1.Controls.Add(uiButton_sendInputTask);
             groupBox_1.Controls.Add(uiButton_swichAgvMode);
             groupBox_1.Controls.Add(uiButton_outputTrayCount);
             groupBox_1.Controls.Add(uiButton_inputTrayCount);
@@ -81,6 +89,52 @@ namespace EAP.Client.Forms
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
+            // 
+            // uiLabel_currenttaskState
+            // 
+            uiLabel_currenttaskState.Font = new Font("微软雅黑", 22F, FontStyle.Bold);
+            uiLabel_currenttaskState.ForeColor = Color.FromArgb(0, 0, 192);
+            uiLabel_currenttaskState.Location = new Point(338, 224);
+            uiLabel_currenttaskState.Name = "uiLabel_currenttaskState";
+            uiLabel_currenttaskState.Size = new Size(187, 45);
+            uiLabel_currenttaskState.TabIndex = 9;
+            uiLabel_currenttaskState.Text = "无AGV任务";
+            // 
+            // uiButton_sendInputOutputTask
+            // 
+            uiButton_sendInputOutputTask.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendInputOutputTask.Location = new Point(359, 115);
+            uiButton_sendInputOutputTask.MinimumSize = new Size(1, 1);
+            uiButton_sendInputOutputTask.Name = "uiButton_sendInputOutputTask";
+            uiButton_sendInputOutputTask.Size = new Size(166, 35);
+            uiButton_sendInputOutputTask.TabIndex = 8;
+            uiButton_sendInputOutputTask.Text = "发送InputOutput任务";
+            uiButton_sendInputOutputTask.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendInputOutputTask.Click += uiButton_sendInputOutputTask_Click;
+            // 
+            // uiButton_sendOutputTask
+            // 
+            uiButton_sendOutputTask.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendOutputTask.Location = new Point(187, 115);
+            uiButton_sendOutputTask.MinimumSize = new Size(1, 1);
+            uiButton_sendOutputTask.Name = "uiButton_sendOutputTask";
+            uiButton_sendOutputTask.Size = new Size(166, 35);
+            uiButton_sendOutputTask.TabIndex = 8;
+            uiButton_sendOutputTask.Text = "发送Output任务";
+            uiButton_sendOutputTask.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendOutputTask.Click += uiButton_sendOutputTask_Click;
+            // 
+            // uiButton_sendInputTask
+            // 
+            uiButton_sendInputTask.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendInputTask.Location = new Point(15, 115);
+            uiButton_sendInputTask.MinimumSize = new Size(1, 1);
+            uiButton_sendInputTask.Name = "uiButton_sendInputTask";
+            uiButton_sendInputTask.Size = new Size(166, 35);
+            uiButton_sendInputTask.TabIndex = 8;
+            uiButton_sendInputTask.Text = "发送Input任务";
+            uiButton_sendInputTask.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_sendInputTask.Click += uiButton_sendInputTask_Click;
             // 
             // uiButton_swichAgvMode
             // 
@@ -104,7 +158,7 @@ namespace EAP.Client.Forms
             uiButton_outputTrayCount.FillSelectedColor = Color.FromArgb(88, 152, 32);
             uiButton_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_outputTrayCount.LightColor = Color.FromArgb(245, 251, 241);
-            uiButton_outputTrayCount.Location = new Point(238, 161);
+            uiButton_outputTrayCount.Location = new Point(150, 224);
             uiButton_outputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_outputTrayCount.Name = "uiButton_outputTrayCount";
             uiButton_outputTrayCount.RectColor = Color.FromArgb(110, 190, 40);
@@ -121,7 +175,7 @@ namespace EAP.Client.Forms
             // uiButton_inputTrayCount
             // 
             uiButton_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_inputTrayCount.Location = new Point(15, 161);
+            uiButton_inputTrayCount.Location = new Point(15, 224);
             uiButton_inputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_inputTrayCount.Name = "uiButton_inputTrayCount";
             uiButton_inputTrayCount.Size = new Size(100, 23);
@@ -134,7 +188,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiLedLabel_outputTrayCount.ForeColor = Color.Lime;
-            uiLedLabel_outputTrayCount.Location = new Point(238, 190);
+            uiLedLabel_outputTrayCount.Location = new Point(150, 253);
             uiLedLabel_outputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_outputTrayCount.Name = "uiLedLabel_outputTrayCount";
             uiLedLabel_outputTrayCount.Size = new Size(100, 35);
@@ -144,7 +198,7 @@ namespace EAP.Client.Forms
             // uiLedLabel_inputTrayCount
             // 
             uiLedLabel_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiLedLabel_inputTrayCount.Location = new Point(15, 190);
+            uiLedLabel_inputTrayCount.Location = new Point(15, 253);
             uiLedLabel_inputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_inputTrayCount.Name = "uiLedLabel_inputTrayCount";
             uiLedLabel_inputTrayCount.Size = new Size(100, 35);
@@ -155,7 +209,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvLocked.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiCheckBox_agvLocked.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox_agvLocked.Location = new Point(238, 115);
+            uiCheckBox_agvLocked.Location = new Point(150, 178);
             uiCheckBox_agvLocked.MinimumSize = new Size(1, 1);
             uiCheckBox_agvLocked.Name = "uiCheckBox_agvLocked";
             uiCheckBox_agvLocked.ReadOnly = true;
@@ -167,7 +221,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvEnabled.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiCheckBox_agvEnabled.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox_agvEnabled.Location = new Point(15, 115);
+            uiCheckBox_agvEnabled.Location = new Point(15, 178);
             uiCheckBox_agvEnabled.MinimumSize = new Size(1, 1);
             uiCheckBox_agvEnabled.Name = "uiCheckBox_agvEnabled";
             uiCheckBox_agvEnabled.ReadOnly = true;
@@ -247,5 +301,9 @@ namespace EAP.Client.Forms
         private UIButton uiButton_outputTrayCount;
         private UIButton uiButton_inputTrayCount;
         private UIButton uiButton_swichAgvMode;
+        private UIButton uiButton_sendInputOutputTask;
+        private UIButton uiButton_sendOutputTask;
+        private UIButton uiButton_sendInputTask;
+        private UILabel uiLabel_currenttaskState;
     }
 }

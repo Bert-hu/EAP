@@ -30,7 +30,7 @@ namespace HandlerAgv.Service.Models.Database
         [SugarColumn(IsNullable = true, ColumnDescription = "设备EQID")]
         public string? EquipmentId { get; set; }
         [SugarColumn(IsNullable = true, ColumnDescription = "物料机种,用UPN前11码")]
-        public string? MaterialId { get; set; }
+        public string? MaterialName { get; set; }
         [SugarColumn(IsNullable = true, ColumnDescription = "物料站别")]
         public string? GroupName { get; set; }
 

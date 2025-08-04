@@ -1,4 +1,5 @@
 ﻿using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.Services;
 using log4net;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
@@ -35,7 +36,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         .UpdateColumns(it => new { it.AgvEnabled })
                         .ExecuteCommand();
                     repTrans.Parameters.Add("Result", true);
+                    dbgLog.Debug($"AGV功能状态切换 {machine.Id}: {machine.AgvEnabled}");
 
+                    EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                    eapClient.UpdateClientInfo(trans.EquipmentID);
                 }
             }
             catch (Exception ex)

@@ -37,13 +37,18 @@ namespace HandlerAgv.Service.ScheduledJob
                 MachineEstimatedService machineEstimatedService = new MachineEstimatedService(sqlSugarClient, mapper);
                 var machines = machineEstimatedService.GetEquipmentVmData(enableMachines);
 
-                machines = machines.Where(it => it.InputTrayNumber <= bufferTrayCount 
+                machines = machines.Where(it => it.InputTrayNumber <= bufferTrayCount
                 && it.LoadEstimatedTime < DateTime.Now.AddSeconds(bufferTime)
                 && string.IsNullOrEmpty(it.CurrentTaskId)).ToList();
 
+                AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration);
+
                 foreach (var machine in enableMachines)
                 {
-
+                    if (machine.OutputTrayNumber > 0)
+                    {
+                        agvApiService.SendInputOutputTask(machine);
+                    }
                 }
             }
             catch (Exception ex)
