@@ -15,6 +15,7 @@ namespace HandlerAgv.Service.Models.Database
         AgvArrived = 2, // AGV已到达设备
         MachineReady = 3,//设备已锁定进出料,允许对接手臂
         AgvRobotFinished = 4, // AGV手臂任务完成
+        AgvRobotAbnormal = 5, // AGV手臂任务执行时取消，状态MachineReady下取消任务时进入此状态，用于解锁设备
         Completed = 10,   // 已完成
         AbnormalEnd = 11  // 异常完结
     }

@@ -87,5 +87,93 @@ namespace HandlerAgv.Service.Services
             }
         }
 
+        public void MachineAgvLock(string equipmentId)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = equipmentId,
+                    TransactionName = "AgvLock",
+                    ExpireSecond = 5
+                };
+                var reply = rabbitMqService.ProduceWaitReply("EAP.SecsClient." + equipmentId, trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
+                    var message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "";
+                    dbgLog.Info($"MachineAgvLock: {equipmentId}, Result: {result}, Message: {message}");
+                }
+                else
+                {
+                    dbgLog.Warn($"MachineAgvLock: {equipmentId} - No reply received or timeout.");
+                }
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex.ToString());
+            }
+        }
+
+        public void MachineAgvUnlock(string equipmentId)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = equipmentId,
+                    TransactionName = "AgvUnlock",
+                    ExpireSecond = 5
+                };
+                var reply = rabbitMqService.ProduceWaitReply("EAP.SecsClient." + equipmentId, trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
+                    var message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "";
+                    dbgLog.Info($"MachineAgvUnlock: {equipmentId}, Result: {result}, Message: {message}");
+                }
+                else
+                {
+                    dbgLog.Warn($"MachineAgvUnlock: {equipmentId} - No reply received or timeout.");
+                }
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex.ToString());
+            }
+        }
+
+        public (bool, string) GetMachineLockState(string equipmentId)
+        {
+            var lockState = false;
+            var message = string.Empty;
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = equipmentId,
+                    TransactionName = "GetAgvLockState",
+                    ExpireSecond = 5,
+                };
+                var reply = rabbitMqService.ProduceWaitReply("EAP.SecsClient." + equipmentId, trans);
+                if (reply != null)
+                {
+                    lockState = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
+                    message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "获取设备锁定状态成功";
+                }
+                else
+                {
+                    message = "获取设备锁定状态超时或失败";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                message = $"获取设备锁定状态异常: {equipmentId} ,{ex.Message}";
+                dbgLog.Error(ex.ToString());
+            }
+            return (lockState, message);
+        }
+
     }
 }

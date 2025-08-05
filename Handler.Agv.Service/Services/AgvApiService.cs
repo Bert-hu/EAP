@@ -29,7 +29,7 @@ namespace HandlerAgv.Service.Services
             {
                 var agvTaskRequest = new AgvTaskRequest { TaskType = AgvTaskType.InputOutput.ToString(), EQID = equipment.Id, MaterialName = equipment.MaterialName, GroupName = equipment.GroupName };
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
-                var method = "/api/v2/order";
+                var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
                 var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
@@ -77,7 +77,7 @@ namespace HandlerAgv.Service.Services
             {
                 var agvTaskRequest = new AgvTaskRequest { TaskType = AgvTaskType.Input.ToString(), EQID = equipment.Id, MaterialName = equipment.MaterialName, GroupName = equipment.GroupName };
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
-                var method = "/api/v2/order";
+                var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
                 var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
@@ -123,7 +123,7 @@ namespace HandlerAgv.Service.Services
             {
                 var agvTaskRequest = new AgvTaskRequest { TaskType = AgvTaskType.Output.ToString(), EQID = equipment.Id, MaterialName = equipment.MaterialName, GroupName = equipment.GroupName };
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
-                var method = "/api/v2/order";
+                var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
                 var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
