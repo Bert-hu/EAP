@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.Services;
 using log4net;
 using Quartz;
