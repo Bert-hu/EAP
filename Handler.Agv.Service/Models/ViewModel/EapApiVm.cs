@@ -10,6 +10,7 @@
     public class TaskFeedBackRequest
     {
         public string TaskId { get; set; }
+        public int LotLayers { get; set; }
         public string Result { get; set; }
     }
 }

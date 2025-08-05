@@ -116,23 +116,45 @@ namespace HandlerAgv.Service.Controllers
                 }
                 else
                 {
+                    var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
+                        .Where(it => it.Id == task.EquipmentId)
+                        .First();
+
                     EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMqService);
-                    if (task.Status == AgvTaskStatus.MachineReady)
+                    if (request.Result == "Finished")
                     {
                         task.Status = AgvTaskStatus.AgvRobotFinished;
                         task.CompletedTime = DateTime.Now;
                         sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.CompletedTime }).ExecuteCommand();
                         clientService.MachineAgvUnlock(task.EquipmentId);
-                        dbgLog.Info($"TaskFeedBack: {request.TaskId}, 设备{task.EquipmentId}已解锁，状态更新为AgvRobotFinished。");
+                        dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已正常完成，状态更新为AgvRobotFinished。");
+
+                        if (task.Type == AgvTaskType.Input )
+                        {
+                            machine.InputTrayNumber = request.LotLayers;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber }).ExecuteCommand();
+                        }
+                        else if(task.Type == AgvTaskType.Output)
+                        {
+                            machine.OutputTrayNumber = 0;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.OutputTrayNumber }).ExecuteCommand();
+                        }
+                        else if (task.Type == AgvTaskType.InputOutput)
+                        {
+                            machine.InputTrayNumber = request.LotLayers;
+                            machine.OutputTrayNumber = 0;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber }).ExecuteCommand();
+                        }
+
                         clientService.UpdateClientInfo(task.EquipmentId);
                     }
-                    else if (task.Status == AgvTaskStatus.AgvRobotAbnormal)
+                    else if (request.Result == "Cancelled")
                     {
                         task.Status = AgvTaskStatus.AbnormalEnd;
                         task.CompletedTime = DateTime.Now;
                         sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.CompletedTime }).ExecuteCommand();
                         clientService.MachineAgvUnlock(task.EquipmentId);
-                        dbgLog.Info($"TaskFeedBack: {request.TaskId}, 设备{task.EquipmentId}已解锁，状态更新为AbnormalEnd。");
+                        dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已取消，状态更新为AbnormalEnd。");
                         clientService.UpdateClientInfo(task.EquipmentId);
                     }
                     result = true;
