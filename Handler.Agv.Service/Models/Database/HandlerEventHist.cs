@@ -1,4 +1,6 @@
-﻿namespace HandlerAgv.Service.Models.Database
+﻿using SqlSugar;
+
+namespace HandlerAgv.Service.Models.Database
 {
     public class HandlerEventHist
     {
@@ -8,9 +10,13 @@
         public string ProcessState { get; set; } = string.Empty;
         public string ProcessStateCode { get; set; } = string.Empty;
         public string RecipeName { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true)]
         public string AlarmList { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true)]
         public bool LockState { get; set; } = false;
+        [SugarColumn(IsNullable = true)]
         public bool CleanOut { get; set; } = false;
+        [SugarColumn(IsNullable = true)]
         public bool Auto1Full { get; set; } = false;
     }
 }

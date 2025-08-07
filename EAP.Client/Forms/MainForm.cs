@@ -184,11 +184,11 @@ namespace EAP.Client.Forms
             }));
         }
 
-        public bool ConfirmMessageBox(string showtext)
-        {
-            var confirm = UIMessageBox.ShowAsk2($"{showtext}");
-            return confirm;
-        }
+        //public bool ConfirmMessageBox(string showtext)
+        //{
+        //    var confirm = UIMessageBox.ShowAsk2($"{showtext}");
+        //    return confirm;
+        //}
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -612,7 +612,6 @@ namespace EAP.Client.Forms
                     catch (Exception ex)
                     {
                         traLog.Error($"更新入料口盘数时发生异常: {ex.Message}");
-                        UIMessageBox.ShowError("更新过程中发生错误");
                     }
                     finally
                     {
@@ -657,7 +656,6 @@ namespace EAP.Client.Forms
                     catch (Exception ex)
                     {
                         traLog.Error($"更新出料口盘数时发生异常: {ex.Message}");
-                        UIMessageBox.ShowError("更新过程中发生错误");
                     }
                     finally
                     {
@@ -692,7 +690,7 @@ namespace EAP.Client.Forms
                     ? $"确定要开启AGV模式吗？当前入料口盘数{InputTrayCount}，出料口盘数{OutputTrayCount}，请确认盘数正确。"
                     : "确定要关闭AGV模式吗？";
 
-                if (ConfirmMessageBox(confirmMsg))
+                if (UIMessageBox.ShowAsk2($"{confirmMsg}"))
                 {
                     bool updateResult = await Task.Run(() => UpdateAgvEnabled(newState));
                 }
@@ -716,16 +714,16 @@ namespace EAP.Client.Forms
             try
             {
                 string confirmMsg = "确定要发送Input任务吗？请确认入料口盘数正确。";
-                if (ConfirmMessageBox(confirmMsg))
+                if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
                     var (result, message) = await Task.Run(() => SemdAgvTask("Input"));
                     if (result)
                     {
-                        UIMessageBox.ShowSuccess(message);
+                        traLog.Info($"Input任务发送成功: {message}");
                     }
                     else
                     {
-                        UIMessageBox.ShowError(message);
+                        traLog.Error($"Input任务发送失败: {message}");
                     }
                 }
             }
@@ -749,16 +747,16 @@ namespace EAP.Client.Forms
             try
             {
                 string confirmMsg = "确定要发送Output任务吗？请确认出料口盘数正确。";
-                if (ConfirmMessageBox(confirmMsg))
+                if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
                     var (result, message) = await Task.Run(() => SemdAgvTask("Output"));
                     if (result)
                     {
-                        UIMessageBox.ShowSuccess(message);
+                        traLog.Info($"Output任务发送成功: {message}");
                     }
                     else
                     {
-                        UIMessageBox.ShowError(message);
+                        traLog.Error($"Output任务发送失败: {message}");
                     }
                 }
             }
@@ -783,16 +781,16 @@ namespace EAP.Client.Forms
             try
             {
                 string confirmMsg = "确定要发送InputOutput任务吗？请确认入料口盘数和出料口盘数正确。";
-                if (ConfirmMessageBox(confirmMsg))
+                if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
                     var (result, message) = await Task.Run(() => SemdAgvTask("InputOutput"));
                     if (result)
                     {
-                        UIMessageBox.ShowSuccess(message);
+                        traLog.Info($"InputOutput任务发送成功: {message}");
                     }
                     else
                     {
-                        UIMessageBox.ShowError(message);
+                        traLog.Error($"InputOutput任务发送失败: {message}");
                     }
                 }
             }
@@ -827,7 +825,7 @@ namespace EAP.Client.Forms
                     AgvLocked = s1f4.SecsItem[0].GetString().ToUpper() == "TRUE";
                     if (AgvLocked)
                     {
-                        UIMessageBox.ShowWarning($"已处于锁定状态，请先解锁");
+                        traLog.Warn($"已处于锁定状态，请先解锁");
                     }
                     else
                     {
@@ -840,11 +838,11 @@ namespace EAP.Client.Forms
                         if (rcmdAck)
                         {
                             AgvLocked = true;
-                            UIMessageBox.ShowSuccess("AGV锁定成功");
+                            traLog.Info("AGV锁定成功");
                         }
                         else
                         {
-                            UIMessageBox.ShowError($"AGV锁定失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
+                            traLog.Error($"AGV锁定失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
                         }
                     }
 
@@ -852,7 +850,6 @@ namespace EAP.Client.Forms
                 catch (Exception ex)
                 {
                     traLog.Error($"AGV锁定操作失败: {ex.ToString()}");
-                    UIMessageBox.ShowError($"AGV锁定操作失败: {ex.Message}");
                 }
                 finally
                 {
@@ -886,7 +883,7 @@ namespace EAP.Client.Forms
                     AgvLocked = s1f4.SecsItem[0].GetString().ToUpper() == "TRUE";
                     if (!AgvLocked)
                     {
-                        UIMessageBox.ShowWarning($"已处于解锁状态，无需重复解锁");
+                        traLog.Warn($"已处于解锁状态，无需重复解锁");
                     }
                     else
                     {
@@ -900,11 +897,11 @@ namespace EAP.Client.Forms
                         if (rcmdAck)
                         {
                             AgvLocked = false;
-                            UIMessageBox.ShowSuccess("AGV解锁成功");
+                            traLog.Info("AGV解锁成功");
                         }
                         else
                         {
-                            UIMessageBox.ShowError($"AGV解锁失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
+                            traLog.Error($"AGV解锁失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
                         }
                     }
 
@@ -912,7 +909,6 @@ namespace EAP.Client.Forms
                 catch (Exception ex)
                 {
                     traLog.Error($"AGV解锁操作失败: {ex.ToString()}");
-                    UIMessageBox.ShowError($"AGV解锁操作失败: {ex.Message}");
                 }
                 finally
                 {
@@ -925,5 +921,8 @@ namespace EAP.Client.Forms
 
             });
         }
+
+
+
     }
 }

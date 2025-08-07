@@ -23,7 +23,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                 string processState = trans.Parameters["ProcessState"].ToString();
                 string processStateCode = trans.Parameters["ProcessStateCode"].ToString();
                 string recipeName = trans.Parameters["RecipeName"].ToString();
-                string alarmList = trans.Parameters.["AlarmList"].ToString();
+                string alarmList = trans.Parameters["AlarmList"].ToString();
                 bool lockState = bool.Parse(trans.Parameters["LockState"].ToString() ?? "False");
                 bool cleanOut = bool.Parse(trans.Parameters["CleanOut"].ToString() ?? "False");
                 bool auto1Full = bool.Parse(trans.Parameters["Auto1Full"].ToString() ?? "False");
