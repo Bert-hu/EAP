@@ -23,6 +23,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                 string processState = trans.Parameters["ProcessState"].ToString();
                 string processStateCode = trans.Parameters["ProcessStateCode"].ToString();
                 string recipeName = trans.Parameters["RecipeName"].ToString();
+                string alarmList = trans.Parameters.["AlarmList"].ToString();
+                bool lockState = bool.Parse(trans.Parameters["LockState"].ToString() ?? "False");
+                bool cleanOut = bool.Parse(trans.Parameters["CleanOut"].ToString() ?? "False");
+                bool auto1Full = bool.Parse(trans.Parameters["Auto1Full"].ToString() ?? "False");
                 DateTime eventTime = DateTime.Now;//改为服务器时间，防止机器时间不准
 
                 var eventHist = new HandlerEventHist
@@ -32,6 +36,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     ProcessState = processState,
                     ProcessStateCode = processStateCode,
                     RecipeName = recipeName,
+                    AlarmList = alarmList,
+                    LockState = lockState,
+                    CleanOut = cleanOut,
+                    Auto1Full = auto1Full,
                 };
                 sqlSugarClient.Insertable<HandlerEventHist>(eventHist).ExecuteCommand();
 
@@ -41,7 +49,12 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     machine.ProcessState = processState;
                     machine.ProcessStateCode = processStateCode;
                     machine.RecipeName = recipeName;
+                    machine.AlarmList = alarmList;
+                    machine.CleanOutState = cleanOut;
+                    machine.Auto1FullState = auto1Full;
+
                     machine.UpdateTime = eventTime;
+
                     await sqlSugarClient.Updateable(machine)
                         .UpdateColumns(it => new { it.ProcessState, it.ProcessStateCode, it.RecipeName, it.UpdateTime })
                         .ExecuteCommandAsync();

@@ -29,20 +29,15 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 var s2f41 = new SecsMessage(2, 41)
                 {
-                    SecsItem = L(
-                        A("LOCKAGV_OFF"),
-                        L(
-                            L(
-
-                                )
-                            ))
+                    SecsItem = L(A("LOCKAGV_OFF"), L())
                 };
                 var s2f42 = await secsGem.SendAsync(s2f41);
                 if (s2f42.SecsItem[0].FirstValue<byte>() == 0)
                 {
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("Message", "Success!");
-                }else
+                }
+                else
                 {
                     reptrans.Parameters.Add("Result", false);
                     reptrans.Parameters.Add("Message", $"AGV Unlock Failed, Error Code: {s2f42.SecsItem.FirstValue<byte>()}");

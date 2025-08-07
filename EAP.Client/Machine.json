@@ -18,8 +18,20 @@
         "ID": 24
       },
       {
+        "Name": "AlarmList",
+        "ID": 1601
+      },
+      {
         "Name": "LockState",
-        "ID": 9999
+        "ID": 1602
+      },
+      {
+        "Name": "CleanOut",
+        "ID": 1603
+      },
+      {
+        "Name": "Auto1Full",
+        "ID": 1604
       }
 
     ],
@@ -30,7 +42,7 @@
       //},
       {
         "ID": 1001,
-        "SvidNames": [ "RecipeName", "ProcessState" ]
+        "SvidNames": [ "RecipeName", "ProcessState", "AlarmList", "LockState", "CleanOut", "Auto1Full" ]
       }
     ],
     "CEIDList": [
@@ -62,6 +74,21 @@
       {
         "Name": "UnloadEmpty",
         "ID": 158,
+        "ReportIds": [ 1001 ]
+      },
+      {
+        "Name": "CleanOut",
+        "ID": 159,
+        "ReportIds": [ 1001 ]
+      },
+      {
+        "Name": "TrayFeed",
+        "ID": 160,
+        "ReportIds": [ 1001 ]
+      },
+      {
+        "Name": "Auto1Full",
+        "ID": 161,
         "ReportIds": [ 1001 ]
       }
     ],

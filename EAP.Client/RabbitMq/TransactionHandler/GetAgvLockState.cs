@@ -37,7 +37,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                     SecsItem = L(U4((uint)lockStateSvid))
                 };
                 var s1f4 = await secsGem.SendAsync(s1f3);
-                if (s1f4.SecsItem[0].FirstValue<Boolean>() == true)
+                if (s1f4.SecsItem[0].GetString().ToUpper() == "TRUE")
                 {
                     reptrans.Parameters.Add("Result", true);
                 }

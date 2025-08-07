@@ -25,7 +25,8 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         {
             HandleCommonAgvEvent(ceid, wrapper, rabbitMqService, commonLibrary);
 
-            MainForm.Instance.InputTrayCount = MainForm.Instance.InputTrayCount > 0 ? MainForm.Instance.InputTrayCount - 1 : 0;
+            //MainForm.Instance.InputTrayCount = MainForm.Instance.InputTrayCount > 0 ? MainForm.Instance.InputTrayCount - 1 : 0;
+            MainForm.Instance.InputTrayCount = MainForm.Instance.InputTrayCount - 1;
             await Task.Run(() => MainForm.Instance.UpdateMachineInputTrayCount(MainForm.Instance.InputTrayCount));
         }
     }

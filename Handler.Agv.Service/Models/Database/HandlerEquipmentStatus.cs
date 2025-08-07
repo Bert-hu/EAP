@@ -15,6 +15,13 @@ namespace HandlerAgv.Service.Models.Database
         public string? ProcessStateCode { get; set; } = string.Empty;
         [SugarColumn(IsNullable = true, ColumnDescription = "Recipe名称")]
         public string? RecipeName { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true, ColumnDescription = "当前报警Code List")]
+        public string AlarmList { get; set; } = string.Empty;
+        [SugarColumn(IsNullable = true, ColumnDescription = "设备是否处于清出状态，此状态不再上料")]
+        public bool CleanOutState { get; set; } = false;
+        [SugarColumn(IsNullable = true, ColumnDescription = "出料口是否已满盘")]
+        public bool Auto1FullState { get; set; } = false;
+
         [SugarColumn(IsNullable = true, ColumnDescription = "物料机种,用UPN前11码")]
         public string? MaterialName { get; set; }
         [SugarColumn(IsNullable = true, ColumnDescription = "物料站别")]

@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using static Secs4Net.Item;
 
@@ -156,7 +157,6 @@ namespace EAP.Client.Forms
                 label_conn_status.BackColor = backcolor;
             }));
         }
-
 
         public void UpdateState(string state)
         {
@@ -602,7 +602,7 @@ namespace EAP.Client.Forms
                         if (updateResult)
                         {
                             InputTrayCount = newCount;
-                            traLog.Info("入料口盘数更新成功");
+                            traLog.Info($"入料口盘数更新成功:{InputTrayCount}");
                         }
                         else
                         {
@@ -647,7 +647,7 @@ namespace EAP.Client.Forms
                         if (updateResult)
                         {
                             OutputTrayCount = newCount;
-                            traLog.Info("出料口盘数更新成功");
+                            traLog.Info($"出料口盘数更新成功:{OutputTrayCount}");
                         }
                         else
                         {
@@ -681,6 +681,13 @@ namespace EAP.Client.Forms
             try
             {
                 bool newState = !AgvEnabled;
+
+                if (newState && (InputTrayCount < 0 || OutputTrayCount > 17))
+                {
+                    UIMessageBox.ShowWarning("入料口盘数不能小于0，出料口盘数不能大于17，请检查盘数设置。");
+                    return;
+                }
+
                 string confirmMsg = newState
                     ? $"确定要开启AGV模式吗？当前入料口盘数{InputTrayCount}，出料口盘数{OutputTrayCount}，请确认盘数正确。"
                     : "确定要关闭AGV模式吗？";
@@ -799,6 +806,124 @@ namespace EAP.Client.Forms
                 Cursor = Cursors.Default;
                 uiButton_sendInputOutputTask.Enabled = true;
             }
+        }
+
+        private async void uiButton_lockAgv_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_lockAgv.Enabled = false;
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var lockStateSvid = commonLibrary.GetGemSvid("LockState").ID;
+
+                    var s1f3 = new SecsMessage(1, 3)
+                    {
+                        SecsItem = L(U4((uint)lockStateSvid))
+                    };
+                    var s1f4 = await secsGem.SendAsync(s1f3);
+
+                    AgvLocked = s1f4.SecsItem[0].GetString().ToUpper() == "TRUE";
+                    if (AgvLocked)
+                    {
+                        UIMessageBox.ShowWarning($"已处于锁定状态，请先解锁");
+                    }
+                    else
+                    {
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(A("LOCKAGV"), L())
+                        };
+                        var s2f42 = await secsGem.SendAsync(s2f41);
+                        var rcmdAck = s2f42.SecsItem[0].FirstValue<byte>() == 0;
+                        if (rcmdAck)
+                        {
+                            AgvLocked = true;
+                            UIMessageBox.ShowSuccess("AGV锁定成功");
+                        }
+                        else
+                        {
+                            UIMessageBox.ShowError($"AGV锁定失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    traLog.Error($"AGV锁定操作失败: {ex.ToString()}");
+                    UIMessageBox.ShowError($"AGV锁定操作失败: {ex.Message}");
+                }
+                finally
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        Cursor = Cursors.Default;
+                        uiButton_lockAgv.Enabled = true;
+                    }));
+                }
+
+            });
+        }
+
+        private async void uiButton_unlockAgv_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_unlockAgv.Enabled = false;
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var lockStateSvid = commonLibrary.GetGemSvid("LockState").ID;
+
+                    // 先查询当前锁定状态
+                    var s1f3 = new SecsMessage(1, 3)
+                    {
+                        SecsItem = L(U4((uint)lockStateSvid))
+                    };
+                    var s1f4 = await secsGem.SendAsync(s1f3);
+
+                    AgvLocked = s1f4.SecsItem[0].GetString().ToUpper() == "TRUE";
+                    if (!AgvLocked)
+                    {
+                        UIMessageBox.ShowWarning($"已处于解锁状态，无需重复解锁");
+                    }
+                    else
+                    {
+                        // 发送解锁命令
+                        var s2f41 = new SecsMessage(2, 41)
+                        {
+                            SecsItem = L(A("LOCKAGV_OFF"), L())
+                        };
+                        var s2f42 = await secsGem.SendAsync(s2f41);
+                        var rcmdAck = s2f42.SecsItem[0].FirstValue<byte>() == 0;
+                        if (rcmdAck)
+                        {
+                            AgvLocked = false;
+                            UIMessageBox.ShowSuccess("AGV解锁成功");
+                        }
+                        else
+                        {
+                            UIMessageBox.ShowError($"AGV解锁失败, 错误代码: {s2f42.SecsItem.FirstValue<byte>()}");
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    traLog.Error($"AGV解锁操作失败: {ex.ToString()}");
+                    UIMessageBox.ShowError($"AGV解锁操作失败: {ex.Message}");
+                }
+                finally
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        Cursor = Cursors.Default;
+                        uiButton_unlockAgv.Enabled = true;
+                    }));
+                }
+
+            });
         }
     }
 }

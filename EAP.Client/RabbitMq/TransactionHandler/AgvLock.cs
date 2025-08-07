@@ -29,13 +29,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
             {
                 var s2f41 = new SecsMessage(2, 41)
                 {
-                    SecsItem = L(
-        A("LOCKAGV"),
-        L(
-            L(
-
-                )
-            ))
+                    SecsItem = L(A("LOCKAGV"), L())
                 };
                 var s2f42 = await secsGem.SendAsync(s2f41);
                 if (s2f42.SecsItem[0].FirstValue<byte>() == 0)

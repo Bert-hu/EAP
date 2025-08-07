@@ -37,13 +37,23 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                 string recipeName = string.Empty;
                 string processStateCode = string.Empty;
                 string processState = "Unknown";
+                string alarmList = string.Empty;
+                bool lockState = false;
+                bool cleanOut = false;
+                bool auto1Full = false;
 
                 recipeName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
                 processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][1].GetString();
+                alarmList = wrapper.PrimaryMessage.SecsItem[2][0][1][2].GetString();
+                lockState = wrapper.PrimaryMessage.SecsItem[2][0][1][3].GetString().ToUpper() == "TRUE";
+                cleanOut = wrapper.PrimaryMessage.SecsItem[2][0][1][4].GetString().ToUpper() == "TRUE";
+                auto1Full = wrapper.PrimaryMessage.SecsItem[2][0][1][5].GetString().ToUpper() == "TRUE";
                 StatusDict.TryGetValue(processStateCode, out processState);
-
-                MainForm.Instance?.UpdateState(processState);
-
+                if (MainForm.Instance != null)
+                {
+                    MainForm.Instance.UpdateState(processState);
+                    MainForm.Instance.AgvLocked = lockState;
+                }
 
                 traLog.Debug($"{ceidint} {eventname}: {processState},{recipeName}");
                 var equipmentid = commonLibrary.CustomSettings["EquipmentId"];
@@ -56,7 +66,12 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
                     {"EventName", eventname},
                     {"ProcessState",processState},
                     {"ProcessStateCode",processStateCode},
-                    {"RecipeName",recipeName}
+                    {"RecipeName",recipeName},
+                    {"AlarmList", alarmList},
+                    {"LockState", lockState},
+                    {"CleanOut", cleanOut},
+                    {"Auto1Full", auto1Full}
+
                 },
                 };
                 rabbitMq.Produce("HandlerAgv.Service", rabbitTrans);

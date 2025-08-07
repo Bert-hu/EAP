@@ -34,6 +34,8 @@ namespace EAP.Client.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_unlockAgv = new UIButton();
+            uiButton_lockAgv = new UIButton();
             uiLabel_currenttaskState = new UILabel();
             uiButton_sendInputOutputTask = new UIButton();
             uiButton_sendOutputTask = new UIButton();
@@ -65,6 +67,8 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_unlockAgv);
+            groupBox_1.Controls.Add(uiButton_lockAgv);
             groupBox_1.Controls.Add(uiLabel_currenttaskState);
             groupBox_1.Controls.Add(uiButton_sendInputOutputTask);
             groupBox_1.Controls.Add(uiButton_sendOutputTask);
@@ -84,17 +88,41 @@ namespace EAP.Client.Forms
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(590, 306);
+            groupBox_1.Size = new Size(590, 227);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
             // 
+            // uiButton_unlockAgv
+            // 
+            uiButton_unlockAgv.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_unlockAgv.Location = new Point(333, 74);
+            uiButton_unlockAgv.MinimumSize = new Size(1, 1);
+            uiButton_unlockAgv.Name = "uiButton_unlockAgv";
+            uiButton_unlockAgv.Size = new Size(68, 35);
+            uiButton_unlockAgv.TabIndex = 10;
+            uiButton_unlockAgv.Text = "解锁";
+            uiButton_unlockAgv.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_unlockAgv.Click += uiButton_unlockAgv_Click;
+            // 
+            // uiButton_lockAgv
+            // 
+            uiButton_lockAgv.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_lockAgv.Location = new Point(259, 74);
+            uiButton_lockAgv.MinimumSize = new Size(1, 1);
+            uiButton_lockAgv.Name = "uiButton_lockAgv";
+            uiButton_lockAgv.Size = new Size(68, 35);
+            uiButton_lockAgv.TabIndex = 10;
+            uiButton_lockAgv.Text = "锁定";
+            uiButton_lockAgv.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_lockAgv.Click += uiButton_lockAgv_Click;
+            // 
             // uiLabel_currenttaskState
             // 
             uiLabel_currenttaskState.Font = new Font("微软雅黑", 22F, FontStyle.Bold);
             uiLabel_currenttaskState.ForeColor = Color.FromArgb(0, 0, 192);
-            uiLabel_currenttaskState.Location = new Point(338, 224);
+            uiLabel_currenttaskState.Location = new Point(338, 156);
             uiLabel_currenttaskState.Name = "uiLabel_currenttaskState";
             uiLabel_currenttaskState.Size = new Size(187, 45);
             uiLabel_currenttaskState.TabIndex = 9;
@@ -158,7 +186,7 @@ namespace EAP.Client.Forms
             uiButton_outputTrayCount.FillSelectedColor = Color.FromArgb(88, 152, 32);
             uiButton_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_outputTrayCount.LightColor = Color.FromArgb(245, 251, 241);
-            uiButton_outputTrayCount.Location = new Point(150, 224);
+            uiButton_outputTrayCount.Location = new Point(150, 156);
             uiButton_outputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_outputTrayCount.Name = "uiButton_outputTrayCount";
             uiButton_outputTrayCount.RectColor = Color.FromArgb(110, 190, 40);
@@ -175,7 +203,7 @@ namespace EAP.Client.Forms
             // uiButton_inputTrayCount
             // 
             uiButton_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_inputTrayCount.Location = new Point(15, 224);
+            uiButton_inputTrayCount.Location = new Point(15, 156);
             uiButton_inputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_inputTrayCount.Name = "uiButton_inputTrayCount";
             uiButton_inputTrayCount.Size = new Size(100, 23);
@@ -188,7 +216,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_outputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiLedLabel_outputTrayCount.ForeColor = Color.Lime;
-            uiLedLabel_outputTrayCount.Location = new Point(150, 253);
+            uiLedLabel_outputTrayCount.Location = new Point(150, 185);
             uiLedLabel_outputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_outputTrayCount.Name = "uiLedLabel_outputTrayCount";
             uiLedLabel_outputTrayCount.Size = new Size(100, 35);
@@ -198,7 +226,7 @@ namespace EAP.Client.Forms
             // uiLedLabel_inputTrayCount
             // 
             uiLedLabel_inputTrayCount.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiLedLabel_inputTrayCount.Location = new Point(15, 253);
+            uiLedLabel_inputTrayCount.Location = new Point(15, 185);
             uiLedLabel_inputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_inputTrayCount.Name = "uiLedLabel_inputTrayCount";
             uiLedLabel_inputTrayCount.Size = new Size(100, 35);
@@ -209,11 +237,11 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvLocked.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiCheckBox_agvLocked.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox_agvLocked.Location = new Point(150, 178);
+            uiCheckBox_agvLocked.Location = new Point(407, 74);
             uiCheckBox_agvLocked.MinimumSize = new Size(1, 1);
             uiCheckBox_agvLocked.Name = "uiCheckBox_agvLocked";
             uiCheckBox_agvLocked.ReadOnly = true;
-            uiCheckBox_agvLocked.Size = new Size(203, 29);
+            uiCheckBox_agvLocked.Size = new Size(180, 29);
             uiCheckBox_agvLocked.TabIndex = 4;
             uiCheckBox_agvLocked.Text = "AGV锁定(禁止进出盘)";
             // 
@@ -221,7 +249,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvEnabled.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiCheckBox_agvEnabled.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox_agvEnabled.Location = new Point(15, 178);
+            uiCheckBox_agvEnabled.Location = new Point(121, 74);
             uiCheckBox_agvEnabled.MinimumSize = new Size(1, 1);
             uiCheckBox_agvEnabled.Name = "uiCheckBox_agvEnabled";
             uiCheckBox_agvEnabled.ReadOnly = true;
@@ -245,7 +273,7 @@ namespace EAP.Client.Forms
             // 
             richTextBox1.FillColor = Color.White;
             richTextBox1.Font = new Font("宋体", 10F);
-            richTextBox1.Location = new Point(14, 368);
+            richTextBox1.Location = new Point(12, 277);
             richTextBox1.Margin = new Padding(4, 5, 4, 5);
             richTextBox1.MinimumSize = new Size(1, 1);
             richTextBox1.Name = "richTextBox1";
@@ -266,7 +294,7 @@ namespace EAP.Client.Forms
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
-            ClientSize = new Size(614, 609);
+            ClientSize = new Size(614, 515);
             Controls.Add(richTextBox1);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -305,5 +333,7 @@ namespace EAP.Client.Forms
         private UIButton uiButton_sendOutputTask;
         private UIButton uiButton_sendInputTask;
         private UILabel uiLabel_currenttaskState;
+        private UIButton uiButton_unlockAgv;
+        private UIButton uiButton_lockAgv;
     }
 }
