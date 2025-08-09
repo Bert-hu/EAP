@@ -145,9 +145,16 @@ namespace EAP.Client.Forms
         }
         public void UpdateMachineRecipe(string recipename)
         {
-            this.Invoke(new Action(() =>
+            this.BeginInvoke(new Action(() =>
             {
                 this.textBox_machinerecipe.Text = recipename;
+            }));
+        }
+        public void UpdateModelName(string modelname)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                this.uiTextBox_modelName.Text = modelname;
             }));
         }
 
@@ -371,7 +378,6 @@ namespace EAP.Client.Forms
             button_CompareRecipe.Enabled = false;
             Task.Run(() =>
             {
-
                 try
                 {
 
@@ -538,179 +544,6 @@ namespace EAP.Client.Forms
             var config = manager.LoadConfig();
             config.GroupName = uiTextBox_groupName.Text;
             manager.SaveConfig(config);
-        }
-
-        private async void uiButton_downloadRecipe_Click(object sender, EventArgs e)
-        {
-            Control control = (Control)sender;
-            ScanBarcodeForm form = new ScanBarcodeForm();
-            DialogResult result = form.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                (string recipeName, string modelName, string errMsg) = await GetRecipeNameBySn(form.Value);
-                if (string.IsNullOrEmpty(recipeName))
-                {
-                    traLog.Warn($"Fail, Check Model Name Fail: {errMsg}");
-                    return;
-                }
-
-                if (UIMessageBox.ShowAsk($"Download Recipe: {recipeName} to Machine?"))
-                {
-                    var (downloadresult, message) = DownloadRecipeToMachine(recipeName);
-                    if (downloadresult)
-                    {
-                        traLog.Info($"Download success. Barcode: {form.Value}, Recipe: {message}");
-                    }
-                    else
-                    {
-                        traLog.Error($"Download fail. Barcode: {form.Value}, Message: {message}");
-                    }
-                }
-            }
-        }
-
-
-
-        public async Task<(string recipeName, string modelname, string errMsg)> GetRecipeNameBySn(string panelid)
-        {
-            var site = _configuration.GetSection("Custom")["Site"] ?? "HPH";
-            var sfisIp = _configuration.GetSection("Custom")["SfisIp"];
-            var sfisPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
-            var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
-            var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-            var getModelnameReq = string.Empty;
-            if (site == "JQ")
-            {
-                getModelnameReq = $"SMD_SPC_QUERY,{panelid},7,M090696,JQ01-3FAP-12,,OK,SN_MODEL_NAME_PROJECT_NAME_INFO=???";//JQ
-            }
-            else
-            {
-                getModelnameReq = $"EQXXXXXX01,{panelid},7,M001603,V98,,OK,SN_MODEL_NAME_INFO=???";//HPH
-            }
-
-            //var getModelnameRes = string.Empty;
-            //var getModelnameErr = string.Empty;
-            string recipeName = null;
-            string modelname = null;
-            string errMsg = null;
-
-            BaymaxService baymax = new BaymaxService();
-            var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getModelnameReq);
-
-            if (trans.Result)
-            {
-                if (trans.BaymaxResponse.ToUpper().StartsWith("OK"))
-                {
-                    Dictionary<string, string> sfisParameters = trans.BaymaxResponse.Split(',')[1].Split(' ').Select(keyValueString => keyValueString.Split('='))
-                                  .Where(keyValueArray => keyValueArray.Length == 2)
-                                  .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
-
-                    if (site == "JQ")
-                    {
-                        //JQ
-                        modelname = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[0];
-                        string projectName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[1];
-                        string groupName = sfisParameters["SN_MODEL_NAME_PROJECT_NAME_INFO"].TrimEnd(';').Split(':')[2];
-                    }
-                    else
-                    {
-                        //HPH
-                        modelname = sfisParameters["SN_MODEL_NAME_INFO"];
-                    }
-                    this.Invoke(() =>
-                    {
-                        uiTextBox_modelName.Text = modelname;
-                    });
-
-                    (recipeName, errMsg) = CheckRecipeGroup(rmsUrl, equipmentId, modelname);
-                    return (recipeName, modelname, errMsg);
-                }
-                else
-                {
-                    return (recipeName, modelname, "SFIS Fail: " + trans.BaymaxResponse);
-                }
-            }
-            else
-            {
-                return (recipeName, modelname, trans.BaymaxResponse);
-            }
-        }
-
-        private (string recipeName, string errMsg) CheckRecipeGroup(string rmsUrl, string equipmentId, string recipeGroupName)
-        {
-            string recipeName = null;
-            string errMsg = string.Empty;
-
-            try
-            {
-                string url = rmsUrl.TrimEnd('/') + "/api/checkrecipegroup";
-                var req = new
-                {
-                    EquipmentId = equipmentId,
-                    RecipeGroupName = recipeGroupName,
-                    CheckLastRecipe = false //不检查最后一次使用的Recipe
-                };
-                var reqstr = JsonConvert.SerializeObject(req);
-                using (var httpClient = new HttpClient())
-                {
-                    var httpResponse = httpClient.PostAsync(url, new StringContent(reqstr, Encoding.UTF8, "application/json")).Result;
-                    if (httpResponse.IsSuccessStatusCode)
-                    {
-                        var responseContent = httpResponse.Content.ReadAsStringAsync().Result;
-                        var repobj = JObject.Parse(responseContent);
-                        if ((bool)repobj["Result"])
-                        {
-                            recipeName = repobj["RecipeName"].ToString();
-                            return (recipeName, errMsg);
-                        }
-                        else
-                        {
-                            errMsg = repobj["Message"].ToString();
-                        }
-                    }
-                    else
-                    {
-                        errMsg = $"HTTP请求失败，状态码：{httpResponse.StatusCode}";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                errMsg = $"发生异常：{ex.Message}";
-            }
-
-            return (recipeName, errMsg);
-        }
-
-        private (bool result, string message) DownloadRecipeToMachine(string recipeName)
-        {
-            try
-            {
-                var rmsUrl = _configuration.GetSection("Custom")["RmsApiUrl"];
-                var equipmentId = _configuration.GetSection("Custom")["EquipmentId"];
-
-                string url = rmsUrl.TrimEnd('/') + "/api/downloadeffectiverecipetomachine";
-                var reqstr = JsonConvert.SerializeObject(new { TrueName = uiTextBox_empNo.Text, EquipmentId = equipmentId, RecipeName = recipeName });
-                using (var httpClient = new HttpClient())
-                {
-                    var httpResponse = httpClient.PostAsync(url, new StringContent(reqstr, Encoding.UTF8, "application/json")).Result;
-                    if (httpResponse.IsSuccessStatusCode)
-                    {
-                        var responseContent = httpResponse.Content.ReadAsStringAsync().Result;
-                        var reply = JsonConvert.DeserializeObject<DownloadEffectiveRecipeToMachineResponse>(responseContent);
-                        return (reply.Result, reply.Result ? reply.RecipeName : reply.Message);
-                    }
-                    else
-                    {
-                        return (false, $"EAP Error: HTTP request fail：{httpResponse.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return (false, $"EAP Error: HTTP request fail：{ex.Message}");
-            }
-
         }
 
         private async void uiSymbolButton_changeReel_Click(object sender, EventArgs e)

@@ -1,7 +1,10 @@
 ﻿using EAP.Client.Forms;
+using EAP.Client.Models;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
+using EAP.Client.Service;
 using EAP.Client.Sfis;
+using EAP.Client.Utils;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Secs4Net;
@@ -44,18 +47,47 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
             if (MainForm.Instance.checkBox_checkrecipe.Checked)
             {
-                var (recipeName, modelName, recipeErrorMessage) = await MainForm.Instance.GetRecipeNameBySn(panelId);
+                string message = string.Empty;
+                ConfigManager<MoldingConfig> manager = new ConfigManager<MoldingConfig>();
+                var config = manager.LoadConfig();
 
-                if (recipeName == null)
+                BesiMoldingService besiMolding = new BesiMoldingService(configuration, rabbitMqService);
+
+                string modelName = string.Empty;
+                (modelName, message)  = await besiMolding.GetModelNameBySn(panelId);
+                if (string.IsNullOrEmpty(modelName))
                 {
-                    HandleValidationFailure($"Fail, Check Model Name Fail: {recipeErrorMessage}");
+                    HandleValidationFailure($"Panel In: Fail, 获取{panelId}的ModelName失败: {message}");
+                    return;
+                }
+                MainForm.Instance.UpdateModelName(modelName);
+
+                string materialPn = string.Empty;
+                (materialPn, message) = await besiMolding.GetMaterialPn(config.ReelId);
+                if (string.IsNullOrEmpty(materialPn))
+                {
+                    HandleValidationFailure($"Panel In: Fail, 获取{config.ReelId}的PN失败: {message}");
                     return;
                 }
 
-                if (recipeName != machineRecipeName)
+                List<string>? recipeAlias = null;
+                (recipeAlias, message) = await besiMolding.GetRecipeNameAlias(machineRecipeName);
+                if (recipeAlias == null || recipeAlias.Count == 0)
                 {
-                    HandleValidationFailure($"Fail, Recipe is not match. ModelName:{modelName}, Linked recipe:{recipeName}, Machine recipe: {machineRecipeName}");
+                    HandleValidationFailure($"Panel In: Fail, 获取{machineRecipeName}绑定的PN List失败: {message}");
                     return;
+                }
+                else
+                {
+                    if (recipeAlias.Contains(materialPn))
+                    {
+                        traLog.Info($"{machineRecipeName}绑定的PN列表包含{materialPn}，RecipeName检查通过");
+                    }
+                    else
+                    {
+                        HandleValidationFailure($"Panel In: Fail, 绑定的PN列表({string.Join(",", recipeAlias)})不包含{materialPn}，RecipeName检查失败");
+                        return;
+                    }
                 }
             }
 
@@ -84,12 +116,13 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             }
 
             SendValidationResponse(true);
+            traLog.Info($"{panelId}检查全部通过，允许进板。");
         }
 
 
         private bool ValidateRecipeBody(out string compareBodyMessage)
         {
-            compareBodyMessage = "Do not compare recipe body";
+            compareBodyMessage = "未勾选比较Recipe Body";
 
             if (!MainForm.Instance.uiCheckBox_checkRecipeBody.Checked)
             {

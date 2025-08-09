@@ -16,7 +16,7 @@ namespace EAP.Client.Forms
     {
         public string Value { get; set; }
 
-        public PpSelectForm()
+        public PartNoBindingForm()
         {
             InitializeComponent();
         }

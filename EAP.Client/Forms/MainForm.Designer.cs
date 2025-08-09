@@ -54,11 +54,9 @@ namespace EAP.Client.Forms
             uiTextBox_empNo = new UITextBox();
             uiLabel3 = new UILabel();
             uiTextBox_line = new UITextBox();
-            uiButton_downloadRecipe = new UIButton();
             uiLabel6 = new UILabel();
             uiTextBox_groupName = new UITextBox();
             uiCheckBox_checkRecipeBody = new UICheckBox();
-            uiSymbolButton1 = new UISymbolButton();
             groupBox_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)snInfoBindingSource).BeginInit();
             SuspendLayout();
@@ -103,7 +101,6 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
-            groupBox_1.Controls.Add(uiSymbolButton1);
             groupBox_1.Controls.Add(uiSymbolButton_changeReel);
             groupBox_1.Controls.Add(uiTextBox_reelId);
             groupBox_1.Controls.Add(uiTextBox_modelName);
@@ -327,29 +324,6 @@ namespace EAP.Client.Forms
             uiTextBox_line.Watermark = "";
             uiTextBox_line.TextChanged += uiTextBox_line_TextChanged;
             // 
-            // uiButton_downloadRecipe
-            // 
-            uiButton_downloadRecipe.FillColor = Color.FromArgb(102, 58, 183);
-            uiButton_downloadRecipe.FillColor2 = Color.FromArgb(102, 58, 183);
-            uiButton_downloadRecipe.FillHoverColor = Color.FromArgb(133, 97, 198);
-            uiButton_downloadRecipe.FillPressColor = Color.FromArgb(82, 46, 147);
-            uiButton_downloadRecipe.FillSelectedColor = Color.FromArgb(82, 46, 147);
-            uiButton_downloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_downloadRecipe.LightColor = Color.FromArgb(244, 242, 251);
-            uiButton_downloadRecipe.Location = new Point(175, 118);
-            uiButton_downloadRecipe.MinimumSize = new Size(1, 1);
-            uiButton_downloadRecipe.Name = "uiButton_downloadRecipe";
-            uiButton_downloadRecipe.RectColor = Color.FromArgb(102, 58, 183);
-            uiButton_downloadRecipe.RectHoverColor = Color.FromArgb(133, 97, 198);
-            uiButton_downloadRecipe.RectPressColor = Color.FromArgb(82, 46, 147);
-            uiButton_downloadRecipe.RectSelectedColor = Color.FromArgb(82, 46, 147);
-            uiButton_downloadRecipe.Size = new Size(135, 29);
-            uiButton_downloadRecipe.Style = UIStyle.Custom;
-            uiButton_downloadRecipe.TabIndex = 5;
-            uiButton_downloadRecipe.Text = "Download Recipe";
-            uiButton_downloadRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_downloadRecipe.Click += uiButton_downloadRecipe_Click;
-            // 
             // uiLabel6
             // 
             uiLabel6.AutoSize = true;
@@ -392,25 +366,11 @@ namespace EAP.Client.Forms
             uiCheckBox_checkRecipeBody.Text = "Auto Check Recipe Body";
             uiCheckBox_checkRecipeBody.CheckedChanged += uiCheckBox_checkRecipeBody_CheckedChanged;
             // 
-            // uiSymbolButton1
-            // 
-            uiSymbolButton1.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiSymbolButton1.Location = new Point(403, 106);
-            uiSymbolButton1.MinimumSize = new Size(1, 1);
-            uiSymbolButton1.Name = "uiSymbolButton1";
-            uiSymbolButton1.Size = new Size(43, 29);
-            uiSymbolButton1.Style = UIStyle.Custom;
-            uiSymbolButton1.Symbol = 61459;
-            uiSymbolButton1.TabIndex = 12;
-            uiSymbolButton1.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiSymbolButton1.Click += uiSymbolButton_changeReel_Click;
-            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(728, 703);
             Controls.Add(groupBox_1);
-            Controls.Add(uiButton_downloadRecipe);
             Controls.Add(button_CompareRecipe);
             Controls.Add(uiCheckBox_checkRecipeBody);
             Controls.Add(checkBox_checkrecipe);
@@ -469,13 +429,11 @@ namespace EAP.Client.Forms
         public UITextBox uiTextBox_line;
         public UITextBox uiTextBox_modelName;
         private UILabel uiLabel4;
-        private UIButton uiButton_downloadRecipe;
         public UITextBox uiTextBox_reelId;
         private UILabel uiLabel1;
         private UISymbolButton uiSymbolButton_changeReel;
         private UILabel uiLabel6;
         public UITextBox uiTextBox_groupName;
         public UICheckBox uiCheckBox_checkRecipeBody;
-        private UISymbolButton uiSymbolButton1;
     }
 }

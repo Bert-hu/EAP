@@ -94,14 +94,14 @@ namespace EAP.Client.Sfis
                 byte[] baymaxRequest = Encoding.UTF8.GetBytes(request);
                 await baymaxStream.WriteAsync(baymaxRequest, 0, baymaxRequest.Length);
                 await baymaxStream.FlushAsync();
-                traLog.Info($"Send to SFIS: {request}");
+                traLog.Debug($"Send to SFIS: {request}");
                 int baymaxBytesRead = await readTask;
                 baymaxTrans.BaymaxResponse = Encoding.UTF8.GetString(baymaxBuffer, 0, baymaxBytesRead);
                 Thread.Sleep(10);
                 baymaxStream.Flush();
                 baymaxClient.Close();
                 baymaxTrans.Result = true;
-                traLog.Info($"Receive from SFIS: {baymaxTrans.BaymaxResponse}");
+                traLog.Debug($"Receive from SFIS: {baymaxTrans.BaymaxResponse}");
             }
             catch (Exception)
             {
