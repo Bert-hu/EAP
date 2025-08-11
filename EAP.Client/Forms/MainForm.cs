@@ -13,12 +13,14 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using static Secs4Net.Item;
 
 namespace EAP.Client.Forms
 {
+    [SupportedOSPlatform("windows")]
     public partial class MainForm : UIForm
     {
         private static MainForm instance;
@@ -34,6 +36,7 @@ namespace EAP.Client.Forms
         bool agvEnabled = false;
         bool agvLocked = false;
         string currentTaskState = "无AGV任务";
+        string currentLot = string.Empty;
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -97,6 +100,19 @@ namespace EAP.Client.Forms
                 this.Invoke(new Action(() =>
                 {
                     uiLabel_currenttaskState.Text = currentTaskState;
+                }));
+            }
+        }
+
+        public string CurrentLot
+        {
+            get { return currentLot; }
+            set
+            {
+                currentLot = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiTextBox_currentLot.Text = currentLot;
                 }));
             }
         }
@@ -369,6 +385,7 @@ namespace EAP.Client.Forms
                         InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
                         OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
                         CurrentTaskState = info.Parameters.ContainsKey("CurrentTaskState") ? info.Parameters["CurrentTaskState"].ToString() : "无AGV任务";
+                        CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"].ToString() : string.Empty;
                     }
                 }
                 else
@@ -498,6 +515,49 @@ namespace EAP.Client.Forms
                 return false;
             }
 
+        }
+
+        public bool UpdateLot(string lot)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    TransactionName = "UpdateCurrentLot",
+                    NeedReply = true,
+                    ExpireSecond = 5,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "CurrentLot", lot }
+                    }
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
+                    if (result)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        traLog.Warn($"更新CurrentLot失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
+                        return false;
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"更新CurrentLot超时。");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"更新CurrentLot失败: {ex.ToString()}");
+                return false;
+            }
         }
         public bool UpdateAgvEnabled(bool enabled)
         {
@@ -922,6 +982,47 @@ namespace EAP.Client.Forms
             });
         }
 
+        private async void uiSymbolButton_updateLot_Click(object sender, EventArgs e)
+        {
+            EditValueForm editValueForm = new EditValueForm("修改当前Lot", CurrentLot);
+            if (editValueForm.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(editValueForm.Value))
+                {
+                    Cursor = Cursors.WaitCursor;
+                    uiSymbolButton_updateLot.Enabled = false;
+                    try
+                    {
+                        // 在后台线程执行更新Lot号操作
+                        bool updateResult = await Task.Run(() => UpdateLot(editValueForm.Value.Trim()));
+                        if (updateResult)
+                        {
+                            CurrentLot = editValueForm.Value.Trim();
+                            traLog.Info($"Lot号更新成功: {CurrentLot}");
+                        }
+                        else
+                        {
+                            traLog.Warn("Lot号更新失败");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        traLog.Error($"更新Lot号时发生异常: {ex.Message}");
+                    }
+                    finally
+                    {
+                        // 恢复界面状态
+                        Cursor = Cursors.Default;
+                        uiSymbolButton_updateLot.Enabled = true;
+                    }
+
+                }
+                else
+                {
+                    UIMessageBox.ShowWarning("请输入有效的Lot号");
+                }
+            }
+        }
 
 
     }

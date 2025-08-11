@@ -37,6 +37,8 @@ namespace HandlerAgv.Service.Models.Database
         public bool AgvEnabled { get; set; } = false;
         [SugarColumn(IsNullable = true, ColumnDescription = "当前任务Id")]
         public string? CurrentTaskId { get; set; } = null;
+        [SugarColumn(IsNullable = true, ColumnDescription = "当前Lot号")]
+        public string? CurrentLot{ get; set; } = null;
         public string IP { get; set; } = string.Empty;
         public int InputTrayCT { get; set; } = 120;
         public int OutputTrayCT { get; set; } = 120;

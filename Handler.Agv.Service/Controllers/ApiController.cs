@@ -132,6 +132,7 @@ namespace HandlerAgv.Service.Controllers
                         if (task.Type == AgvTaskType.Input )
                         {
                             machine.InputTrayNumber = request.LotLayers;
+                            machine.CurrentLot = request.InputLot;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber }).ExecuteCommand();
                         }
                         else if(task.Type == AgvTaskType.Output)
@@ -142,6 +143,7 @@ namespace HandlerAgv.Service.Controllers
                         else if (task.Type == AgvTaskType.InputOutput)
                         {
                             machine.InputTrayNumber = request.LotLayers;
+                            machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber }).ExecuteCommand();
                         }

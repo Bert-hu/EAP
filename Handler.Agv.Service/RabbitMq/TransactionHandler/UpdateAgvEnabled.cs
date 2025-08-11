@@ -31,10 +31,27 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                 }
                 else
                 {
-                    machine.AgvEnabled = bool.Parse(trans.Parameters["AgvEnabled"].ToString());
-                    sqlSugarClient.Updateable(machine)
-                        .UpdateColumns(it => new { it.AgvEnabled })
-                        .ExecuteCommand();
+                    var agvEnabled = bool.Parse(trans.Parameters["AgvEnabled"].ToString());             
+
+                    if (agvEnabled)
+                    {
+                        if (string.IsNullOrEmpty(machine.CurrentLot))
+                        {
+                            repTrans.Parameters.Add("Result", false);
+                            repTrans.Parameters.Add("Message", "开启AGV功能失败: 当前Lot不能为空");
+                        }
+                        else
+                        {
+                            machine.AgvEnabled = agvEnabled;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.AgvEnabled }).ExecuteCommand();
+                        }
+                    }
+                    else
+                    {
+                        machine.AgvEnabled = agvEnabled;
+                        machine.CurrentLot = string.Empty; // Clear CurrentLot when AGV is disabled
+                        sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.AgvEnabled, it.CurrentLot }).ExecuteCommand();
+                    }
                     repTrans.Parameters.Add("Result", true);
                     dbgLog.Debug($"AGV功能状态切换 {machine.Id}: {machine.AgvEnabled}");
 

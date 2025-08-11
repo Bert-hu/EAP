@@ -71,7 +71,8 @@ namespace HandlerAgv.Service.Services
                                 { "InputTrayCount", equipment.InputTrayNumber },
                                 { "OutputTrayCount", equipment.OutputTrayNumber },
                                 { "AgvEnabled" , equipment.AgvEnabled },
-                                { "CurrentTaskState", currentTaskState }
+                                { "CurrentTaskState", currentTaskState },
+                                { "CurrentLot", equipment.CurrentLot }
                             }
                     };
                     rabbitMqService.Produce("EAP.SecsClient." + equipmentId, trans);
