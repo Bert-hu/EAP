@@ -38,12 +38,14 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         if (string.IsNullOrEmpty(machine.CurrentLot))
                         {
                             repTrans.Parameters.Add("Result", false);
-                            repTrans.Parameters.Add("Message", "开启AGV功能失败: 当前Lot不能为空");
+                            repTrans.Parameters.Add("Message", "开启AGV功能失败: 当前Lot不能为空"); 
                         }
                         else
                         {
                             machine.AgvEnabled = agvEnabled;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.AgvEnabled }).ExecuteCommand();
+                            repTrans.Parameters.Add("Result", true);
+                            repTrans.Parameters.Add("Message", $"{trans.EquipmentID}AGV功能已开启");
                         }
                     }
                     else
@@ -51,9 +53,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         machine.AgvEnabled = agvEnabled;
                         machine.CurrentLot = string.Empty; // Clear CurrentLot when AGV is disabled
                         sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.AgvEnabled, it.CurrentLot }).ExecuteCommand();
+                        repTrans.Parameters.Add("Result", true);
+                        repTrans.Parameters.Add("Message", $"{trans.EquipmentID}AGV功能已关闭");
                     }
-                    repTrans.Parameters.Add("Result", true);
-                    dbgLog.Debug($"AGV功能状态切换 {machine.Id}: {machine.AgvEnabled}");
+
 
                     EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
                     eapClient.UpdateClientInfo(trans.EquipmentID);
