@@ -154,7 +154,7 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                 TransactionName = transName,
                 Parameters = para
             };
-            rabbitMqService.Produce("EAP.RIDMTest", trans);
+            rabbitMqService.Produce("EAP.RIDM", trans);
         }
     }
 }

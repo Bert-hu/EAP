@@ -25,7 +25,7 @@ namespace EAP.Client.NonSecs.Message
     {
         public string Name { get; set; }
 
-        public Dictionary<string, Dictionary<string, Dictionary<string, int>>> Parameter { get; set; }
+        public Dictionary<string, string> Parameter { get; set; }
     }
 
 }

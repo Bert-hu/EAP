@@ -3,6 +3,7 @@ using EAP.Client.NonSecs.Message;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Runtime.Intrinsics.X86;
 
 namespace EAP.Client.RabbitMq
@@ -43,8 +44,24 @@ namespace EAP.Client.RabbitMq
                     if (upperCaseDict.TryGetValue("COMMAND", out object _c))
                     {
                         var commandJson = _c?.ToString();
-                        var cmd = JsonConvert.DeserializeObject<Command>(commandJson);
+                        var root = JObject.Parse(commandJson);
+                        var parameter = (JObject)root["parameter"].First.First;
+                        var name = root["name"].ToString();
+                        var resultObj = new Dictionary<string, string>();
+                        foreach (var prop in parameter.Properties())
+                        {
+                            var innerObj = (JObject)prop.Value;
+                            string values = $"{innerObj["2to1"]},{innerObj["3to1"]},{innerObj["4to1"]}";
+                            resultObj[prop.Name] = values;
+                        }
 
+                        //string newJson = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
+                        //var cmd = JsonConvert.DeserializeObject<Command>(commandJson);
+                        var cmd = new Command
+                        {
+                            Name = name,
+                            Parameter = resultObj
+                        };
                         var s2f41 = new S2F41
                         {
                             EQID = equipmentId,
@@ -57,7 +74,6 @@ namespace EAP.Client.RabbitMq
                         reptrans?.Parameters?.Add("Result", s2f42.Result);
                     }
                 }
-                  
                 catch (Exception ex)
                 {
                     
