@@ -97,12 +97,21 @@ namespace EAP.Client.RabbitMq
 
                     reptrans?.Parameters?.Add("Result", true);
                 }
+                catch (InvalidOperationException ioex) when (ioex.Message.Contains("无活跃客户端连接"))
+                {
+                    // 无客户端连接，状态设为 Offline
+                    Status = "Offline";
+                    reptrans?.Parameters?.Add("Result", false);
+                    reptrans?.Parameters?.Add("Message", ioex.Message);
+                    dbgLog.Warn($"No active client connection: {ioex.Message}");
+                }
                 catch (Exception ex)
                 {
                     Status = "EAP Error";
                     reptrans?.Parameters.Add("Result", false);
                     reptrans?.Parameters.Add("Message", $"EAP Error {ex.Message}");
                     dbgLog.Error(ex.Message, ex);
+                    return;
                 }
                 reptrans?.Parameters?.Add("Status", Status);
                 if (reptrans != null && reptrans.NeedReply) rabbitMq.Produce(trans!.ReplyChannel, reptrans);
