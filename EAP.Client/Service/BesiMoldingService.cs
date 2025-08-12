@@ -137,9 +137,10 @@ namespace EAP.Client.Service
             {
                 var sfisIp = configuration.GetSection("Custom")["SfisIp"];
                 var sfisPort = int.Parse(configuration.GetSection("Custom")["SfisPort"] ?? "21347");
+                var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
 
-                //TODO: 等IT文档出来再修改
-                var getPnReq = $"SMD_SPC_QUERY,{reelId},7,M090696,JQ01-3FAP-12,,OK,MaterialInfo=???";//JQ
+
+                var getPnReq = $"{equipmentId},{reelId},7,M090696,{MainForm.Instance.uiTextBox_line.Text},,OK,REELINFO=???";//JQ
                 BaymaxService baymax = new BaymaxService();
                 var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getPnReq);
 
@@ -152,8 +153,7 @@ namespace EAP.Client.Service
                                       .ToDictionary(keyValueArray => keyValueArray[0], keyValueArray => keyValueArray[1]);
 
 
-                        //TODO: 等IT文档出来再修改
-                        string materialPn = sfisParameters["MaterialInfo"].TrimEnd(';').Split(':')[0];
+                        string materialPn = sfisParameters["REELINFO"].TrimEnd(';').Split(':')[0];
                         return (materialPn, message);
                     }
                     else
