@@ -26,7 +26,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 var outputTrayCount = int.Parse(trans.Parameters["OutputTrayCount"].ToString());
                 var agvEnabled = bool.Parse(trans.Parameters["AgvEnabled"].ToString());
                 var currentTaskState = trans.Parameters["CurrentTaskState"].ToString();
-                var currentLot = trans.Parameters["CurrentLog"].ToString();
+                var currentLot = trans.Parameters["CurrentLot"]?.ToString();
 
                 MainForm.Instance.InputTrayCount = inputTrayCount;
                 MainForm.Instance.OutputTrayCount = outputTrayCount;
