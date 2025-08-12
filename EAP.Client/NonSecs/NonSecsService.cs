@@ -284,6 +284,13 @@ public class NonSecsService
             {
                 break;
             }
+            catch (IOException ioEx)
+            {
+                TraceLog.Info("客户端已断开");
+                nonSecsLog.Info("客户端已断开");
+                connectionState = ConnectionState.NotConnnected;
+                break;
+            }
             catch (Exception ex)
             {
                 nonSecsLog.Error("读取消息失败", ex);
