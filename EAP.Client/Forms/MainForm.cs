@@ -421,9 +421,9 @@ namespace EAP.Client.Forms
                         InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
                         OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
                         CurrentTaskState = info.Parameters.ContainsKey("CurrentTaskState") ? info.Parameters["CurrentTaskState"].ToString() : "无AGV任务";
-                        CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"].ToString() : string.Empty;
-                        MaterialName = info.Parameters.ContainsKey("MaterialName") ? info.Parameters["MaterialName"].ToString() : string.Empty;
-                        GroupName = info.Parameters.ContainsKey("GroupName") ? info.Parameters["GroupName"].ToString() : string.Empty;
+                        CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"]?.ToString() : string.Empty;
+                        MaterialName = info.Parameters.ContainsKey("MaterialName") ? info.Parameters["MaterialName"]?.ToString() : string.Empty;
+                        GroupName = info.Parameters.ContainsKey("GroupName") ? info.Parameters["GroupName"]?.ToString() : string.Empty;
                     }
                 }
                 else
