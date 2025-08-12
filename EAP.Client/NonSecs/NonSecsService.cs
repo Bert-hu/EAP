@@ -1,4 +1,5 @@
-﻿using EAP.Client.NonSecs;
+﻿using EAP.Client.Forms;
+using EAP.Client.NonSecs;
 using EAP.Client.NonSecs.Message;
 using EAP.Client.RabbitMq;
 using log4net;
@@ -284,6 +285,13 @@ public class NonSecsService
             {
                 break;
             }
+            catch (IOException ioEx)
+            {
+                TraceLog.Info("客户端已断开");
+                nonSecsLog.Info("客户端已断开");
+                connectionState = ConnectionState.NotConnnected;
+                break;
+            }
             catch (Exception ex)
             {
                 nonSecsLog.Error("读取消息失败", ex);
@@ -365,6 +373,8 @@ public class NonSecsService
                 // 主动模式：使用客户端连接发送消息
                 if (client == null || !client.Connected)
                 {
+                    nonSecsLog.Info("客户端已断开");
+                    connectionState = ConnectionState.NotConnnected;
                     throw new InvalidOperationException("客户端未连接");
                 }
 
@@ -386,6 +396,8 @@ public class NonSecsService
                 // 注意：被动模式下需要维护客户端连接集合，这里简化处理
                 if (client == null || !client.Connected)
                 {
+                    nonSecsLog.Info("客户端已断开");
+                    connectionState = ConnectionState.NotConnnected;
                     throw new InvalidOperationException("无活跃客户端连接");
                 }
 
