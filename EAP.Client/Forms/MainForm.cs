@@ -1,6 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs;
+using EAP.Client.Service;
 using EAP.Client.Sfis;
 using EAP.Client.Utils;
 using log4net;
@@ -29,6 +30,9 @@ namespace EAP.Client.Forms
         private readonly CommonLibrary commonLibrary;
         private readonly ISecsGem secsGem;
         private readonly RabbitMq.RabbitMqService rabbitMqservice;
+
+
+        private readonly JhtHanderService jhtHanderService;
         internal static ILog traLog = LogManager.GetLogger("Trace");
         internal static ILog dbgLog = LogManager.GetLogger("Debug");
         int inputTrayCount = 0;
@@ -37,6 +41,8 @@ namespace EAP.Client.Forms
         bool agvLocked = false;
         string currentTaskState = "无AGV任务";
         string currentLot = string.Empty;
+        string materialName = string.Empty;
+        string groupName = string.Empty;
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -117,7 +123,31 @@ namespace EAP.Client.Forms
             }
         }
 
+        public string MaterialName
+        {
+            get { return materialName; }
+            set
+            {
+                materialName = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiTextBox_materialName.Text = materialName;
+                }));
+            }
+        }
 
+        public string GroupName
+        {
+            get { return groupName; }
+            set
+            {
+                groupName = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiTextBox_groupName.Text = groupName;
+                }));
+            }
+        }
 
         public static MainForm Instance
         {
@@ -139,13 +169,19 @@ namespace EAP.Client.Forms
             this.secsGem = secsGem;
             rabbitMqservice = rabbitMq;
             instance = this;
+
+            jhtHanderService = new JhtHanderService(rabbitMqservice, configuration);
             InitializeComponent();
+
+
 
             this.secsConnection.ConnectionChanged += _secsConnection_ConnectionChanged;
             var appender = LogManager.GetRepository().GetAppenders().First(it => it.Name == "TraceLog") as RichTextBoxAppender;
             appender.RichTextBox = this.richTextBox1;
 
         }
+
+
 
         private void _secsConnection_ConnectionChanged(object? sender, ConnectionState e)
         {
@@ -252,13 +288,13 @@ namespace EAP.Client.Forms
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
             AutoUpdater.Start(updateUrl);
-            UpdateMachineIP(); //更新机器IP
+            jhtHanderService.UpdateMachineIP(); //更新机器IP
 
             DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };//定时去检测更新根据自己业务需求
             timer.Tick += delegate
             {
                 AutoUpdater.Start(updateUrl);
-                UpdateMachineIP(); //更新机器IP
+                jhtHanderService.UpdateMachineIP(); //更新机器IP
             };
             timer.Start();
         }
@@ -364,7 +400,7 @@ namespace EAP.Client.Forms
             {
                 var trans = new RabbitMqTransaction
                 {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
+                    EquipmentID = configuration.GetSection("Custom")["EquipmentId"],
                     TransactionName = "GetMachineInfo",
                     NeedReply = true,
                     ExpireSecond = 3,
@@ -386,6 +422,8 @@ namespace EAP.Client.Forms
                         OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
                         CurrentTaskState = info.Parameters.ContainsKey("CurrentTaskState") ? info.Parameters["CurrentTaskState"].ToString() : "无AGV任务";
                         CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"].ToString() : string.Empty;
+                        MaterialName = info.Parameters.ContainsKey("MaterialName") ? info.Parameters["MaterialName"].ToString() : string.Empty;
+                        GroupName = info.Parameters.ContainsKey("GroupName") ? info.Parameters["GroupName"].ToString() : string.Empty;
                     }
                 }
                 else
@@ -400,208 +438,7 @@ namespace EAP.Client.Forms
             }
         }
 
-        public void UpdateMachineIP()
-        {
-            var ips = Dns.GetHostAddresses(Dns.GetHostName());
-            // 过滤测试网段的Ipv4地址
-            var ipv4ips = ips.Where(ip => ip.AddressFamily == AddressFamily.InterNetwork).ToList();
-            var ipv4 = ipv4ips.FirstOrDefault(ip => ip.ToString().StartsWith("10.6"));
-            if (ipv4 == null)
-            {
-                // 如果没有找到10.6开头的IP，取第一个IPv4地址
-                ipv4 = ipv4ips.FirstOrDefault();
-            }
 
-            if (ipv4 != null)
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = "UpdateMachineIP",
-                    NeedReply = true,
-                    ExpireSecond = 5,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "MachineIP", ipv4.ToString() }
-                    }
-                };
-                rabbitMqservice.Produce("HandlerAgv.Service", trans);
-            }
-        }
-
-        public bool UpdateMachineInputTrayCount(int count)
-        {
-            try
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = "UpdateMachineInputTrayCount",
-                    NeedReply = true,
-                    ExpireSecond = 5,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "InputTrayCount", count }
-                    }
-                };
-                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
-                if (reply != null)
-                {
-                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
-                    if (result)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        traLog.Warn($"更新入料口盘数失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    traLog.Warn($"更新入料口盘数超时。");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                traLog.Error($"更新入料口盘数失败: {ex.ToString()}");
-                return false;
-            }
-        }
-
-        public bool UpdateMachineOutputTrayCount(int count)
-        {
-            try
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = "UpdateMachineOutputTrayCount",
-                    NeedReply = true,
-                    ExpireSecond = 5,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "OutputTrayCount", count }
-                    }
-                };
-                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
-                if (reply != null)
-                {
-                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
-                    if (result)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        traLog.Warn($"更新出料口盘数失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    traLog.Warn($"更新出料口盘数超时。");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                traLog.Error($"更新出料口盘数失败: {ex.ToString()}");
-                return false;
-            }
-
-        }
-
-        public bool UpdateLot(string lot)
-        {
-            try
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = "UpdateCurrentLot",
-                    NeedReply = true,
-                    ExpireSecond = 5,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "CurrentLot", lot }
-                    }
-                };
-                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
-                if (reply != null)
-                {
-                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
-                    if (result)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        traLog.Warn($"更新CurrentLot失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    traLog.Warn($"更新CurrentLot超时。");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                traLog.Error($"更新CurrentLot失败: {ex.ToString()}");
-                return false;
-            }
-        }
-        public bool UpdateAgvEnabled(bool enabled)
-        {
-            try
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = "UpdateAgvEnabled",
-                    NeedReply = true,
-                    ExpireSecond = 3,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
-                    Parameters = new Dictionary<string, object>
-                    {
-                        { "AgvEnabled", enabled }
-                    }
-                };
-                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
-                if (reply != null)
-                {
-                    var result = reply.Parameters.ContainsKey("Result") ? Convert.ToBoolean(reply.Parameters["Result"]) : false;
-                    if (result)
-                    {
-                        traLog.Info($"更新AGV模式成功: {(enabled ? "开启" : "关闭")}");
-                        return true;
-                    }
-                    else
-                    {
-                        traLog.Warn($"更新AGV模式失败: {(reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误")}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    traLog.Warn($"更新AGV模式超时。");
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
 
         public (bool, string) SemdAgvTask(string taskType)
         {
@@ -657,7 +494,7 @@ namespace EAP.Client.Forms
                     try
                     {
                         // 在后台线程执行耗时操作
-                        bool updateResult = await Task.Run(() => UpdateMachineInputTrayCount(newCount));
+                        bool updateResult = await Task.Run(() => jhtHanderService.UpdateMachineInputTrayCount(newCount));
 
                         if (updateResult)
                         {
@@ -701,7 +538,7 @@ namespace EAP.Client.Forms
                     try
                     {
                         // 在后台线程执行耗时操作
-                        bool updateResult = await Task.Run(() => UpdateMachineOutputTrayCount(newCount));
+                        bool updateResult = await Task.Run(() => jhtHanderService.UpdateMachineOutputTrayCount(newCount));
 
                         if (updateResult)
                         {
@@ -752,7 +589,7 @@ namespace EAP.Client.Forms
 
                 if (UIMessageBox.ShowAsk2($"{confirmMsg}"))
                 {
-                    bool updateResult = await Task.Run(() => UpdateAgvEnabled(newState));
+                    bool updateResult = await Task.Run(() => jhtHanderService.UpdateAgvEnabled(newState));
                 }
             }
             catch (Exception ex)
@@ -994,7 +831,7 @@ namespace EAP.Client.Forms
                     try
                     {
                         // 在后台线程执行更新Lot号操作
-                        bool updateResult = await Task.Run(() => UpdateLot(editValueForm.Value.Trim()));
+                        bool updateResult = await Task.Run(() => jhtHanderService.UpdateLot(editValueForm.Value.Trim()));
                         if (updateResult)
                         {
                             CurrentLot = editValueForm.Value.Trim();
@@ -1020,6 +857,96 @@ namespace EAP.Client.Forms
                 else
                 {
                     UIMessageBox.ShowWarning("请输入有效的Lot号");
+                }
+            }
+        }
+
+        private async void uiSymbolButton_updateMaterialName_Click(object sender, EventArgs e)
+        {
+            // 创建编辑表单，标题为"修改物料名称"，初始值为当前物料名称
+            EditValueForm editValueForm = new EditValueForm("修改物料名称（UPN前11码）", MaterialName);
+            if (editValueForm.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(editValueForm.Value))
+                {
+                    // 显示等待光标，禁用按钮防止重复操作
+                    Cursor = Cursors.WaitCursor;
+                    uiSymbolButton_updateMaterialName.Enabled = false;
+                    try
+                    {
+                        // 在后台线程执行更新物料名称操作
+                        bool updateResult = await Task.Run(() =>
+                            jhtHanderService.UpdateMaterialName(editValueForm.Value.Trim()));
+
+                        if (updateResult)
+                        {
+                            MaterialName = editValueForm.Value.Trim();
+                            traLog.Info($"物料名称更新成功: {MaterialName}");
+                        }
+                        else
+                        {
+                            traLog.Warn("物料名称更新失败");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        traLog.Error($"更新物料名称时发生异常: {ex.Message}");
+                    }
+                    finally
+                    {
+                        // 恢复界面状态
+                        Cursor = Cursors.Default;
+                        uiSymbolButton_updateMaterialName.Enabled = true;
+                    }
+                }
+                else
+                {
+                    UIMessageBox.ShowWarning("请输入有效的物料名称");
+                }
+            }
+        }
+
+        private async void uiSymbolButton_updateGroupName_Click(object sender, EventArgs e)
+        {
+            // 创建编辑表单，标题为"修改站别名称"，初始值为当前站别名称
+            EditValueForm editValueForm = new EditValueForm("修改站别名称", GroupName);
+            if (editValueForm.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(editValueForm.Value))
+                {
+                    // 显示等待光标，禁用按钮防止重复操作
+                    Cursor = Cursors.WaitCursor;
+                    uiSymbolButton_updateGroupName.Enabled = false;
+                    try
+                    {
+                        // 在后台线程执行更新站别名称操作
+                        bool updateResult = await Task.Run(() =>
+                            jhtHanderService.UpdateGroupName(editValueForm.Value.Trim()));
+
+                        if (updateResult)
+                        {
+                            GroupName = editValueForm.Value.Trim();
+                            traLog.Info($"站别名称更新成功: {GroupName}");
+                        }
+                        else
+                        {
+                            traLog.Warn("站别名称更新失败");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        traLog.Error($"更新站别名称时发生异常: {ex.Message}");
+                    }
+                    finally
+                    {
+                        // 恢复界面状态
+                        Cursor = Cursors.Default;
+                        uiSymbolButton_updateGroupName.Enabled = true;
+                    }
+                }
+                else
+                {
+                    UIMessageBox.ShowWarning("请输入有效的站别名称");
                 }
             }
         }

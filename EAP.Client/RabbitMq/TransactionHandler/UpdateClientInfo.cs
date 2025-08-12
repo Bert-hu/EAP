@@ -22,17 +22,40 @@ namespace EAP.Client.RabbitMq.TransactionHandler
         {
             try
             {
-                var inputTrayCount =  int.Parse(trans.Parameters["InputTrayCount"].ToString());
-                var outputTrayCount = int.Parse(trans.Parameters["OutputTrayCount"].ToString());
-                var agvEnabled = bool.Parse(trans.Parameters["AgvEnabled"].ToString());
-                var currentTaskState = trans.Parameters["CurrentTaskState"].ToString();
-                var currentLot = trans.Parameters["CurrentLot"]?.ToString();
+                if (trans?.Parameters.TryGetValue("InputTrayCount", out object inputTrayCount) ?? false)
+                {
+                    MainForm.Instance.InputTrayCount = int.Parse(inputTrayCount.ToString());
+                }
 
-                MainForm.Instance.InputTrayCount = inputTrayCount;
-                MainForm.Instance.OutputTrayCount = outputTrayCount;
-                MainForm.Instance.AgvEnabled = agvEnabled;
-                MainForm.Instance.CurrentTaskState = currentTaskState;
-                MainForm.Instance.CurrentLot = currentLot;
+                if (trans?.Parameters.TryGetValue("OutputTrayCount", out object outputTrayCount) ?? false)
+                {
+                    MainForm.Instance.OutputTrayCount = int.Parse(outputTrayCount.ToString());
+                }
+
+                if (trans?.Parameters.TryGetValue("AgvEnabled", out object agvEnabled) ?? false)
+                {
+                    MainForm.Instance.AgvEnabled = bool.Parse(agvEnabled.ToString());
+                }
+
+                if(trans?.Parameters.TryGetValue("CurrentTaskState", out object currentTaskState) ?? false)
+                {
+                    MainForm.Instance.CurrentTaskState = currentTaskState.ToString();
+                }
+
+                if(trans?.Parameters.TryGetValue("CurrentLot", out object currentLot) ?? false)
+                {
+                    MainForm.Instance.CurrentLot = currentLot?.ToString();
+                }
+
+                if(trans?.Parameters.TryGetValue("GroupName", out object groupName) ?? false)
+                {
+                    MainForm.Instance.GroupName = groupName?.ToString();
+                }
+
+                if(trans?.Parameters.TryGetValue("MaterialName", out object materialName) ?? false)
+                {
+                    MainForm.Instance.MaterialName = materialName?.ToString();
+                }
             }
             catch (Exception ex)
             {

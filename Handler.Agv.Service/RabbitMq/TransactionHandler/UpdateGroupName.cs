@@ -1,17 +1,18 @@
 ﻿using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.Services;
 using log4net;
-using Newtonsoft.Json.Linq;
 using SqlSugar;
 
 namespace HandlerAgv.Service.RabbitMq.TransactionHandler
 {
-    public class GetMachineInfo : ITransactionHandler
+    public class UpdateGroupName : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         private ISqlSugarClient sqlSugarClient;
         private readonly RabbitMqService rabbitMqService;
-        public GetMachineInfo(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
+
+        public UpdateGroupName(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.rabbitMqService = rabbitMqService;
@@ -22,19 +23,29 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
             var repTrans = trans.GetReplyTransaction();
             try
             {
-                var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
+                // 查询设备信息
+                var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
+                    .InSingle(trans.EquipmentID);
+
                 if (machine != null)
                 {
+                    // 获取并更新组名称
+                    var groupName = trans.Parameters["GroupName"].ToString();
+                    machine.GroupName = groupName;
+
+                    await sqlSugarClient.Updateable(machine)
+                        .UpdateColumns(it => new { it.GroupName })
+                        .ExecuteCommandAsync();
+
                     repTrans.Parameters.Add("Result", true);
-                    repTrans.Parameters.Add("AgvEnabled", machine.AgvEnabled);
-                    repTrans.Parameters.Add("InputTrayCount", machine.InputTrayNumber);
-                    repTrans.Parameters.Add("OutputTrayCount", machine.OutputTrayNumber);
-                    repTrans.Parameters.Add("CurrentLot", machine.CurrentLot);
-                    repTrans.Parameters.Add("GroupName", machine.GroupName);
-                    repTrans.Parameters.Add("MaterialName", machine.MaterialName);
+                    dbgLog.Info($"{machine.Id} GroupName更新: {groupName}");
+
+                    // 同步更新客户端信息
+                    EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                    eapClient.UpdateClientInfo(trans.EquipmentID);
                 }
                 else
-                {                   
+                {
                     repTrans.Parameters.Add("Result", false);
                     repTrans.Parameters.Add("Message", "Machine not found");
                 }
@@ -43,8 +54,10 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
             {
                 dbgLog.Error(ex.Message, ex);
                 repTrans.Parameters.Add("Result", false);
-                repTrans.Parameters.Add("Message", "Error occurred while retrieving machine info");
+                repTrans.Parameters.Add("Message", "Error occurred while updating group name");
             }
+
+            // 发送回复消息
             rabbitMqService.Produce(trans.ReplyChannel, repTrans);
         }
     }
