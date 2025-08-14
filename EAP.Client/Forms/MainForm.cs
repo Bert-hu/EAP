@@ -1034,7 +1034,7 @@ namespace EAP.Client.Forms
                 var baymaxPort = int.Parse(_configuration.GetSection("Custom")["SfisPort"] ?? "21347");
 
                 string cathodeStr = string.Join(" ", config.Select(it => $"CATHODE_{it.Seq}={it.CathodeId}"));
-                string step2Req = $@"{equipmentId},{snInfos.First().CarrierId},2,{empno},{line},,OK,,,ACTUAL_GROUP=SPUTTER {cathodeStr} ,,,{string.Join(";", snInfos.Select(it => it.CarrierId))},{trayId},,{modelName}";
+                string step2Req = $@"{equipmentId},{snInfos.First().CarrierId},2,{empno},{line},,OK,,,ACTUAL_GROUP=SPUTTERING {cathodeStr} ,,,{string.Join(";", snInfos.Select(it => it.CarrierId))},{trayId},,{modelName}";
                 BaymaxService baymaxService = new BaymaxService();
                 var trans = await baymaxService.GetBaymaxTrans(baymaxIp, baymaxPort, step2Req);
                 if (trans.Result && trans.BaymaxResponse.ToUpper().StartsWith("OK"))
