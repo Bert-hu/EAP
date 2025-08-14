@@ -39,11 +39,13 @@ namespace HandlerAgv.Service.ScheduledJob
 
                 machines = machines.Where(it => it.InputTrayNumber <= bufferTrayCount
                 && it.LoadEstimatedTime < DateTime.Now.AddSeconds(bufferTime)
-                && string.IsNullOrEmpty(it.CurrentTaskId)).ToList();
+                && string.IsNullOrEmpty(it.CurrentTaskId)
+                && it.InputTrayNumber > 0
+                ).ToList();
 
                 AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration);
 
-                foreach (var machine in enableMachines)
+                foreach (var machine in machines)
                 {
                     if (machine.OutputTrayNumber > 0)
                     {

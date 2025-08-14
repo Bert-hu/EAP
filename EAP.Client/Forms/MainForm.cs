@@ -440,45 +440,6 @@ namespace EAP.Client.Forms
 
 
 
-        public (bool, string) SemdAgvTask(string taskType)
-        {
-            try
-            {
-                var trans = new RabbitMqTransaction
-                {
-                    EquipmentID = commonLibrary.CustomSettings["EquipmentId"],
-                    TransactionName = $"Send{taskType}Task",
-                    NeedReply = true,
-                    ExpireSecond = 6,
-                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"]
-                };
-                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
-                if (reply != null)
-                {
-                    if (reply.Parameters.ContainsKey("Result") && Convert.ToBoolean(reply.Parameters["Result"]))
-                    {
-                        traLog.Info($"{taskType}任务发送成功");
-                        return (true, $"{taskType}任务发送成功");
-                    }
-                    else
-                    {
-                        string message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误";
-                        traLog.Warn($"{taskType}任务发送失败: {message}");
-                        return (false, $"{taskType}任务发送失败: {message}");
-                    }
-                }
-                else
-                {
-                    traLog.Warn($"{taskType}任务发送超时。");
-                    return (false, $"{taskType}任务发送超时");
-                }
-            }
-            catch (Exception ex)
-            {
-                traLog.Error($"发送AGV任务失败: {ex.ToString()}");
-                return (false, "发送AGV任务失败");
-            }
-        }
 
         private async void uiButton_inputTrayCount_Click(object sender, EventArgs e)
         {
@@ -613,7 +574,7 @@ namespace EAP.Client.Forms
                 string confirmMsg = "确定要发送Input任务吗？请确认入料口盘数正确。";
                 if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
-                    var (result, message) = await Task.Run(() => SemdAgvTask("Input"));
+                    var (result, message) = await Task.Run(() => jhtHanderService.SemdAgvTask("Input"));
                     if (result)
                     {
                         traLog.Info($"Input任务发送成功: {message}");
@@ -646,7 +607,7 @@ namespace EAP.Client.Forms
                 string confirmMsg = "确定要发送Output任务吗？请确认出料口盘数正确。";
                 if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
-                    var (result, message) = await Task.Run(() => SemdAgvTask("Output"));
+                    var (result, message) = await Task.Run(() => jhtHanderService.SemdAgvTask("Output"));
                     if (result)
                     {
                         traLog.Info($"Output任务发送成功: {message}");
@@ -680,7 +641,7 @@ namespace EAP.Client.Forms
                 string confirmMsg = "确定要发送InputOutput任务吗？请确认入料口盘数和出料口盘数正确。";
                 if (UIMessageBox.ShowAsk2(confirmMsg))
                 {
-                    var (result, message) = await Task.Run(() => SemdAgvTask("InputOutput"));
+                    var (result, message) = await Task.Run(() => jhtHanderService.SemdAgvTask("InputOutput"));
                     if (result)
                     {
                         traLog.Info($"InputOutput任务发送成功: {message}");

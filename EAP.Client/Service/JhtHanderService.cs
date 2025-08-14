@@ -339,5 +339,46 @@ namespace EAP.Client.Service
                 return false;
             }
         }
+
+        public (bool, string) SemdAgvTask(string taskType)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = configuration.GetSection("Custom")["EquipmentId"],
+                    TransactionName = $"Send{taskType}Task",
+                    NeedReply = true,
+                    ExpireSecond = 6,
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"]
+                };
+                var reply = rabbitMqservice.ProduceWaitReply("HandlerAgv.Service", trans);
+                if (reply != null)
+                {
+                    if (reply.Parameters.ContainsKey("Result") && Convert.ToBoolean(reply.Parameters["Result"]))
+                    {
+                        traLog.Info($"{taskType}任务发送成功");
+                        return (true, $"{taskType}任务发送成功");
+                    }
+                    else
+                    {
+                        string message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "未知错误";
+                        traLog.Warn($"{taskType}任务发送失败: {message}");
+                        return (false, $"{taskType}任务发送失败: {message}");
+                    }
+                }
+                else
+                {
+                    traLog.Warn($"{taskType}任务发送超时。");
+                    return (false, $"{taskType}任务发送超时");
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送AGV任务失败: {ex.ToString()}");
+                return (false, "发送AGV任务失败");
+            }
+        }
+
     }
 }
