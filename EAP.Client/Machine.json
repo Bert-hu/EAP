@@ -93,15 +93,15 @@
       }
     ],
     "ProcessStateCodes": {
+      "0": "Idle",
       "1": "Idle",
       "2": "Idle",
-      "3": "Idle",
+      "3": "Run",
       "4": "Run",
-      "5": "Run",
-      "6": "Idle",
+      "5": "Idle",
+      "6": "Alarm",
       "7": "Alarm",
-      "8": "Alarm",
-      "9": "Idle"
+      "8": "Idle"
     }
   },
   "Others": {
