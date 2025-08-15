@@ -22,6 +22,30 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
         }
 
     }
+    internal class Press2EndCurning : PressXEndCurning, IEventHandler
+    {
+        public Press2EndCurning(IConfiguration configuration) : base(configuration)
+        {
+        }
+
+        public async Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
+        {
+            await HandlePressXEndCurning(2, ceid, wrapper);
+        }
+
+    }
+    internal class Press3EndCurning : PressXEndCurning, IEventHandler
+    {
+        public Press3EndCurning(IConfiguration configuration) : base(configuration)
+        {
+        }
+
+        public async Task HandleEvent(GemCeid ceid, PrimaryMessageWrapper wrapper)
+        {
+            await HandlePressXEndCurning(3, ceid, wrapper);
+        }
+
+    }
     internal class PressXEndCurning
     {
         internal static ILog traLog = LogManager.GetLogger("Trace");

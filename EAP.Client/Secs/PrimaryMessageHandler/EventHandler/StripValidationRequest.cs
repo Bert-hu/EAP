@@ -53,14 +53,14 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                 BesiMoldingService besiMolding = new BesiMoldingService(configuration, rabbitMqService);
 
-                string modelName = string.Empty;
-                (modelName, message)  = await besiMolding.GetModelNameBySn(panelId);
-                if (string.IsNullOrEmpty(modelName))
-                {
-                    HandleValidationFailure($"Panel In: Fail, 获取{panelId}的ModelName失败: {message}");
-                    return;
-                }
-                MainForm.Instance.UpdateModelName(modelName);
+                //string modelName = string.Empty;
+                //(modelName, message)  = await besiMolding.GetModelNameBySn(panelId);
+                //if (string.IsNullOrEmpty(modelName))
+                //{
+                //    HandleValidationFailure($"Panel In: Fail, 获取{panelId}的ModelName失败: {message}");
+                //    return;
+                //}
+                //MainForm.Instance.UpdateModelName(modelName);
 
                 string materialPn = string.Empty;
                 (materialPn, message) = await besiMolding.GetMaterialPn(config.ReelId);
