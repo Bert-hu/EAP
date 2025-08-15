@@ -140,7 +140,7 @@ namespace EAP.Client.Service
                 var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
 
 
-                var getPnReq = $"{equipmentId},{reelId},7,M090696,{MainForm.Instance.uiTextBox_line.Text},,OK,REELINFO=???";//JQ
+                var getPnReq = $"SMD_REELINFO_QUERY,{reelId},7,ADMIN,SMD_REELINFO_QUERY,,OK,REELINFO=???";//JQ
                 BaymaxService baymax = new BaymaxService();
                 var trans = await baymax.GetBaymaxTrans(sfisIp, sfisPort, getPnReq);
 
