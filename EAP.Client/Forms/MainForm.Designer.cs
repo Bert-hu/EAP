@@ -49,6 +49,8 @@ namespace EAP.Client.Forms
             richTextBox1 = new UIRichTextBox();
             uiButton_ScanToDownloadRecipe = new UIButton();
             notifyIcon = new NotifyIcon(components);
+            uiCheckBox_autoLock = new UICheckBox();
+            uiTextBox_lockStation = new UITextBox();
             groupBox_1.SuspendLayout();
             SuspendLayout();
             // 
@@ -152,7 +154,11 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiTextBox_lockStation);
+            groupBox_1.Controls.Add(uiButton_ScanToDownloadRecipe);
+            groupBox_1.Controls.Add(uiCheckBox_autoLock);
             groupBox_1.Controls.Add(checkBox_checkrecipe);
+            groupBox_1.Controls.Add(button_CompareRecipe);
             groupBox_1.Controls.Add(label_ProcessState);
             groupBox_1.Controls.Add(label_conn_status);
             groupBox_1.Controls.Add(textBox_panelid);
@@ -170,7 +176,7 @@ namespace EAP.Client.Forms
             groupBox_1.MinimumSize = new Size(1, 1);
             groupBox_1.Name = "groupBox_1";
             groupBox_1.Padding = new Padding(0, 32, 0, 0);
-            groupBox_1.Size = new Size(471, 302);
+            groupBox_1.Size = new Size(590, 302);
             groupBox_1.TabIndex = 7;
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
@@ -185,9 +191,9 @@ namespace EAP.Client.Forms
             checkBox_checkrecipe.Location = new Point(21, 265);
             checkBox_checkrecipe.MinimumSize = new Size(1, 1);
             checkBox_checkrecipe.Name = "checkBox_checkrecipe";
-            checkBox_checkrecipe.Size = new Size(250, 32);
+            checkBox_checkrecipe.Size = new Size(178, 32);
             checkBox_checkrecipe.TabIndex = 4;
-            checkBox_checkrecipe.Text = "MP模式（检查Recipe）";
+            checkBox_checkrecipe.Text = "自动检查Recipe";
             checkBox_checkrecipe.CheckedChanged += checkBox_checkrecipe_CheckedChanged;
             // 
             // label_ProcessState
@@ -231,7 +237,7 @@ namespace EAP.Client.Forms
             // button_CompareRecipe
             // 
             button_CompareRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            button_CompareRecipe.Location = new Point(490, 101);
+            button_CompareRecipe.Location = new Point(465, 112);
             button_CompareRecipe.MinimumSize = new Size(1, 1);
             button_CompareRecipe.Name = "button_CompareRecipe";
             button_CompareRecipe.Size = new Size(108, 33);
@@ -258,7 +264,7 @@ namespace EAP.Client.Forms
             // uiButton_ScanToDownloadRecipe
             // 
             uiButton_ScanToDownloadRecipe.Font = new Font("Microsoft YaHei UI", 11F);
-            uiButton_ScanToDownloadRecipe.Location = new Point(490, 58);
+            uiButton_ScanToDownloadRecipe.Location = new Point(465, 69);
             uiButton_ScanToDownloadRecipe.MinimumSize = new Size(1, 1);
             uiButton_ScanToDownloadRecipe.Name = "uiButton_ScanToDownloadRecipe";
             uiButton_ScanToDownloadRecipe.Size = new Size(108, 33);
@@ -274,13 +280,40 @@ namespace EAP.Client.Forms
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
             // 
+            // uiCheckBox_autoLock
+            // 
+            uiCheckBox_autoLock.AutoSize = true;
+            uiCheckBox_autoLock.Checked = true;
+            uiCheckBox_autoLock.Font = new Font("Microsoft YaHei UI", 15F);
+            uiCheckBox_autoLock.ForeColor = Color.FromArgb(48, 48, 48);
+            uiCheckBox_autoLock.Location = new Point(221, 267);
+            uiCheckBox_autoLock.MinimumSize = new Size(1, 1);
+            uiCheckBox_autoLock.Name = "uiCheckBox_autoLock";
+            uiCheckBox_autoLock.Size = new Size(115, 32);
+            uiCheckBox_autoLock.TabIndex = 4;
+            uiCheckBox_autoLock.Text = "异常锁板";
+            uiCheckBox_autoLock.CheckedChanged += uiCheckBox_autoLock_CheckedChanged;
+            // 
+            // uiTextBox_lockStation
+            // 
+            uiTextBox_lockStation.Font = new Font("宋体", 12F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            uiTextBox_lockStation.Location = new Point(353, 269);
+            uiTextBox_lockStation.Margin = new Padding(4, 5, 4, 5);
+            uiTextBox_lockStation.MinimumSize = new Size(1, 16);
+            uiTextBox_lockStation.Name = "uiTextBox_lockStation";
+            uiTextBox_lockStation.Padding = new Padding(5);
+            uiTextBox_lockStation.ShowText = false;
+            uiTextBox_lockStation.Size = new Size(220, 29);
+            uiTextBox_lockStation.TabIndex = 6;
+            uiTextBox_lockStation.Text = "LASERMARKING";
+            uiTextBox_lockStation.TextAlignment = ContentAlignment.MiddleLeft;
+            uiTextBox_lockStation.Watermark = "";
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(614, 609);
-            Controls.Add(uiButton_ScanToDownloadRecipe);
             Controls.Add(richTextBox1);
-            Controls.Add(button_CompareRecipe);
             Controls.Add(groupBox_1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -319,5 +352,7 @@ namespace EAP.Client.Forms
         private UIButton button_CompareRecipe;
         private UIButton uiButton_ScanToDownloadRecipe;
         private NotifyIcon notifyIcon;
+        private UICheckBox uiCheckBox_autoLock;
+        private UITextBox uiTextBox_lockStation;
     }
 }
