@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EAP.Client.Model
+{
+    public class RMS_PARAMETER_SCOPE
+    {
+        public string ID { get; set; }
+        public double LCL { get; set; }
+        public double UCL { get; set; }
+        public string EnumValue { get; set; }
+        public string PARAMETER_NAME { get; set; }
+        public string Type { get; set; }
+
+        public string CompareValue(object machineValue, object serverValue)
+        {
+            string result = string.Empty;
+
+            if (machineValue == null)
+                return $"{PARAMETER_NAME} 机器值为空";
+
+            try
+            {
+                switch (Type?.ToLowerInvariant())
+                {
+                    case "value":
+                        double machineVal = Convert.ToDouble(machineValue);
+                        if (machineVal > UCL)
+                            result = $"{PARAMETER_NAME} {machineVal} > {UCL}";
+                        else if (machineVal < LCL)
+                            result = $"{PARAMETER_NAME} {machineVal} < {LCL}";
+                        break;
+
+                    case "floatvalue":
+                        if (serverValue == null)
+                            return $"{PARAMETER_NAME} 服务器值为空";
+
+                        double machineFloat = Convert.ToDouble(machineValue);
+                        double serverFloat = Convert.ToDouble(serverValue);
+                        double difference = machineFloat - serverFloat;
+
+                        if (difference > UCL)
+                            result = $"{PARAMETER_NAME} {machineFloat} - {serverFloat} = {difference:F2} > {UCL}";
+                        else if (difference < LCL)
+                            result = $"{PARAMETER_NAME} {machineFloat} - {serverFloat} = {difference:F2} < {LCL}";
+                        break;
+
+                    case "percent":
+                        if (serverValue == null)
+                            return $"{PARAMETER_NAME} 服务器值为空";
+
+                        double machinePercent = Convert.ToDouble(machineValue);
+                        double serverPercent = Convert.ToDouble(serverValue);
+                        double percentDiff = ((machinePercent / serverPercent) - 1) * 100;
+
+                        if (percentDiff > UCL)
+                            result = $"{PARAMETER_NAME} 百分比差异: {percentDiff:F2}% > {UCL}%";
+                        else if (percentDiff < LCL)
+                            result = $"{PARAMETER_NAME} 百分比差异: {percentDiff:F2}% < {LCL}%";
+                        break;
+
+                    case "enum":
+                        string machineEnum = machineValue.ToString();
+                        string[] values = EnumValue.Split('/');
+                        if(!values.Any(it => it.Equals(machineEnum)))
+                            result = $"{PARAMETER_NAME} {machineEnum} 不在允许值范围内: {EnumValue}";
+                        break;
+
+                    default:
+                        result = $"不支持的参数类型: {Type}";
+                        break;
+                }
+            }
+            catch (FormatException ex)
+            {
+                result = $"{PARAMETER_NAME} 值格式错误: {ex.Message}";
+            }
+            catch (Exception ex)
+            {
+                result = $"{PARAMETER_NAME} 比较时发生错误: {ex.Message}";
+            }
+
+            return result;
+        }
+    }
+}

@@ -28,16 +28,27 @@ namespace EAP.Client.RabbitMq
             var reptrans = trans.GetReplyTransaction();
             try
             {
-                var recipename = string.Empty;
-                SecsMessage s7f19 = new(7, 19, true)
+                //var recipename = string.Empty;
+                //SecsMessage s7f19 = new(7, 19, true)
+                //{
+                //};
+                //var rep = await secsGem.SendAsync(s7f19);
+                var s1f3 = new SecsMessage(1, 3, true)
                 {
+                    SecsItem = L(
+                            U4(206)//packageName
+                        )
                 };
-                var rep = await secsGem.SendAsync(s7f19);
+                var s1f4 = await secsGem.SendAsync(s1f3);
+                var packageName = s1f4.SecsItem[0].GetString();
+
+
                 List<string> EPPD = new List<string>();
-                foreach (var item in rep.SecsItem.Items)
-                {
-                    EPPD.Add(item.GetString());
-                }
+                //foreach (var item in rep.SecsItem.Items)
+                //{
+                //    EPPD.Add(item.GetString());
+                //}
+                EPPD.Add(packageName);
                 reptrans.Parameters.Add("Result", true);
                 reptrans.Parameters.Add("EPPD", EPPD);
 
