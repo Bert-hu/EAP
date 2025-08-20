@@ -7,7 +7,7 @@ using SqlSugar;
 
 namespace HandlerAgv.Service.RabbitMq.TransactionHandler
 {
-    public class SendInputOutputOutputTask : ITransactionHandler
+    public class SendInputOutputTask : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
@@ -15,7 +15,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
         private readonly RabbitMqService rabbitMqService;
         private readonly IMapper mapper;
         private readonly DbConfigurationService dbConfiguration;
-        public SendInputOutputOutputTask(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService, IMapper mapper, DbConfigurationService dbConfiguration)
+        public SendInputOutputTask(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService, IMapper mapper, DbConfigurationService dbConfiguration)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.rabbitMqService = rabbitMqService;

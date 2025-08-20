@@ -148,7 +148,6 @@ namespace HandlerAgv.Service.Controllers
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber }).ExecuteCommand();
                         }
 
-                        clientService.UpdateClientInfo(task.EquipmentId);
                     }
                     else if (request.Result == "Cancelled")
                     {
@@ -158,13 +157,13 @@ namespace HandlerAgv.Service.Controllers
 
                         clientService.MachineAgvUnlock(task.EquipmentId);
                         dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已取消，状态更新为AbnormalEnd。");
-                        clientService.UpdateClientInfo(task.EquipmentId);
                     }
                     if (machine.CurrentTaskId == request.TaskId)
                     {
                         machine.CurrentTaskId = null;
                         sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommand();
                     }
+                    clientService.UpdateClientInfo(task.EquipmentId);
                     result = true;
                 }
             }
