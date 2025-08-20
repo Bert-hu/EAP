@@ -155,9 +155,15 @@ namespace HandlerAgv.Service.Controllers
                         task.Status = AgvTaskStatus.AbnormalEnd;
                         task.CompletedTime = DateTime.Now;
                         sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.CompletedTime }).ExecuteCommand();
+
                         clientService.MachineAgvUnlock(task.EquipmentId);
                         dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已取消，状态更新为AbnormalEnd。");
                         clientService.UpdateClientInfo(task.EquipmentId);
+                    }
+                    if (machine.CurrentTaskId == request.TaskId)
+                    {
+                        machine.CurrentTaskId = null;
+                        sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommand();
                     }
                     result = true;
                 }
