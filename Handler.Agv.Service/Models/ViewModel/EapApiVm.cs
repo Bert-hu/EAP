@@ -11,7 +11,7 @@
     {
         public string TaskId { get; set; }
         public string Result { get; set; }
-        public int LotLayers { get; set; }
-        public string InputLot { get; set; }
+        public int? LotLayers { get; set; }
+        public string? InputLot { get; set; }
     }
 }
