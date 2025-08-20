@@ -32,7 +32,7 @@
             uiRichTextBox_receiveMessage = new Sunny.UI.UIRichTextBox();
             uiButton_send = new Sunny.UI.UIButton();
             QuickTestS1F11 = new Sunny.UI.UIButton();
-            QuickTestS5F11 = new Sunny.UI.UIButton();
+            QuickTestS5F5 = new Sunny.UI.UIButton();
             QuickTestS1F3 = new Sunny.UI.UIButton();
             SuspendLayout();
             // 
@@ -95,22 +95,22 @@
             QuickTestS1F11.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             QuickTestS1F11.Click += QuickTestS1F11_Click;
             // 
-            // QuickTestS5F11
+            // QuickTestS5F5
             // 
-            QuickTestS5F11.FillColor = Color.FromArgb(255, 128, 128);
-            QuickTestS5F11.FillColor2 = Color.FromArgb(255, 192, 192);
-            QuickTestS5F11.FillHoverColor = Color.FromArgb(255, 128, 128);
-            QuickTestS5F11.FillPressColor = Color.FromArgb(255, 128, 128);
-            QuickTestS5F11.FillSelectedColor = Color.FromArgb(255, 128, 128);
-            QuickTestS5F11.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            QuickTestS5F11.Location = new Point(289, 280);
-            QuickTestS5F11.MinimumSize = new Size(1, 1);
-            QuickTestS5F11.Name = "QuickTestS5F11";
-            QuickTestS5F11.Size = new Size(100, 35);
-            QuickTestS5F11.TabIndex = 3;
-            QuickTestS5F11.Text = "S5F11";
-            QuickTestS5F11.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            QuickTestS5F11.Click += QuickTestS5F11_Click;
+            QuickTestS5F5.FillColor = Color.FromArgb(255, 128, 128);
+            QuickTestS5F5.FillColor2 = Color.FromArgb(255, 192, 192);
+            QuickTestS5F5.FillHoverColor = Color.FromArgb(255, 128, 128);
+            QuickTestS5F5.FillPressColor = Color.FromArgb(255, 128, 128);
+            QuickTestS5F5.FillSelectedColor = Color.FromArgb(255, 128, 128);
+            QuickTestS5F5.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            QuickTestS5F5.Location = new Point(289, 280);
+            QuickTestS5F5.MinimumSize = new Size(1, 1);
+            QuickTestS5F5.Name = "QuickTestS5F5";
+            QuickTestS5F5.Size = new Size(100, 35);
+            QuickTestS5F5.TabIndex = 3;
+            QuickTestS5F5.Text = "S5F5";
+            QuickTestS5F5.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            QuickTestS5F5.Click += QuickTestS5F5_Click;
             // 
             // QuickTestS1F3
             // 
@@ -134,7 +134,7 @@
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(630, 547);
             Controls.Add(QuickTestS1F3);
-            Controls.Add(QuickTestS5F11);
+            Controls.Add(QuickTestS5F5);
             Controls.Add(QuickTestS1F11);
             Controls.Add(uiButton_send);
             Controls.Add(uiRichTextBox_receiveMessage);
@@ -153,7 +153,7 @@
         private Sunny.UI.UIRichTextBox uiRichTextBox_receiveMessage;
         private Sunny.UI.UIButton uiButton_send;
         private Sunny.UI.UIButton QuickTestS1F11;
-        private Sunny.UI.UIButton QuickTestS5F11;
+        private Sunny.UI.UIButton QuickTestS5F5;
         private Sunny.UI.UIButton QuickTestS1F3;
     }
 }
