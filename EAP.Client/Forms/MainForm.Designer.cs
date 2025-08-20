@@ -238,13 +238,14 @@ namespace EAP.Client.Forms
             // 
             // uiLabel_currenttaskState
             // 
-            uiLabel_currenttaskState.Font = new Font("微软雅黑", 18F, FontStyle.Bold);
+            uiLabel_currenttaskState.Font = new Font("微软雅黑", 15F, FontStyle.Bold);
             uiLabel_currenttaskState.ForeColor = Color.FromArgb(0, 0, 192);
-            uiLabel_currenttaskState.Location = new Point(386, 216);
+            uiLabel_currenttaskState.Location = new Point(332, 234);
             uiLabel_currenttaskState.Name = "uiLabel_currenttaskState";
-            uiLabel_currenttaskState.Size = new Size(143, 35);
+            uiLabel_currenttaskState.Size = new Size(204, 35);
             uiLabel_currenttaskState.TabIndex = 9;
             uiLabel_currenttaskState.Text = "无AGV任务";
+            uiLabel_currenttaskState.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // uiButton_sendInputOutputTask
             // 

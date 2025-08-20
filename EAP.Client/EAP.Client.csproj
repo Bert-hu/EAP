@@ -8,8 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageIcon>favicon1.ico</PackageIcon>
     <ApplicationIcon>favicon1.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.1.5</AssemblyVersion>
-    <FileVersion>1.0.1.5</FileVersion>
+    <AssemblyVersion>1.0.1.6</AssemblyVersion>
+    <FileVersion>1.0.1.6</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

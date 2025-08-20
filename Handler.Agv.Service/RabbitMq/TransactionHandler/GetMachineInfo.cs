@@ -32,6 +32,42 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     repTrans.Parameters.Add("CurrentLot", machine.CurrentLot);
                     repTrans.Parameters.Add("GroupName", machine.GroupName);
                     repTrans.Parameters.Add("MaterialName", machine.MaterialName);
+
+                    string currentTaskState = "未知状态";
+
+                    if (!string.IsNullOrEmpty(machine.CurrentTaskId))
+                    {
+                        var task = sqlSugarClient.Queryable<HandlerAgvTask>()
+                            .Where(t => t.ID == machine.CurrentTaskId)
+                            .First();
+                        if (task != null)
+                        {
+                            switch (task.Status)
+                            {
+                                case AgvTaskStatus.AgvRequested:
+                                    currentTaskState = "AGV任务已请求";
+                                    break;
+                                case AgvTaskStatus.AgvArrived:
+                                    currentTaskState = "AGV已到达";
+                                    break;
+                                case AgvTaskStatus.MachineReady:
+                                    currentTaskState = "设备已锁定进出料";
+                                    break;
+                                case AgvTaskStatus.AgvRobotFinished:
+                                    currentTaskState = "AGV手臂任务已完成";
+                                    break;
+                                default:
+                                    currentTaskState = "未知状态";
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        currentTaskState = "无AGV任务";
+                    }
+                    repTrans.Parameters.Add("CurrentTaskState", currentTaskState);
+
                 }
                 else
                 {                   
