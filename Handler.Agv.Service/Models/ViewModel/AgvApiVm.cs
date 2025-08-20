@@ -8,9 +8,9 @@
         public string MaterialName { get; set; }
         public string GroupName { get; set; }
     }
-    public class AgvTaskResponse
-    {
-        public bool Result { get; set; } = false;
-        public string Message { get; set; } = string.Empty;
-    }
+    //public class AgvTaskResponse
+    //{
+    //    public bool Result { get; set; } = false;
+    //    public string Message { get; set; } = string.Empty;
+    //}
 }

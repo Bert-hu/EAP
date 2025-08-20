@@ -31,10 +31,10 @@ namespace HandlerAgv.Service.Services
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
                 var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
-                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
+                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskRequest>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
 
-                if (agvTaskResponse.Result)
+                //if (agvTaskResponse.Result)
                 {
                     var task = new HandlerAgvTask
                     {
@@ -52,11 +52,11 @@ namespace HandlerAgv.Service.Services
 
                     return (true, string.Empty);
                 }
-                else
-                {
-                    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
-                    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
-                }
+                //else
+                //{
+                //    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
+                //    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
+                //}
 
             }
             catch (TaskCanceledException)
@@ -79,10 +79,10 @@ namespace HandlerAgv.Service.Services
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
                 var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
-                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
+                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskRequest>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
 
-                if (agvTaskResponse.Result)
+                //if (agvTaskResponse.Result)
                 {
                     var task = new HandlerAgvTask
                     {
@@ -99,11 +99,11 @@ namespace HandlerAgv.Service.Services
                     await sqlSugarClient.Updateable(equipment).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommandAsync();
                     return (true, string.Empty);
                 }
-                else
-                {
-                    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
-                    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
-                }
+                //else
+                //{
+                //    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
+                //    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
+                //}
             }
             catch (TaskCanceledException)
             {
@@ -125,10 +125,10 @@ namespace HandlerAgv.Service.Services
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
                 var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
-                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskResponse>(agvApiUrl + method, agvTaskRequest);
+                var agvTaskResponse = await HttpClientHelper.HttpPostRequestAsync<AgvTaskRequest>(agvApiUrl + method, agvTaskRequest);
                 dbgLog.Info($"agv response:{JsonConvert.SerializeObject(agvTaskResponse)}");
 
-                if (agvTaskResponse.Result)
+                //if (agvTaskResponse.Result)
                 {
                     var task = new HandlerAgvTask
                     {
@@ -145,11 +145,11 @@ namespace HandlerAgv.Service.Services
                     await sqlSugarClient.Updateable(equipment).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommandAsync();
                     return (true, string.Empty);
                 }
-                else
-                {
-                    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
-                    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
-                }
+                //else
+                //{
+                //    dbgLog.Error($"AGV任务请求失败: {agvTaskResponse.Message}");
+                //    return (false, "AGV任务请求失败:" + agvTaskResponse.Message);
+                //}
 
             }
             catch (TaskCanceledException)
