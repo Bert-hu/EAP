@@ -35,7 +35,7 @@ namespace HandlerAgv.Service.Models.Database
         [SugarColumn(IsNullable = true, ColumnDescription = "物料站别")]
         public string? GroupName { get; set; }
 
-        [SugarColumn(ColumnDescription = "AGV唯一码，AGV到位时更新")]
+        [SugarColumn(IsNullable = true, ColumnDescription = "AGV唯一码，AGV到位时更新")]
         public string AgvId { get; set; }
         [SugarColumn(IsNullable = true, ColumnDescription = "AGV请求时间")]
         public DateTime? AgvRequestTime { get; set; } = null;
