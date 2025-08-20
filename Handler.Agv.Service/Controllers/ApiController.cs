@@ -129,20 +129,20 @@ namespace HandlerAgv.Service.Controllers
                         clientService.MachineAgvUnlock(task.EquipmentId);
                         dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已正常完成，状态更新为AgvRobotFinished。");
 
-                        if (task.Type == AgvTaskType.Input )
+                        if (task.Type == AgvTaskType.Input)
                         {
-                            machine.InputTrayNumber = request.LotLayers;
+                            machine.InputTrayNumber = request.LotLayers ?? 0;
                             machine.CurrentLot = request.InputLot;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber }).ExecuteCommand();
                         }
-                        else if(task.Type == AgvTaskType.Output)
+                        else if (task.Type == AgvTaskType.Output)
                         {
                             machine.OutputTrayNumber = 0;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.OutputTrayNumber }).ExecuteCommand();
                         }
                         else if (task.Type == AgvTaskType.InputOutput)
                         {
-                            machine.InputTrayNumber = request.LotLayers;
+                            machine.InputTrayNumber = request.LotLayers ?? 0;
                             machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber }).ExecuteCommand();
