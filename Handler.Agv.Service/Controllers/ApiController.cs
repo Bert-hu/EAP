@@ -133,7 +133,7 @@ namespace HandlerAgv.Service.Controllers
                         {
                             machine.InputTrayNumber = request.LotLayers ?? 0;
                             machine.CurrentLot = request.InputLot;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber }).ExecuteCommand();
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber ,it.CurrentLot}).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {request.LotLayers}, 当前Lot {request.InputLot}");
                         }
                         else if (task.Type == AgvTaskType.Output)
@@ -147,7 +147,7 @@ namespace HandlerAgv.Service.Controllers
                             machine.InputTrayNumber = request.LotLayers ?? 0;
                             machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber }).ExecuteCommand();
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {request.LotLayers}, 当前Lot {request.InputLot}， 出料口盘数 0");
                         }
 
