@@ -912,6 +912,9 @@ namespace EAP.Client.Forms
             }
         }
 
-
+        private async void uiButton_refresh_Click(object sender, EventArgs e)
+        {
+            await Task.Run(() => GetMachineInfo());
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace EAP.Client.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_refresh = new UIButton();
             uiSymbolButton_updateGroupName = new UISymbolButton();
             uiSymbolButton_updateMaterialName = new UISymbolButton();
             uiSymbolButton_updateLot = new UISymbolButton();
@@ -73,6 +74,7 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_refresh);
             groupBox_1.Controls.Add(uiSymbolButton_updateGroupName);
             groupBox_1.Controls.Add(uiSymbolButton_updateMaterialName);
             groupBox_1.Controls.Add(uiSymbolButton_updateLot);
@@ -105,6 +107,18 @@ namespace EAP.Client.Forms
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
+            // 
+            // uiButton_refresh
+            // 
+            uiButton_refresh.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_refresh.Location = new Point(473, 26);
+            uiButton_refresh.MinimumSize = new Size(1, 1);
+            uiButton_refresh.Name = "uiButton_refresh";
+            uiButton_refresh.Size = new Size(56, 35);
+            uiButton_refresh.TabIndex = 13;
+            uiButton_refresh.Text = "刷新";
+            uiButton_refresh.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_refresh.Click += uiButton_refresh_Click;
             // 
             // uiSymbolButton_updateGroupName
             // 
@@ -240,9 +254,9 @@ namespace EAP.Client.Forms
             // 
             uiLabel_currenttaskState.Font = new Font("微软雅黑", 15F, FontStyle.Bold);
             uiLabel_currenttaskState.ForeColor = Color.FromArgb(0, 0, 192);
-            uiLabel_currenttaskState.Location = new Point(332, 234);
+            uiLabel_currenttaskState.Location = new Point(335, 228);
             uiLabel_currenttaskState.Name = "uiLabel_currenttaskState";
-            uiLabel_currenttaskState.Size = new Size(204, 35);
+            uiLabel_currenttaskState.Size = new Size(201, 35);
             uiLabel_currenttaskState.TabIndex = 9;
             uiLabel_currenttaskState.Text = "无AGV任务";
             uiLabel_currenttaskState.TextAlign = ContentAlignment.MiddleCenter;
@@ -286,7 +300,7 @@ namespace EAP.Client.Forms
             // uiButton_swichAgvMode
             // 
             uiButton_swichAgvMode.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
-            uiButton_swichAgvMode.Location = new Point(311, 32);
+            uiButton_swichAgvMode.Location = new Point(270, 26);
             uiButton_swichAgvMode.MinimumSize = new Size(1, 1);
             uiButton_swichAgvMode.Name = "uiButton_swichAgvMode";
             uiButton_swichAgvMode.Size = new Size(100, 35);
@@ -368,7 +382,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvEnabled.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiCheckBox_agvEnabled.ForeColor = Color.FromArgb(48, 48, 48);
-            uiCheckBox_agvEnabled.Location = new Point(417, 32);
+            uiCheckBox_agvEnabled.Location = new Point(376, 26);
             uiCheckBox_agvEnabled.MinimumSize = new Size(1, 1);
             uiCheckBox_agvEnabled.Name = "uiCheckBox_agvEnabled";
             uiCheckBox_agvEnabled.ReadOnly = true;
@@ -460,5 +474,6 @@ namespace EAP.Client.Forms
         private UISymbolButton uiSymbolButton_updateLot;
         private UITextBox uiTextBox_groupName;
         private UITextBox uiTextBox_materialName;
+        private UIButton uiButton_refresh;
     }
 }
