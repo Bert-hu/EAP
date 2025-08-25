@@ -6,7 +6,7 @@ using static Secs4Net.Item;
 
 namespace EAP.Client.RabbitMq
 {
-    public class GetEquipmentStatus :  ITransactionHandler
+    public class GetEquipmentStatus : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
         private readonly RabbitMqService rabbitMq;
@@ -31,12 +31,13 @@ namespace EAP.Client.RabbitMq
             this.commonLibrary = commonLibrary;
         }
 
-        public  async Task HandleTransaction(RabbitMqTransaction trans)
+        public async Task HandleTransaction(RabbitMqTransaction trans)
         {
             try
             {
                 var reptrans = trans?.GetReplyTransaction();
                 string Status = "Offline";
+                var showProcessState = "Offline";
                 var secs = secsGem as SecsGem;
                 if (secs._hsmsConnector != null && secs._hsmsConnector.State == ConnectionState.Selected)
                 {
@@ -83,8 +84,7 @@ namespace EAP.Client.RabbitMq
                         reptrans?.Parameters.Add("ControlState", controlState);
                         reptrans?.Parameters.Add("ProcessState", processState);
 
-
-                        StatusDict.TryGetValue(processStateCode, out string showProcessState);
+                        StatusDict.TryGetValue(processStateCode, out showProcessState);
                         if (MainForm.Instance != null)
                         {
                             MainForm.Instance.UpdateState(showProcessState);
@@ -114,6 +114,7 @@ namespace EAP.Client.RabbitMq
                 reptrans?.Parameters.Add("Status", Status);
                 if (reptrans != null) rabbitMq.Produce(trans.ReplyChannel, reptrans);
                 UpdateEquipmentStatus(Status);
+                UpdateEquipmentStatusToAGV(showProcessState);
             }
             catch (Exception ex)
             {
@@ -135,6 +136,19 @@ namespace EAP.Client.RabbitMq
                 Parameters = para
             };
             rabbitMq.Produce("EAP.Services", trans);
+        }
+
+        public void UpdateEquipmentStatusToAGV(string Status)
+        {
+            var para = new Dictionary<string, object> {
+                        { "Status",Status}
+                    };
+            RabbitMqTransaction trans = new RabbitMqTransaction
+            {
+                TransactionName = "UpdateMachineStatus",
+                Parameters = para
+            };
+            rabbitMq.Produce("HandlerAgv.Service", trans);
         }
     }
 }
