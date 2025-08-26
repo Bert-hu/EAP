@@ -27,7 +27,14 @@ namespace HandlerAgv.Service.Services
         {
             try
             {
-                var agvTaskRequest = new AgvTaskRequest { TaskType = AgvTaskType.InputOutput.ToString(), EQID = equipment.Id, MaterialName = equipment.MaterialName, GroupName = equipment.GroupName };
+                var agvTaskRequest = new AgvTaskRequest
+                {
+                    TaskType = AgvTaskType.InputOutput.ToString(),
+                    EQID = equipment.Id,
+                    MaterialName = equipment.MaterialName,
+                    GroupName = equipment.GroupName,
+                    OutputLot = equipment.CurrentLot
+                };
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
                 var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");
@@ -121,7 +128,14 @@ namespace HandlerAgv.Service.Services
         {
             try
             {
-                var agvTaskRequest = new AgvTaskRequest { TaskType = AgvTaskType.Output.ToString(), EQID = equipment.Id, MaterialName = equipment.MaterialName, GroupName = equipment.GroupName };
+                var agvTaskRequest = new AgvTaskRequest
+                {
+                    TaskType = AgvTaskType.Output.ToString(),
+                    EQID = equipment.Id,
+                    MaterialName = equipment.MaterialName,
+                    GroupName = equipment.GroupName,
+                    OutputLot = equipment.CurrentLot
+                };
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
                 var method = "/api/v3/handler/eap/order";
                 dbgLog.Info($"agv request:{agvApiUrl + method},{JsonConvert.SerializeObject(agvTaskRequest)}");

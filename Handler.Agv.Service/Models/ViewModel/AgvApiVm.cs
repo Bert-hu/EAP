@@ -7,6 +7,7 @@
         public string EQID { get; set; }
         public string MaterialName { get; set; }
         public string GroupName { get; set; }
+        public string? OutputLot { get; set; }
     }
     //public class AgvTaskResponse
     //{
