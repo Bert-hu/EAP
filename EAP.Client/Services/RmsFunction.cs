@@ -3,7 +3,7 @@ using EAP.Client.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace EAP.Client.Utils
+namespace EAP.Client.Services
 {
     public class GetRecipeNameResponse
     {
@@ -50,7 +50,6 @@ namespace EAP.Client.Utils
             {
                 TransactionName = "CompareRecipeBody",
                 EquipmentID = equipmentId,
-                ExpireSecond = 3,
                 Parameters = new Dictionary<string, object>() { { "EquipmentId", equipmentId }, { "RecipeName", recipeName }, }
             };
             var repTrans = rabbitMq.ProduceWaitReply("Rms.Service", rabbitTrans);

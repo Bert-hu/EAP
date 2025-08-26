@@ -63,7 +63,7 @@ namespace EAP.Client.RabbitMq
 
                     reptrans.Parameters.Add("Result", true);
                     reptrans.Parameters.Add("RecipeName", recipename);
-                    reptrans.Parameters.Add("RecipeBody", recipeJson);
+                    reptrans.Parameters.Add("RecipeBody",  Convert.ToBase64String(new byte[] { }));
                     reptrans.Parameters.Add("RecipeParameters", recipeJson);
                 }
             }

@@ -9,10 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Secs4Net;
 using Sunny.UI;
+using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using static Secs4Net.Item;
 
@@ -230,7 +232,7 @@ namespace EAP.Client.Forms
             bool isrunning = false;
             locktimer.Tick += delegate
             {
-                if(isrunning) return;
+                if (isrunning) return;
                 isrunning = true;
                 Task.Run(() =>
                 {
@@ -272,8 +274,8 @@ namespace EAP.Client.Forms
                     {
                         isrunning = false;
                     }
-                } );
-          
+                });
+
             };
             locktimer.Start();
 
@@ -490,6 +492,7 @@ namespace EAP.Client.Forms
         }
 
         public bool machineLocked { get; set; } = false;
+        public bool autoCheckRecipe { get; set; } = false;
         public string lockMessage { get; set; } = string.Empty;
         private void uiCheckBox_isLocked_CheckedChanged(object sender, EventArgs e)
         {
@@ -638,6 +641,42 @@ namespace EAP.Client.Forms
                     UIMessageBox.ShowError2($"获取设备当前PackageName异常");
                 }
             }
+        }
+
+        private async void uiButton_compareRecipe_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var s1f3 = new SecsMessage(1, 3)
+                {
+                    SecsItem = L(
+         U4(206)
+         )
+                };
+                var s1f4 = await _secsGem.SendAsync(s1f3);
+                var packageName = s1f4.SecsItem[0].GetString();
+
+                var result = RmsFunction.CompareRecipeBody(_rabbitMq, _configuration, packageName);
+                if (result.Result)
+                {
+                    UIMessageTip.ShowOk((Component)this, result.Message, centerInControl: true);
+                }
+                else
+                {
+                    UIMessageTip.ShowError((Component)this, result.Message, centerInControl: true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex.ToString());
+                UIMessageTip.ShowError(ex.Message);
+            }
+        }
+
+        private void uiCheckBox_autoCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            autoCheckRecipe = uiCheckBox_autoCheck.Checked;
         }
     }
 }

@@ -36,6 +36,8 @@ namespace EAP.Client.Forms
             label2 = new UILabel();
             label_conn_status = new UILabel();
             groupBox_1 = new UIGroupBox();
+            uiButton_compareRecipe = new UIButton();
+            uiCheckBox_autoCheck = new UICheckBox();
             uiLedLabel_totalMax = new UILedLabel();
             uiButton_clearCount = new UIButton();
             uiLedLabel_total = new UILedLabel();
@@ -107,6 +109,8 @@ namespace EAP.Client.Forms
             // 
             // groupBox_1
             // 
+            groupBox_1.Controls.Add(uiButton_compareRecipe);
+            groupBox_1.Controls.Add(uiCheckBox_autoCheck);
             groupBox_1.Controls.Add(uiLedLabel_totalMax);
             groupBox_1.Controls.Add(uiButton_clearCount);
             groupBox_1.Controls.Add(uiLedLabel_total);
@@ -139,6 +143,31 @@ namespace EAP.Client.Forms
             groupBox_1.TabStop = false;
             groupBox_1.Text = "Info";
             groupBox_1.TextAlignment = ContentAlignment.MiddleLeft;
+            // 
+            // uiButton_compareRecipe
+            // 
+            uiButton_compareRecipe.Font = new Font("宋体", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_compareRecipe.Location = new Point(303, 192);
+            uiButton_compareRecipe.MinimumSize = new Size(1, 1);
+            uiButton_compareRecipe.Name = "uiButton_compareRecipe";
+            uiButton_compareRecipe.Size = new Size(82, 24);
+            uiButton_compareRecipe.TabIndex = 12;
+            uiButton_compareRecipe.Text = "Recipe比对";
+            uiButton_compareRecipe.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_compareRecipe.Click += uiButton_compareRecipe_Click;
+            // 
+            // uiCheckBox_autoCheck
+            // 
+            uiCheckBox_autoCheck.AutoSize = true;
+            uiCheckBox_autoCheck.Font = new Font("宋体", 9.75F);
+            uiCheckBox_autoCheck.ForeColor = Color.FromArgb(48, 48, 48);
+            uiCheckBox_autoCheck.Location = new Point(303, 165);
+            uiCheckBox_autoCheck.MinimumSize = new Size(1, 1);
+            uiCheckBox_autoCheck.Name = "uiCheckBox_autoCheck";
+            uiCheckBox_autoCheck.Size = new Size(82, 21);
+            uiCheckBox_autoCheck.TabIndex = 4;
+            uiCheckBox_autoCheck.Text = "自动比对";
+            uiCheckBox_autoCheck.CheckedChanged += uiCheckBox_autoCheck_CheckedChanged;
             // 
             // uiLedLabel_totalMax
             // 
@@ -442,7 +471,7 @@ namespace EAP.Client.Forms
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
-            ClientSize = new Size(437, 325);
+            ClientSize = new Size(436, 325);
             Controls.Add(uiTabControl1);
             Font = new Font("宋体", 8F);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -498,5 +527,7 @@ namespace EAP.Client.Forms
         private TabPage tabPage1;
         private TabPage tabPage2;
         private UIButton uiButton_loadSetting;
+        private UIButton uiButton_compareRecipe;
+        private UICheckBox uiCheckBox_autoCheck;
     }
 }
