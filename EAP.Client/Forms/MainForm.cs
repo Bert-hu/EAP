@@ -649,9 +649,7 @@ namespace EAP.Client.Forms
             {
                 var s1f3 = new SecsMessage(1, 3)
                 {
-                    SecsItem = L(
-         U4(206)
-         )
+                    SecsItem = L(U4(206))
                 };
                 var s1f4 = await _secsGem.SendAsync(s1f3);
                 var packageName = s1f4.SecsItem[0].GetString();
@@ -672,6 +670,7 @@ namespace EAP.Client.Forms
                 dbgLog.Error(ex.ToString());
                 UIMessageTip.ShowError(ex.Message);
             }
+
         }
 
         private void uiCheckBox_autoCheck_CheckedChanged(object sender, EventArgs e)

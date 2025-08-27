@@ -1,7 +1,7 @@
 ﻿using EAP.Client.Forms;
 using EAP.Client.RabbitMq;
 using EAP.Client.Secs.Models;
-using EAP.Client.Services;
+using EAP.Client.Utils;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +37,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
             try
             {
                 var packageName = wrapper.PrimaryMessage.SecsItem[2][0][1][0].GetString();
+                var processStateCode = wrapper.PrimaryMessage.SecsItem[2][0][1][5].FirstValue<byte>();
 
                 MainForm.Instance.UpdatePackageName(packageName);
 
@@ -58,7 +59,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                 await Task.Run(() =>
                 {
-                    if (MainForm.Instance.autoCheckRecipe)
+                    if (processStateCode == 3 && MainForm.Instance.autoCheckRecipe)
                     {
                         var result = RmsFunction.CompareRecipeBody(rabbitMqService, configuration, packageName);
                         if (result.Result)
