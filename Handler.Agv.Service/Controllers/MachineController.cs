@@ -28,12 +28,16 @@ namespace HandlerAgv.Service.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetMachineData(int? page, int? limit,string? searchText)
+        public JsonResult GetMachineData(int? page, int? limit, string? searchText)
         {
-            var list = sqlSugarClient.Queryable<HandlerEquipmentStatus>().ToList();
-            return new JsonResult(new { code =0, data = list, count=list.Count });
+            var list = sqlSugarClient.Queryable<HandlerEquipmentStatus>().OrderBy(it => it.Id).ToList();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                list = list.Where(x => (x.Id + x.RecipeName + x.MaterialName + x.GroupName).ToUpper().Contains(searchText)).ToList();
+            }
+            return new JsonResult(new { code = 0, data = list, count = list.Count });
         }
 
-     
+
     }
 }

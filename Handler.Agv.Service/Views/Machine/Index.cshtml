@@ -25,7 +25,7 @@
             </div>
         </div>
     </form>
-    <div style="padding: 16px;">
+    <div style="padding: 16px;height: 100px">
         <table class="layui-hide" id="machineTable" lay-filter="machineTable"></table>
     </div>
     <script type="text/html" id="toolBar">
@@ -44,31 +44,52 @@
         layui.use(function () {
             var table = layui.table;
             var form = layui.form;
+
+            var tableHeight = $(window).height() - 150;
             // 创建表格实例
             table.render({
                 elem: '#machineTable',
                 url: './GetMachineData',
                 cols: [[
                     { type: 'radio', title: '😊', fixed: true }, // 单选框
-                    { field: 'id', title: 'ID', minWidth: 10, sort: true, fixed: true, sort: true },
-                    { field: 'ip', title: 'IP', minWidth: 10, sort: true },
-                    { field: 'agvEnabled', title: 'AGV开启', minWidth: 10, sort: true },
-                    { field: 'processState', title: '状态', minWidth: 80, sort: true },
-                    { field: 'recipeName', title: '当前程式', minWidth: 80, sort: true },
-                    { field: 'materialName', title: 'AGV上料机种', minWidth: 80, sort: true },
-                    { field: 'groupName', title: 'AGV上料站别', minWidth: 80, sort: true },
-                    { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 80, sort: true },
-                    { field: 'inputTrayUpdateTime', title: '上料口盘数更新时间', minWidth: 80, sort: true },
-                    { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 80, sort: true },
-                    { field: 'outputTrayUpdateTime', title: '出料口盘数更新时间', minWidth: 80, sort: true },
-                    { field: 'currentTaskId', title: '当前任务号', minWidth: 80, sort: true },
+                    { field: 'id', title: 'ID', minWidth: 80, sort: true, fixed: true, sort: true },
+                    { field: 'ip', title: 'IP', minWidth: 130, sort: true },
+                    {
+                        field: 'agvEnabled', title: 'AGV', minWidth: 80, sort: true,
+                        // 自定义模板：根据值判断背景色
+                        templet: function (d) {
+                            // d 为当前行数据，d.agvEnabled 即当前列的值
+                            if (d.agvEnabled === true) {
+                                // 值为true：绿色背景 + 白色文字（提高可读性）
+                                return '<div style="background-color: #52c41a; color: white; padding: 4px 0; text-align: center;">开启</div>';
+                            } else {
+                                // 值为false：默认背景（可根据需求调整，如浅灰色）
+                                return '<div style="background-color: #f5f5f5; padding: 4px 0; text-align: center;">关闭</div>';
+                            }
+                        }
+                    },
+                    { field: 'processState', title: '状态', minWidth: 150, sort: true },
+                    { field: 'recipeName', title: '当前程式', minWidth: 150, sort: true },
+                    { field: 'materialName', title: '上料机种', minWidth: 150, sort: true },
+                    { field: 'groupName', title: '上料站别', minWidth: 80, sort: true },
+                    { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 30, sort: true },
+                    { field: 'inputTrayUpdateTime', title: '上料口盘数更新时间', minWidth: 200, sort: true },
+                    { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 30, sort: true },
+                    { field: 'outputTrayUpdateTime', title: '出料口盘数更新时间', minWidth: 200, sort: true },
+                    { field: 'currentTaskId', title: '当前任务号', minWidth: 300, sort: true },
                     { fixed: 'right', title: '操作', width: 134, minWidth: 125, templet: '#toolBar' }
                 ]],
-                height: 'full'
+                height: tableHeight
             });
             // 日期
 
-
+            // 监听窗口大小变化，重新计算表格高度
+            $(window).resize(function () {
+                tableHeight = $(window).height() - 150;
+                table.reload('machineTable', {
+                    height: tableHeight
+                });
+            });
 
             form.on('input-affix(search)', function (data) {
                 var elem = data.elem; // Input box
