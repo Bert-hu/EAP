@@ -1,0 +1,94 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="ch">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+    </style>
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <title>Laser Power Dashboard</title>
+</head>
+
+<body>
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item layui-row">
+            <div class="layui-row">
+                <div class="layui-input-inline" style="width: 80%; margin-left: 1%">
+                    <input type="text" lay-affix="search" lay-filter="search" lay-options="{split: true}" placeholder="Search…" class="layui-input" id="searchInput">
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="padding: 16px;">
+        <table class="layui-hide" id="machineTable" lay-filter="machineTable"></table>
+    </div>
+    <script src="~/jquery-3.7.1.js"></script>
+    <script src="~/layui/layui.js"></script>
+    <script>
+        layui.use(function () {
+            var table = layui.table;
+            var form = layui.form;
+            // 创建表格实例
+            table.render({
+                elem: '#machineTable',
+                url: './GetMachineData', 
+                cols: [[
+                    { type: 'radio', title: '😊', fixed: true }, // 单选框
+                    { field: 'id', title: 'ID', minWidth: 10, sort: true, fixed: true, sort: true },
+                    { field: 'ip', title: 'IP', minWidth: 10, sort: true },
+                    { field: 'agvEnabled', title: 'AGV开启', minWidth: 10, sort: true },
+                    { field: 'processState', title: '状态', minWidth: 80, sort: true },
+                    { field: 'recipeName', title: '当前程式', minWidth: 80, sort: true },
+                    { field: 'materialName', title: 'AGV上料机种', minWidth: 80, sort: true },
+                    { field: 'groupName', title: 'AGV上料站别', minWidth: 80, sort: true },
+                    { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 80, sort: true },
+                    { field: 'inputTrayUpdateTime', title: '上料口盘数更新时间', minWidth: 80, sort: true },
+                    { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 80, sort: true },
+                    { field: 'outputTrayUpdateTime', title: '出料口盘数更新时间', minWidth: 80, sort: true },
+                    { field: 'currentTaskId', title: '当前任务号', minWidth: 80, sort: true },
+                ]],
+                height: 'full'
+            });
+            // 日期
+
+
+
+            form.on('input-affix(search)', function (data) {
+                var elem = data.elem; // Input box
+                var value = elem.value; // Value of the input box
+                if (!value) {
+                    layer.msg('Please enter search content');
+                    return elem.focus();
+                };
+                // Simulate search jump
+                table.reload('machineTable', {
+                    where: {
+                        searchText: value
+                    } // Search field
+                });
+            });
+
+            $('#searchInput').on('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    // Prevent default behavior (e.g., form submission)
+                    event.preventDefault();
+                    // Get the value from the input box
+                    const searchValue = $(this).val();
+                    // Execute your search logic here
+                    table.reload('machineTable', {
+                        where: {
+                            searchText: searchValue
+                        } // Search field
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

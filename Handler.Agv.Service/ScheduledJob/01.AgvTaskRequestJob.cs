@@ -26,7 +26,6 @@ namespace HandlerAgv.Service.ScheduledJob
             var sqlSugarClient = SqlsugarService.GetSqlSugarClient(configuration);
 
             try
-
             {
                 var bufferTrayCount = int.Parse(dbConfiguration.GetConfigurations("BufferTrayCount") ?? "2");
                 var bufferTime = int.Parse(dbConfiguration.GetConfigurations("BufferTime") ?? "180");

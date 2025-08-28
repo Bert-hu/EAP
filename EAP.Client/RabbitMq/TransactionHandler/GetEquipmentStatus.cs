@@ -85,6 +85,7 @@ namespace EAP.Client.RabbitMq
                         reptrans?.Parameters.Add("ProcessState", processState);
 
                         StatusDict.TryGetValue(processStateCode, out showProcessState);
+                        if(string.IsNullOrEmpty(showProcessState)) showProcessState = "Unknown";
                         if (MainForm.Instance != null)
                         {
                             MainForm.Instance.UpdateState(showProcessState);
