@@ -40,6 +40,8 @@ namespace HandlerAgv.Service.RabbitMq
             {
                 consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"];
                 consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
+                connection = factory.CreateConnectionAsync().Result;
+                channel = connection.CreateChannelAsync().Result;
             }
             else //测试环境
             {
@@ -47,8 +49,7 @@ namespace HandlerAgv.Service.RabbitMq
                 consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
             }
 
-            connection = factory.CreateConnectionAsync().Result;
-            channel = connection.CreateChannelAsync().Result;
+   
 
         }
         public void Produce(string routingKey, RabbitMqTransaction trans)

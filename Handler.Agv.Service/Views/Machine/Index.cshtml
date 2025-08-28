@@ -12,7 +12,7 @@
     <style>
     </style>
     <link href="~/layui/css/layui.css" rel="stylesheet" />
-    <title>Laser Power Dashboard</title>
+    <title>Handler Machine</title>
 </head>
 
 <body>
@@ -31,6 +31,7 @@
     <script type="text/html" id="toolBar">
         <div class="layui-clear-space">
             <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs" lay-event="vnc">VNC</a>
             <a class="layui-btn layui-btn-xs" lay-event="more">
                 更多
                 <i class="layui-icon layui-icon-down"></i>
@@ -97,6 +98,15 @@
                         } // Search field
                     });
                 }
+            });
+
+            // 触发单元格工具事件
+            table.on('tool(machineTable)', function (obj) { // 双击 toolDouble
+                var data = obj.data; // 获得当前行数据
+                // console.log(obj)
+                if (obj.event === 'vnc') {
+                    window.open("http://10.5.5.238:6080/vnc.html?path=websockify/?token="+data.ip+":5900&password=000000");
+                };
             });
         });
     </script>
