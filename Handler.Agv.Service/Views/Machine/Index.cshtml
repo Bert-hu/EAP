@@ -28,6 +28,15 @@
     <div style="padding: 16px;">
         <table class="layui-hide" id="machineTable" lay-filter="machineTable"></table>
     </div>
+    <script type="text/html" id="toolBar">
+        <div class="layui-clear-space">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs" lay-event="more">
+                更多
+                <i class="layui-icon layui-icon-down"></i>
+            </a>
+        </div>
+    </script>
     <script src="~/jquery-3.7.1.js"></script>
     <script src="~/layui/layui.js"></script>
     <script>
@@ -37,7 +46,7 @@
             // 创建表格实例
             table.render({
                 elem: '#machineTable',
-                url: './GetMachineData', 
+                url: './GetMachineData',
                 cols: [[
                     { type: 'radio', title: '😊', fixed: true }, // 单选框
                     { field: 'id', title: 'ID', minWidth: 10, sort: true, fixed: true, sort: true },
@@ -52,6 +61,7 @@
                     { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 80, sort: true },
                     { field: 'outputTrayUpdateTime', title: '出料口盘数更新时间', minWidth: 80, sort: true },
                     { field: 'currentTaskId', title: '当前任务号', minWidth: 80, sort: true },
+                    { fixed: 'right', title: '操作', width: 134, minWidth: 125, templet: '#toolBar' }
                 ]],
                 height: 'full'
             });
