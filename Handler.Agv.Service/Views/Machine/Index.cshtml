@@ -79,7 +79,8 @@
                     { field: 'currentTaskId', title: '当前任务号', minWidth: 300, sort: true },
                     { fixed: 'right', title: '操作', width: 134, minWidth: 125, templet: '#toolBar' }
                 ]],
-                height: tableHeight
+                height: tableHeight,
+                scrollPos: 'fixed'
             });
             // 日期
 
@@ -94,12 +95,12 @@
             form.on('input-affix(search)', function (data) {
                 var elem = data.elem; // Input box
                 var value = elem.value; // Value of the input box
-                if (!value) {
-                    layer.msg('Please enter search content');
-                    return elem.focus();
-                };
+                //if (!value) {
+                //    layer.msg('Please enter search content');
+                //    return elem.focus();
+                //};
                 // Simulate search jump
-                table.reload('machineTable', {
+                table.reloadData('machineTable', {
                     where: {
                         searchText: value
                     } // Search field
@@ -113,7 +114,7 @@
                     // Get the value from the input box
                     const searchValue = $(this).val();
                     // Execute your search logic here
-                    table.reload('machineTable', {
+                    table.reloadData('machineTable', {
                         where: {
                             searchText: searchValue
                         } // Search field
@@ -126,7 +127,7 @@
                 var data = obj.data; // 获得当前行数据
                 // console.log(obj)
                 if (obj.event === 'vnc') {
-                    window.open("http://10.5.5.238:6080/vnc.html?path=websockify/?token="+data.ip+":5900&password=000000");
+                    window.open("http://10.5.5.238:6080/vnc.html?path=websockify/?token=" + data.ip + ":5900&password=000000");
                 };
             });
         });
