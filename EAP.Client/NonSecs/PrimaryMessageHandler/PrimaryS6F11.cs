@@ -35,6 +35,8 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                 var s6f11 = JsonConvert.DeserializeObject<S6F11>(wrapper.PrimaryMessageString);
                 var vidDict = configuration.GetSection("NonSecs:VidDict").Get<Dictionary<string, string>>();
                 var subEqDict = configuration.GetSection("NonSecs:SubEquipment").Get<Dictionary<string, string>>();
+                // 加载Status映射字典
+                var statusDict = configuration.GetSection("NonSecs:ProcessStateCodes").Get<Dictionary<string, string>>();
                 foreach (var item in s6f11.Reports) // 遍历参数
                 {
                     if (!vidDict.TryGetValue(item.Key, out var name) || string.IsNullOrEmpty(name))
@@ -47,10 +49,12 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                     // 判断ReportID
                     if (reportId.Length == 2)
                     {
-                        // 两位数ReportID，取第一位
-                        string index = reportId.Substring(0, 1);
-                        subEQID = subEqDict.TryGetValue(index, out var eqid) ? eqid : "Unknown";
-
+                        if (name.Contains("Status"))
+                        {
+                            var mappedStatus = statusDict.ContainsKey(item.Value.ToUpper()) ? statusDict[item.Value.ToUpper()] : "Unknown";
+                            dbgLog.Info($"Recive Status from S6F11: {mappedStatus}");
+                            UpdateEquipmentStatus(mappedStatus, subEQID);
+                        }
                         // by subEQID上传
                         UploadParameter(subEQID, name, vidStr, item.Value);
                     }
@@ -111,6 +115,24 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
 
             rabbitMqService.Produce("EAP.Services", paratrans);
         }
+
+        public void UpdateEquipmentStatus(string equipmentState, string subEQID)
+        {
+            var para = new Dictionary<string, object> {
+                        { "EQID",subEQID },
+                        { "DateTime",DateTime.Now},
+                        { "EQType",configuration.GetSection("Custom")["EquipmentType"] },
+                        { "Status",equipmentState}
+                    };
+            RabbitMqTransaction trans = new RabbitMqTransaction
+            {
+                TransactionName = "EquipmentStatus",
+                EquipmentID = subEQID,
+                Parameters = para
+            };
+            rabbitMqService.Produce("EAP.Services", trans);
+        }
+
 
     }
 }

@@ -60,12 +60,12 @@ namespace EAP.Client.Forms
 
         }
 
-        private async void QuickTestS5F11_Click(object sender, EventArgs e)
+        private async void QuickTestS5F5_Click(object sender, EventArgs e)
         {
             try
             {
-                var s5f11 = new NonSecsMessage() { Stream = 5, Function = 11 };
-                var reply = await nonSecsService.SendMessage(s5f11);
+                var s5f5 = new NonSecsMessage() { Stream = 5, Function = 5 };
+                var reply = await nonSecsService.SendMessage(s5f5);
                 uiRichTextBox_receiveMessage.Text = reply.SecondaryMessageString;
             }
             catch (Exception ex)
