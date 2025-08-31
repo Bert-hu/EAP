@@ -40,7 +40,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     {
                         if (string.IsNullOrEmpty(machine.CurrentTaskId))
                         {
-                            AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration);
+                            AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration, rabbitMqService);
                             var (result, message) =await agvApiService.SendInputTask(machine);
                             if (result)
                             {

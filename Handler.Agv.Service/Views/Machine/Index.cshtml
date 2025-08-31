@@ -95,6 +95,37 @@
             margin-left: 150px;
         }
 
+        /* 任务状态样式 */
+        .status-task-AGV_REQUESTED {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-task-AGV_ARRIVED {
+            background-color: #fffbe6;
+            color: #faad14;
+        }
+
+        .status-task_EQUIP_LOCKED {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-task_ARM_COMPLETED {
+            background-color: #e6fffb;
+            color: #36cfc9;
+        }
+
+        .status-task_NO_TASK {
+            background-color: #f5f5f5;
+            color: #8c8c8c;
+        }
+
+        .status-task_UNKNOWN {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+
         /* 页脚样式 */
         .footer {
             position: fixed;
@@ -267,7 +298,6 @@
                 elem: '#machineTable',
                 url: './GetMachineData',
                 cols: [[
-                    { type: 'radio', title: '选择', fixed: true, width: 60 },
                     { field: 'id', title: 'ID', minWidth: 80, sort: true, fixed: true },
                     { field: 'ip', title: 'IP地址', minWidth: 130, sort: true },
                     {
@@ -302,13 +332,37 @@
                         }
                     },
                     { field: 'recipeName', title: '当前程式', minWidth: 150, sort: true },
+                    {
+                        field: 'currentTaskState',
+                        title: '任务状态',
+                        minWidth: 150,
+                        sort: true,
+                        templet: function (d) {
+                            // 任务状态映射和样式处理
+                            const stateClassMap = {
+                                "AGV任务已请求": "status-task-AGV_REQUESTED",
+                                "AGV已到达": "status-task-AGV_ARRIVED",
+                                "设备已锁定进出料": "status-task_EQUIP_LOCKED",
+                                "AGV手臂任务已完成": "status-task_ARM_COMPLETED",
+                                "无AGV任务": "status-task_NO_TASK",
+                                "未知状态": "status-task_UNKNOWN"
+                            };
+
+                            // 获取对应的样式类，默认为未知状态
+                            const className = stateClassMap[d.currentTaskState] || "status-task_UNKNOWN";
+                            // 显示文本，默认使用原始值
+                            const displayText = d.currentTaskState || "未知状态";
+
+                            return `<span class="status-badge ${className}">${displayText}</span>`;
+                        }
+                    },
+                    { field: 'currentTaskId', title: '当前任务号', minWidth: 200, sort: true },
                     { field: 'materialName', title: '上料机种', minWidth: 150, sort: true },
                     { field: 'groupName', title: '上料站别', minWidth: 100, sort: true },
                     { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 100, sort: true },
                     { field: 'inputTrayUpdateTime', title: '上料更新时间', minWidth: 180, sort: true },
                     { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 100, sort: true },
                     { field: 'outputTrayUpdateTime', title: '出料更新时间', minWidth: 180, sort: true },
-                    { field: 'currentTaskId', title: '当前任务号', minWidth: 200, sort: true },
                     { fixed: 'right', title: '操作', width: 200, minWidth: 250, templet: '#toolBar' }
                 ]],
                 height: calculateTableHeight(),

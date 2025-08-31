@@ -2,9 +2,11 @@
 using HandlerAgv.Service.Extension;
 using HandlerAgv.Service.Models.Database;
 using HandlerAgv.Service.Models.ViewModel;
+using HandlerAgv.Service.RabbitMq;
 using log4net;
 using Newtonsoft.Json;
 using SqlSugar;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace HandlerAgv.Service.Services
@@ -15,12 +17,14 @@ namespace HandlerAgv.Service.Services
         private readonly ISqlSugarClient sqlSugarClient;
         private readonly IMapper mapper;
         private readonly DbConfigurationService dbConfiguration;
+        private readonly RabbitMqService rabbitMqService;
 
-        public AgvApiService(ISqlSugarClient sqlSugarClient, IMapper mapper, DbConfigurationService dbConfiguration)
+        public AgvApiService(ISqlSugarClient sqlSugarClient, IMapper mapper, DbConfigurationService dbConfiguration, RabbitMqService rabbitMqService)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.mapper = mapper;
             this.dbConfiguration = dbConfiguration;
+            this.rabbitMqService = rabbitMqService;
         }
 
         public async Task<(bool, string)> SendInputOutputTask(HandlerEquipmentStatus equipment)
@@ -56,7 +60,8 @@ namespace HandlerAgv.Service.Services
                     await sqlSugarClient.Insertable(task).ExecuteCommandAsync();
                     equipment.CurrentTaskId = task.ID;
                     await sqlSugarClient.Updateable(equipment).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommandAsync();
-
+                    EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                    eapClient.UpdateClientInfo(equipment.Id);
                     return (true, string.Empty);
                 }
                 //else
@@ -104,6 +109,8 @@ namespace HandlerAgv.Service.Services
                     await sqlSugarClient.Insertable(task).ExecuteCommandAsync();
                     equipment.CurrentTaskId = task.ID;
                     await sqlSugarClient.Updateable(equipment).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommandAsync();
+                    EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                    eapClient.UpdateClientInfo(equipment.Id);
                     return (true, string.Empty);
                 }
                 //else
@@ -157,6 +164,8 @@ namespace HandlerAgv.Service.Services
                     await sqlSugarClient.Insertable(task).ExecuteCommandAsync();
                     equipment.CurrentTaskId = task.ID;
                     await sqlSugarClient.Updateable(equipment).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommandAsync();
+                    EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                    eapClient.UpdateClientInfo(equipment.Id);
                     return (true, string.Empty);
                 }
                 //else

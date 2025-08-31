@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HandlerAgv.Service.Models;
 using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.Services;
 using ICOSEAP.Api.Services;
 using log4net;
@@ -22,6 +23,7 @@ namespace HandlerAgv.Service.ScheduledJob
             var configuration = context.JobDetail.JobDataMap["configuration"] as IConfiguration;
             var dbConfiguration = context.JobDetail.JobDataMap["dbConfiguration"] as DbConfigurationService;
             var mapper = context.JobDetail.JobDataMap["mapper"] as IMapper;
+            var rabbitMqService = context.JobDetail.JobDataMap["rabbitMqService"] as RabbitMqService;
 
             var sqlSugarClient = SqlsugarService.GetSqlSugarClient(configuration);
 
@@ -42,7 +44,7 @@ namespace HandlerAgv.Service.ScheduledJob
                 && it.InputTrayNumber > 0
                 ).ToList();
 
-                AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration);
+                AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration,rabbitMqService);
 
                 foreach (var machine in machines)
                 {
