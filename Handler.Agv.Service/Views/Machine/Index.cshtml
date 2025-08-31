@@ -4,132 +4,549 @@
 @{
 }
 <!DOCTYPE html>
-<html lang="ch">
-
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+        body {
+            background-color: #f2f3f5;
+            padding: 15px;
+            margin-bottom: 60px; /* 为页脚留出空间 */
+        }
+
+        .layui-card {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border-radius: 2px;
+        }
+
+        .layui-table th {
+            font-weight: 500;
+            background-color: #f8f8f8;
+        }
+
+        .layui-btn {
+            transition: all 0.2s ease;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 状态样式更新 */
+        .status-INIT {
+            background-color: #e6f4ff;
+            color: #1890ff;
+        }
+
+        .status-IDLE {
+            background-color: #fff8e6;
+            color: #faad14;
+        }
+
+        .status-SETUP {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-READY {
+            background-color: #e6fffb;
+            color: #36cfc9;
+        }
+
+        .status-EXECUTING {
+            background-color: #e6f7e9;
+            color: #008000;
+        }
+
+        .status-PAUSE {
+            background-color: #fff1f0;
+            color: #ff7a45;
+        }
+
+        .status-ALARM_PAUSE {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-IDLE_WITH_ALARMS {
+            background-color: #fff1f0;
+            color: #fa541c;
+        }
+
+        .status-EXIT {
+            background-color: #f5f5f5;
+            color: #8c8c8c;
+        }
+
+        .layui-form-item {
+            margin-bottom: 15px;
+        }
+
+        .layui-form-label {
+            width: 120px;
+        }
+
+        .layui-input-block {
+            margin-left: 150px;
+        }
+
+        /* 页脚样式 */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 10px 15px;
+            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .refresh-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .countdown {
+            color: #1890ff;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+
+        .refresh-btn {
+            margin-left: 10px;
+        }
     </style>
     <link href="~/layui/css/layui.css" rel="stylesheet" />
-    <title>Handler Machine</title>
+    <title>Handler Machine 管理系统</title>
 </head>
-
 <body>
-    <form class="layui-form layui-form-pane" action="">
-        <div class="layui-form-item layui-row">
-            <div class="layui-row">
-                <div class="layui-input-inline" style="width: 80%; margin-left: 1%">
-                    <input type="text" lay-affix="search" lay-filter="search" lay-options="{split: true}" placeholder="Search…" class="layui-input" id="searchInput">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <h2>设备管理</h2>
+        </div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-row">
+                        <div class="layui-input-inline" style="width: 80%; margin-left: 1%">
+                            <input type="text" lay-affix="search" lay-filter="search" lay-options="{split: true}"
+                                   placeholder="搜索设备ID、IP或状态..." class="layui-input" id="searchInput">
+                        </div>
+                    </div>
                 </div>
+            </form>
+            <div style="padding: 10px 0;">
+                <table class="layui-table" id="machineTable" lay-filter="machineTable"></table>
             </div>
         </div>
-    </form>
-    <div style="padding: 16px;height: 100px">
-        <table class="layui-hide" id="machineTable" lay-filter="machineTable"></table>
     </div>
+
+    <!-- 页脚区域 - 显示刷新倒计时 -->
+    <div class="footer">
+        <div class="refresh-info">
+            数据将在 <span class="countdown" id="countdown">10</span> 秒后自动刷新
+        </div>
+        <button class="layui-btn layui-btn-normal refresh-btn" id="manualRefresh">
+            <i class="layui-icon layui-icon-refresh"></i> 手动刷新
+        </button>
+    </div>
+
+    <!-- 工具栏模板 -->
     <script type="text/html" id="toolBar">
-        <div class="layui-clear-space">
-            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-xs" lay-event="vnc">VNC</a>
-            <a class="layui-btn layui-btn-xs" lay-event="more">
+        <div class="layui-btn-group layui-btn-group-xs">
+            <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="edit"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
+            <a class="layui-btn layui-btn-sm layui-btn-primary" lay-event="vnc"><i class="layui-icon layui-icon-monitor"></i> VNC</a>
+            <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="more">
                 更多
                 <i class="layui-icon layui-icon-down"></i>
             </a>
         </div>
     </script>
+
+    <!-- 编辑弹窗 -->
+    <div id="editDialog" style="display: none; padding: 15px;">
+        <form class="layui-form" lay-filter="editForm">
+            <input type="hidden" name="id">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">AGV状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="agvEnabled" value="true" title="开启">
+                    <input type="radio" name="agvEnabled" value="false" title="关闭" checked>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">上料机种</label>
+                <div class="layui-input-block">
+                    <input type="text" name="materialName" placeholder="请输入上料机种" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">上料站别</label>
+                <div class="layui-input-block">
+                    <input type="text" name="groupName" placeholder="请输入上料站别" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">上料口盘数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="inputTrayNumber" lay-verify="number" min="0" placeholder="请输入上料口盘数" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">出料口盘数</label>
+                <div class="layui-input-block">
+                    <input type="number" name="outputTrayNumber" lay-verify="number" min="0" placeholder="请输入出料口盘数" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">当前任务号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="currentTaskId" placeholder="请输入当前任务号" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="text-align: center;">
+                    <button class="layui-btn" lay-submit lay-filter="saveEdit">保存</button>
+                    <button type="button" class="layui-btn layui-btn-primary" id="cancelEdit">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <script src="~/jquery-3.7.1.js"></script>
     <script src="~/layui/layui.js"></script>
     <script>
-        layui.use(function () {
+        layui.use(['table', 'form', 'layer'], function () {
             var table = layui.table;
             var form = layui.form;
+            var layer = layui.layer;
 
-            var tableHeight = $(window).height() - 150;
+            // 全局变量
+            var currentEditData = null;
+            var editDialogIndex = null;
+            var currentSearchText = ''; // 保存当前搜索条件
+            var refreshInterval = 10; // 刷新间隔（秒）
+            var countdownTimer = null; // 倒计时计时器
+            var refreshTimer = null; // 刷新计时器
+            var isRefreshing = false; // 防止重复刷新的标记
+            var resizeTimeout = null; // 窗口调整防抖计时器
+
+            // 防抖函数 - 限制函数执行频率
+            function debounce(func, wait) {
+                return function () {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => func.apply(context, args), wait);
+                };
+            }
+
+            // 计算表格高度，考虑页脚高度
+            var calculateTableHeight = function () {
+                return $(window).height() - 280;
+            };
+
             // 创建表格实例
-            table.render({
+            var tableIns = table.render({
                 elem: '#machineTable',
                 url: './GetMachineData',
                 cols: [[
-                    { type: 'radio', title: '😊', fixed: true }, // 单选框
-                    { field: 'id', title: 'ID', minWidth: 80, sort: true, fixed: true, sort: true },
-                    { field: 'ip', title: 'IP', minWidth: 130, sort: true },
+                    { type: 'radio', title: '选择', fixed: true, width: 60 },
+                    { field: 'id', title: 'ID', minWidth: 80, sort: true, fixed: true },
+                    { field: 'ip', title: 'IP地址', minWidth: 130, sort: true },
                     {
-                        field: 'agvEnabled', title: 'AGV', minWidth: 80, sort: true,
-                        // 自定义模板：根据值判断背景色
+                        field: 'agvEnabled', title: 'AGV状态', minWidth: 100, sort: true,
                         templet: function (d) {
-                            // d 为当前行数据，d.agvEnabled 即当前列的值
-                            if (d.agvEnabled === true) {
-                                // 值为true：绿色背景 + 白色文字（提高可读性）
-                                return '<div style="background-color: #52c41a; color: white; padding: 4px 0; text-align: center;">开启</div>';
-                            } else {
-                                // 值为false：默认背景（可根据需求调整，如浅灰色）
-                                return '<div style="background-color: #f5f5f5; padding: 4px 0; text-align: center;">关闭</div>';
-                            }
+                            return d.agvEnabled ?
+                                '<div style="background-color: #52c41a; color: white; padding: 4px 0; text-align: center; border-radius: 4px;">开启</div>' :
+                                '<div style="background-color: #f5f5f5; padding: 4px 0; text-align: center; border-radius: 4px;">关闭</div>';
                         }
                     },
-                    { field: 'processState', title: '状态', minWidth: 150, sort: true },
+                    {
+                        field: 'processState', title: '设备状态', minWidth: 120, sort: true,
+                        templet: function (d) {
+                            // 状态映射为中文显示
+                            const stateMap = {
+                                "INIT": "初始化",
+                                "IDLE": "空闲",
+                                "SETUP": "设置中",
+                                "READY": "就绪",
+                                "EXECUTING": "运行中",
+                                "PAUSE": "暂停",
+                                "ALARM_PAUSE": "报警暂停",
+                                "IDLE_WITH_ALARMS": "带报警空闲",
+                                "EXIT": "退出"
+                            };
+
+                            // 获取显示文本，默认使用原始值
+                            const displayText = stateMap[d.processState] || d.processState;
+
+                            // 返回带样式的状态标签
+                            return `<span class="status-badge status-${d.processState}">${displayText}</span>`;
+                        }
+                    },
                     { field: 'recipeName', title: '当前程式', minWidth: 150, sort: true },
                     { field: 'materialName', title: '上料机种', minWidth: 150, sort: true },
-                    { field: 'groupName', title: '上料站别', minWidth: 80, sort: true },
-                    { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 30, sort: true },
-                    { field: 'inputTrayUpdateTime', title: '上料口盘数更新时间', minWidth: 200, sort: true },
-                    { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 30, sort: true },
-                    { field: 'outputTrayUpdateTime', title: '出料口盘数更新时间', minWidth: 200, sort: true },
-                    { field: 'currentTaskId', title: '当前任务号', minWidth: 300, sort: true },
-                    { fixed: 'right', title: '操作', width: 134, minWidth: 125, templet: '#toolBar' }
+                    { field: 'groupName', title: '上料站别', minWidth: 100, sort: true },
+                    { field: 'inputTrayNumber', title: '上料口盘数', minWidth: 100, sort: true },
+                    { field: 'inputTrayUpdateTime', title: '上料更新时间', minWidth: 180, sort: true },
+                    { field: 'outputTrayNumber', title: '出料口盘数', minWidth: 100, sort: true },
+                    { field: 'outputTrayUpdateTime', title: '出料更新时间', minWidth: 180, sort: true },
+                    { field: 'currentTaskId', title: '当前任务号', minWidth: 200, sort: true },
+                    { fixed: 'right', title: '操作', width: 200, minWidth: 250, templet: '#toolBar' }
                 ]],
-                height: tableHeight,
-                scrollPos: 'fixed'
+                height: calculateTableHeight(),
+                scrollPos: 'fixed',
+                page: true,
+                limit: 9999,
+                limits: [9999],
+                text: {
+                    none: '暂无相关数据'
+                },
+                response: {
+                    statusName: 'code',
+                    statusCode: 0,
+                    msgName: 'msg',
+                    countName: 'count',
+                    dataName: 'data'
+                }
             });
-            // 日期
 
-            // 监听窗口大小变化，重新计算表格高度
-            $(window).resize(function () {
-                tableHeight = $(window).height() - 150;
-                table.reload('machineTable', {
-                    height: tableHeight
+            // 初始化倒计时
+            function initCountdown() {
+                // 清除现有计时器，防止多个计时器同时运行
+                if (countdownTimer) {
+                    clearInterval(countdownTimer);
+                }
+
+                let seconds = refreshInterval;
+                $('#countdown').text(seconds);
+
+                countdownTimer = setInterval(() => {
+                    seconds--;
+                    $('#countdown').text(seconds);
+
+                    if (seconds <= 0) {
+                        clearInterval(countdownTimer);
+                        refreshData();
+                    }
+                }, 1000);
+            }
+
+            // 刷新数据
+            function refreshData() {
+                // 如果正在刷新，直接返回
+                if (isRefreshing) return;
+
+                isRefreshing = true;
+                // 显示加载动画
+                const loadingIndex = layer.load(1, {
+                    shade: [0.1, '#fff']
                 });
-            });
 
-            form.on('input-affix(search)', function (data) {
-                var elem = data.elem; // Input box
-                var value = elem.value; // Value of the input box
-                //if (!value) {
-                //    layer.msg('Please enter search content');
-                //    return elem.focus();
-                //};
-                // Simulate search jump
-                table.reloadData('machineTable', {
+                // 保留当前页和搜索条件刷新数据
+                tableIns.reloadData({
                     where: {
-                        searchText: value
-                    } // Search field
+                        searchText: currentSearchText
+                    }
+                }, 'data'); // 只刷新数据，不改变其他配置
+
+                // 数据加载完成后关闭加载动画并重新开始倒计时
+                setTimeout(() => {
+                    layer.close(loadingIndex);
+                    isRefreshing = false;
+                    initCountdown();
+                }, 500);
+            }
+
+            // 监听窗口大小变化 - 添加防抖处理
+            $(window).resize(debounce(function () {
+                // 调整表格高度
+                tableIns.reload({
+                    height: calculateTableHeight()
+                });
+            }, 300)); // 300毫秒延迟，可根据需要调整
+
+            // 搜索功能
+            form.on('input-affix(search)', function (data) {
+                currentSearchText = data.elem.value.trim().toLowerCase();
+
+                // 搜索时重置倒计时
+                resetRefreshTimer();
+
+                tableIns.reloadData({
+                    where: {
+                        searchText: currentSearchText
+                    },
+                    page: {
+                        curr: 1
+                    }
                 });
             });
 
+            // 回车搜索
             $('#searchInput').on('keydown', function (event) {
                 if (event.key === 'Enter') {
-                    // Prevent default behavior (e.g., form submission)
                     event.preventDefault();
-                    // Get the value from the input box
-                    const searchValue = $(this).val();
-                    // Execute your search logic here
-                    table.reloadData('machineTable', {
+                    currentSearchText = $(this).val().trim().toLowerCase();
+
+                    // 搜索时重置倒计时
+                    resetRefreshTimer();
+
+                    tableIns.reloadData({
                         where: {
-                            searchText: searchValue
-                        } // Search field
+                            searchText: currentSearchText
+                        },
+                        page: {
+                            curr: 1
+                        }
                     });
                 }
             });
 
-            // 触发单元格工具事件
-            table.on('tool(machineTable)', function (obj) { // 双击 toolDouble
-                var data = obj.data; // 获得当前行数据
-                // console.log(obj)
-                if (obj.event === 'vnc') {
-                    window.open("http://10.5.5.238:6080/vnc.html?path=websockify/?token=" + data.ip + ":5900&password=000000");
-                };
+            // 手动刷新按钮
+            $('#manualRefresh').on('click', function () {
+                // 重置倒计时并立即刷新
+                resetRefreshTimer();
+                refreshData();
             });
+
+            // 重置刷新计时器
+            function resetRefreshTimer() {
+                if (countdownTimer) {
+                    clearInterval(countdownTimer);
+                }
+                initCountdown();
+            }
+
+            // 表格工具事件
+            table.on('tool(machineTable)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'vnc') {
+                    layer.load(2);
+                    window.open(`http://10.5.5.238:6080/vnc.html?path=websockify/?token=${data.ip}:5900&password=000000`, '_blank');
+                    setTimeout(() => layer.closeAll('loading'), 1000);
+                } else if (obj.event === 'edit') {
+                    openEditDialog(data);
+                } else if (obj.event === 'more') {
+                    layer.open({
+                        content: '更多操作功能待实现',
+                        icon: 1,
+                        time: 2000
+                    });
+                }
+            });
+
+            // 打开编辑对话框
+            function openEditDialog(data) {
+                currentEditData = data;
+
+                // 确保id转换为字符串类型
+                form.val('editForm', {
+                    'id': data.id,
+                    'agvEnabled': data.agvEnabled,
+                    'materialName': data.materialName || '',
+                    'groupName': data.groupName || '',
+                    'inputTrayNumber': data.inputTrayNumber || 0,
+                    'outputTrayNumber': data.outputTrayNumber || 0,
+                    'currentTaskId': data.currentTaskId || ''
+                });
+
+                form.render();
+                editDialogIndex = layer.open({
+                    type: 1,
+                    title: '编辑设备信息',
+                    content: $('#editDialog'),
+                    area: ['600px', 'auto'],
+                    maxWidth: '90%',
+                    shade: 0.3,
+                    scrollbar: false,
+                    btnAlign: 'c'
+                });
+            }
+
+            // 取消编辑
+            $('#cancelEdit').on('click', function () {
+                layer.close(editDialogIndex);
+                currentEditData = null;
+                editDialogIndex = null;
+            });
+
+            // 保存编辑
+            form.on('submit(saveEdit)', function (data) {
+                const formData = data.field;
+                // 确保id是字符串类型
+                formData.id = String(formData.id);
+                console.log(formData);
+                const loadingIndex = layer.load(2);
+
+                $.post('./UpdateMachineData', formData, function (response) {
+                    layer.close(loadingIndex);
+
+                    if (response && response.code) {
+                        layer.msg(response.msg || '保存成功', {
+                            icon: 1,
+                            time: 1500
+                        }, function () {
+                            layer.close(editDialogIndex);
+                            // 保留搜索条件重载数据
+                            tableIns.reloadData({
+                                where: {
+                                    searchText: currentSearchText
+                                }
+                            });
+                            currentEditData = null;
+                            editDialogIndex = null;
+                            // 保存后重置倒计时
+                            resetRefreshTimer();
+                        });
+                    } else {
+                        layer.msg(response.msg || '保存失败，请重试', {
+                            icon: 2,
+                            time: 2000
+                        });
+                    }
+                }, 'json')
+                    .fail(function (xhr, status, error) {
+                        layer.close(loadingIndex);
+                        let errorMsg = '保存失败，请重试';
+                        if (status === 'timeout') errorMsg = '请求超时';
+                        else if (xhr.status === 404) errorMsg = '请求地址不存在';
+                        else if (xhr.status === 500) errorMsg = '服务器错误';
+
+                        layer.msg(errorMsg, {
+                            icon: 2,
+                            time: 2000
+                        });
+                    });
+
+                return false;
+            });
+
+            // 页面关闭时清理计时器，防止内存泄漏
+            window.addEventListener('beforeunload', function () {
+                if (countdownTimer) clearInterval(countdownTimer);
+                if (resizeTimeout) clearTimeout(resizeTimeout);
+            });
+
+            // 初始化自动刷新
+            initCountdown();
         });
     </script>
 </body>

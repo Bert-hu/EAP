@@ -33,11 +33,19 @@ namespace HandlerAgv.Service.Controllers
             var list = sqlSugarClient.Queryable<HandlerEquipmentStatus>().OrderBy(it => it.Id).ToList();
             if (!string.IsNullOrEmpty(searchText))
             {
-                list = list.Where(x => (x.Id + x.RecipeName + x.MaterialName + x.GroupName).ToUpper().Contains(searchText)).ToList();
+                list = list.Where(x => (x.Id + x.RecipeName + x.MaterialName + x.GroupName).ToUpper().Contains(searchText.ToUpper())).ToList();
             }
             return new JsonResult(new { code = 0, data = list, count = list.Count });
         }
 
+
+        [HttpPost]
+        public JsonResult UpdateMachineData(HandlerEquipmentStatus data)
+        {
+            var count = sqlSugarClient.Updateable(data).UpdateColumns(it => new { it.AgvEnabled, it.MaterialName, it.GroupName, it.InputTrayNumber, it.OutputTrayNumber, it.CurrentTaskId }).ExecuteCommand();
+            return new JsonResult(new { code = count == 1 });
+
+        }
 
     }
 }
