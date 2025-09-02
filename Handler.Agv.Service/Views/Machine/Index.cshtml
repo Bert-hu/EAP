@@ -138,7 +138,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            z-index: 9999;
         }
 
         .refresh-info {
@@ -155,6 +155,58 @@
         .refresh-btn {
             margin-left: 10px;
         }
+
+        /* 搜索和统计表格容器 */
+        .search-stats-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stats-table-container {
+            flex: 1;
+            min-width: 300px;
+            max-height: 200px;
+            overflow: auto;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stats-table th, .stats-table td {
+            border: 1px solid #e6e6e6;
+            padding: 6px 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .stats-table th {
+            background-color: #f8f8f8;
+            font-weight: 500;
+        }
+
+        .stats-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* 响应式调整 */
+        @@media screen and (max-width: 768px) {
+            .search-stats-container {
+                flex-direction: column;
+            }
+
+            .stats-table-container {
+                max-height: none;
+            }
+        }
     </style>
     <link href="~/layui/css/layui.css" rel="stylesheet" />
     <title>Handler Machine 管理系统</title>
@@ -167,10 +219,35 @@
         <div class="layui-card-body">
             <form class="layui-form layui-form-pane" action="">
                 <div class="layui-form-item layui-row">
-                    <div class="layui-row">
-                        <div class="layui-input-inline" style="width: 80%; margin-left: 1%">
-                            <input type="text" lay-affix="search" lay-filter="search" lay-options="{split: true}"
-                                   placeholder="搜索设备ID、IP或状态..." class="layui-input" id="searchInput">
+                    <!-- 搜索框和统计表格容器 -->
+                    <div class="search-stats-container">
+                        <div class="search-container">
+                            <div class="layui-input-inline" style="width: 100%;">
+                                <input type="text" lay-affix="search" lay-filter="search" lay-options="{split: true}"
+                                       placeholder="搜索设备ID、IP或状态..." class="layui-input" id="searchInput">
+                            </div>
+                        </div>
+
+                        <!-- 新增的统计表格 -->
+                        <div class="stats-table-container">
+                            <table class="stats-table" id="inventoryStatsTable">
+                                <thead>
+                                    <tr>
+                                        <th>机种</th>
+                                        <th>站别</th>
+                                        <th>开启设备数</th>
+                                        <th>AGV库存</th>
+                                        <th>一期Stocker库存</th>
+                                        <th>二期Stocker库存</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态填充 -->
+                                    <tr>
+                                        <td colspan="6" style="text-align: center;">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -290,10 +367,10 @@
 
             // 计算表格高度，考虑页脚高度
             var calculateTableHeight = function () {
-                return $(window).height() - 280;
+                return $(window).height() - 350;
             };
 
-            // 创建表格实例
+            // 创建设备表格实例
             var tableIns = table.render({
                 elem: '#machineTable',
                 url: './GetMachineData',
@@ -379,8 +456,39 @@
                     msgName: 'msg',
                     countName: 'count',
                     dataName: 'data'
+                },
+                done: function (res) {
+                    // 当设备表格数据加载完成后，更新统计表格
+                    updateInventoryStatsTable(res.inventory);
                 }
             });
+
+            // 更新统计表格数据
+            function updateInventoryStatsTable(inventoryData) {
+                const tableBody = document.querySelector('#inventoryStatsTable tbody');
+
+                // 清空表格内容
+                tableBody.innerHTML = '';
+                // 检查数据是否存在
+                if (!inventoryData || inventoryData.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">暂无统计数据</td></tr>';
+                    return;
+                }
+
+                // 填充表格数据
+                inventoryData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${item.materialName || '-'}</td>
+                            <td>${item.groupName || '-'}</td>
+                            <td>${item.enableMachineCount || 0}</td>
+                            <td>${item.agvQuantity || 0}</td>
+                            <td>${item.stocker1Quantity || 0}</td>
+                            <td>${item.stocker2Quantity || 0}</td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+            }
 
             // 初始化倒计时
             function initCountdown() {
