@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HandlerAgv.Service.Extension;
 using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.Models.Inventory;
 using HandlerAgv.Service.Models.ViewModel;
 using HandlerAgv.Service.RabbitMq;
 using log4net;
@@ -184,6 +185,28 @@ namespace HandlerAgv.Service.Services
             {
                 dbgLog.Error($"Request failed: {ex.ToString()}");
                 return (false, "请求失败:" + ex.Message);
+            }
+        }
+
+        public async Task<List<InvRecord>?> GetAgvInventories()
+        {
+            try
+            {
+                var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
+                var method = "/api/v3/handler/load/detail?perpage=9999";
+                //dbgLog.Info($"agv request:{agvApiUrl + method}");
+                var response = await HttpClientHelper.HttpGetRequestAsync<InventoryDetails>(agvApiUrl + method);
+                return response.records;
+            }
+            catch (TaskCanceledException)
+            {
+                dbgLog.Error("获取AGV库存超时.");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error($"获取AGV库存 failed: {ex.ToString()}");
+                return null;
             }
         }
 

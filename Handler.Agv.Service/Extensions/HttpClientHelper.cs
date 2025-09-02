@@ -46,5 +46,29 @@ namespace HandlerAgv.Service.Extension
             }
         }
 
+        public static async Task<T?> HttpGetRequestAsync<T>(string url, int timeoutSeconds = 5)
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+
+            try
+            {
+                using var response = await _httpClient.GetAsync(url, cts.Token);
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync(cts.Token);
+                return JsonSerializer.Deserialize<T>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (TaskCanceledException)
+            {
+                // 超时异常处理
+                throw;
+            }
+            catch (Exception)
+            {
+                // 其他异常处理
+                throw;
+            }
+        }
+
     }
 }

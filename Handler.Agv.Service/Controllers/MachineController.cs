@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HandlerAgv.Service.Models;
 using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.Models.Inventory;
 using HandlerAgv.Service.Models.ViewModel;
 using HandlerAgv.Service.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,8 @@ namespace HandlerAgv.Service.Controllers
                 dbData = dbData.Where(x => (x.Id + x.RecipeName + x.MaterialName + x.GroupName).ToUpper().Contains(searchText.ToUpper())).ToList();
             }
             var vmData = mapper.Map<List<HandlerEquipmentStatusVm>>(dbData);
-            vmData.ForEach(x => {
+            vmData.ForEach(x =>
+            {
                 if (!string.IsNullOrEmpty(x.CurrentTaskId))
                 {
                     var task = sqlSugarClient.Queryable<HandlerAgvTask>()
@@ -75,7 +77,8 @@ namespace HandlerAgv.Service.Controllers
                 }
 
             });
-            return new JsonResult(new { code = 0, data = vmData, count = vmData.Count });
+            var inventory = sqlSugarClient.Queryable<HandlerInventory>().Where(it => it.UpdateTime > DateTime.Now.AddMinutes(-2)).ToList();
+            return new JsonResult(new { code = 0, data = vmData, count = vmData.Count, inventory = inventory });
         }
 
 
@@ -85,6 +88,14 @@ namespace HandlerAgv.Service.Controllers
             var count = sqlSugarClient.Updateable(data).UpdateColumns(it => new { it.AgvEnabled, it.MaterialName, it.GroupName, it.InputTrayNumber, it.OutputTrayNumber, it.CurrentTaskId }).ExecuteCommand();
             return new JsonResult(new { code = count == 1 });
 
+        }
+        [HttpGet]
+        public JsonResult GetMaterialData()
+        {
+            var dbData = sqlSugarClient.Queryable<StockerInventory_II>().ToList();
+
+            var stocker1data = sqlSugarClient.Queryable<StockerInventory_I>().ToList();
+            return new JsonResult(new { code = 0, data = dbData });
         }
 
     }
