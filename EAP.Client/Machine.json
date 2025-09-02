@@ -19,7 +19,6 @@
     },
     "ProcessStateCodes": {
       "IDLE": "Idle",
-      "TEST": "Idle",
       "RUN": "Run",
       "ALARM": "Alarm"
     }

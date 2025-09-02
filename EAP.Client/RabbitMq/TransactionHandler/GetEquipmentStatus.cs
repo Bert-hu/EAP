@@ -48,16 +48,17 @@ namespace EAP.Client.RabbitMq
                             var statusVid = vidDict.FirstOrDefault(it => it.Value == "Status").Key;
 
                             var statusString = string.Empty;
-                            s1f4?.List?.TryGetValue(statusVid, out statusString);
-
-                            if (statusDict.ContainsKey(statusString))
+                            // 提取状态值
+                            if (s1f4?.List?.TryGetValue(statusVid, out statusString) == true)
                             {
-                                Status = statusDict[statusString];
+                                Status = statusDict.ContainsKey(statusString.ToUpper()) ? statusDict[statusString.ToUpper()] : "Unknown";
+
                             }
                             else
                             {
                                 Status = "Unknown";
                             }
+                            
                         }
                         var equipmentId = configuration.GetSection("Custom")["EquipmentId"];
                         foreach (var item in s1f4?.List)
