@@ -42,10 +42,9 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
 
                 string svidResult = string.Join(",", s6f11.Reports.Select(kvp => $"{(vidDict.TryGetValue(kvp.Key, out string paramName) ? paramName : kvp.Key)}={kvp.Value}"));
 
-                if (EventName.Contains("Shortage"))
-                {
-                    UploadParameter(equipmentId, EventName, s6f11.EventID, svidResult);
-                }
+
+                UploadParameter(equipmentId, EventName, s6f11.EventID, svidResult);
+
                     
 
                 
