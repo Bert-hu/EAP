@@ -144,7 +144,7 @@ ORDER BY
             sqlSugarClient.Updateable<HandlerEquipmentStatus>(data).UpdateColumns(it => new { it.InputTrayCT, it.OutputTrayCT }).ExecuteCommand();
         }
 
-        public List<HandlerEquipmentStatusVm> GetEquipmentVmData(IEnumerable<HandlerEquipmentStatus> data)
+        public IEnumerable<HandlerEquipmentStatusVm> GetEquipmentVmData(IEnumerable<HandlerEquipmentStatus> data)
         {
 
             var vmData = mapper.Map<List<HandlerEquipmentStatusVm>>(data);

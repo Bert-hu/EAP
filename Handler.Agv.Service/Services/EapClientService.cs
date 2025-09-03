@@ -3,6 +3,7 @@ using HandlerAgv.Service.Models.Database;
 using HandlerAgv.Service.RabbitMq;
 using log4net;
 using SqlSugar;
+using System.Reflection.PortableExecutable;
 
 namespace HandlerAgv.Service.Services
 {
@@ -61,6 +62,18 @@ namespace HandlerAgv.Service.Services
                     {
                         currentTaskState = "无AGV任务";
                     }
+
+
+                    var agvInventory = "未知";
+                    var stockInventory = "未知";
+                    var inventory = sqlSugarClient.Queryable<HandlerInventory>().Where(t => t.MaterialName == equipment.MaterialName && t.GroupName == equipment.GroupName).First();
+                    if (inventory != null)
+                    {
+                        agvInventory = inventory.AgvQuantity == -1 ? "未知" : inventory.AgvQuantity.ToString();
+                        stockInventory = (inventory.Stocker1Quantity + inventory.Stocker2Quantity).ToString();
+                    }
+
+
                     var trans = new RabbitMqTransaction
                     {
                         EquipmentID = equipmentId,
@@ -74,7 +87,9 @@ namespace HandlerAgv.Service.Services
                                 { "CurrentTaskState", currentTaskState },
                                 { "CurrentLot", equipment.CurrentLot },
                                 { "GroupName", equipment.GroupName },
-                                { "MaterialName", equipment.MaterialName }
+                                { "MaterialName", equipment.MaterialName },
+                                { "AgvInventory", agvInventory },
+                                { "StockInventory", stockInventory }
                             }
                     };
                     rabbitMqService.Produce("EAP.SecsClient." + equipmentId, trans);
@@ -146,10 +161,11 @@ namespace HandlerAgv.Service.Services
             }
         }
 
-        public (bool, string) GetMachineLockState(string equipmentId)
+        public (bool locked, string message, string processState) GetMachineLockState(string equipmentId)
         {
             var lockState = false;
             var message = string.Empty;
+            var processState = string.Empty;
             try
             {
                 var trans = new RabbitMqTransaction
@@ -163,6 +179,7 @@ namespace HandlerAgv.Service.Services
                 {
                     lockState = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
                     message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "获取设备锁定状态成功";
+                    processState = reply.Parameters.ContainsKey("ProcessState") ? reply.Parameters["ProcessState"].ToString() : "UNKNOWN";
                 }
                 else
                 {
@@ -175,7 +192,7 @@ namespace HandlerAgv.Service.Services
                 message = $"获取设备锁定状态异常: {equipmentId} ,{ex.Message}";
                 dbgLog.Error(ex.ToString());
             }
-            return (lockState, message);
+            return (lockState, message, processState);
         }
 
     }

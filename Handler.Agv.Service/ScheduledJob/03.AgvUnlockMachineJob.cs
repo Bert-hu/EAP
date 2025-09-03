@@ -43,7 +43,7 @@ namespace HandlerAgv.Service.ScheduledJob
                     {
                         try
                         {
-                            (var result, var message) = clientService.GetMachineLockState(task.EquipmentId);
+                            (var result, var message, var processState) = clientService.GetMachineLockState(task.EquipmentId);
                             if (result)
                             {
                                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>()

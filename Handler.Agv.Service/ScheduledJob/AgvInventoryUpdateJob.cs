@@ -73,6 +73,7 @@ namespace HandlerAgv.Service.ScheduledJob
                 sqlSugarClient.Deleteable<HandlerInventory>().ExecuteCommand();
                 sqlSugarClient.Insertable<HandlerInventory>(invs).ExecuteCommand();
                 sqlSugarClient.CommitTran();
+            
             }
             catch (Exception ex)
             {

@@ -40,7 +40,7 @@ namespace HandlerAgv.Service.ScheduledJob
                     {
                         try
                         {
-                            (var result, var message) = clientService.GetMachineLockState(task.EquipmentId);
+                            (var result, var message,var processState) = clientService.GetMachineLockState(task.EquipmentId);
                             if (result)
                             {
                                 Log.Info($"AgvLockMachineJob: {task.ID}, 设备{task.EquipmentId}已锁定成功，状态更新为MachineReady。");

@@ -25,6 +25,9 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
                 if (machine != null)
                 {
+
+
+
                     repTrans.Parameters.Add("Result", true);
                     repTrans.Parameters.Add("AgvEnabled", machine.AgvEnabled);
                     repTrans.Parameters.Add("InputTrayCount", machine.InputTrayNumber);
@@ -68,9 +71,19 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     }
                     repTrans.Parameters.Add("CurrentTaskState", currentTaskState);
 
+                    var agvInventory = "未知";
+                    var stockInventory = "未知";
+                    var inventory = sqlSugarClient.Queryable<HandlerInventory>().Where(t => t.MaterialName == machine.MaterialName && t.GroupName == machine.GroupName).First();
+                    if (inventory != null)
+                    {
+                        agvInventory = inventory.AgvQuantity == -1 ? "未知" : inventory.AgvQuantity.ToString();
+                        stockInventory = (inventory.Stocker1Quantity + inventory.Stocker2Quantity).ToString();
+                    }
+                    repTrans.Parameters.Add("AgvInventory", agvInventory);
+                    repTrans.Parameters.Add("StockInventory", stockInventory);
                 }
                 else
-                {                   
+                {
                     repTrans.Parameters.Add("Result", false);
                     repTrans.Parameters.Add("Message", "Machine not found");
                 }

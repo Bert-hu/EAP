@@ -46,6 +46,7 @@ namespace HandlerAgv.Service.Services
                     //_ = QuartzUtil.AddJob<AgvLockMachineJob>("AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     //_ = QuartzUtil.AddJob<AgvUnlockMachineJob>("AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     _ = QuartzUtil.AddJob<AgvInventoryUpdateJob>("AgvInventoryUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, TimeSpan.FromSeconds(30), jobDataMap);
+                                                           
 
                 }
                 else

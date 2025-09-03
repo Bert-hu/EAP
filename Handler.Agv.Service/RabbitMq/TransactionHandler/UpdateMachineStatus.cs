@@ -23,7 +23,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
             try
             {
                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
-                if (machine != null)
+                if (machine != null && trans.Parameters.ContainsKey("Status"))
                 {
                     var status = trans.Parameters["Status"].ToString();
                     machine.ProcessState = status;

@@ -210,5 +210,26 @@ namespace HandlerAgv.Service.Services
             }
         }
 
+        public async Task<List<AgvStatus>?> GetAgvStatus()
+        {
+            try
+            {
+                var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
+                var method = "/api/v3/handler/status";
+                //dbgLog.Info($"agv request:{agvApiUrl + method}");
+                var response = await HttpClientHelper.HttpGetRequestAsync<List<AgvStatus>>(agvApiUrl + method);
+                return response;
+            }
+            catch (TaskCanceledException)
+            {
+                dbgLog.Error("获取AGV状态超时.");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error($"获取AGV状态 failed: {ex.ToString()}");
+                return null;
+            }
+        }
     }
 }

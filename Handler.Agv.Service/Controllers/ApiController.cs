@@ -1,7 +1,9 @@
-﻿using HandlerAgv.Service.Models.Database;
+﻿using AutoMapper;
+using HandlerAgv.Service.Models.Database;
 using HandlerAgv.Service.Models.ViewModel;
 using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.Services;
+using ICOSEAP.Api.Services;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
@@ -16,11 +18,15 @@ namespace HandlerAgv.Service.Controllers
         private ILog dbgLog = LogManager.GetLogger("Debug");
         private readonly ISqlSugarClient sqlSugarClient;
         private readonly RabbitMqService rabbitMqService;
+        private readonly DbConfigurationService dbConfiguration;
+        private readonly IMapper mapper;
 
-        public ApiController(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
+        public ApiController(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService, DbConfigurationService dbConfiguration, IMapper mapper)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.rabbitMqService = rabbitMqService;
+            this.dbConfiguration = dbConfiguration;
+            this.mapper = mapper;
         }
 
         /// <summary>
@@ -49,6 +55,7 @@ namespace HandlerAgv.Service.Controllers
         {
             var result = false;
             var message = string.Empty;
+            string command = "WAIT";
             try
             {
                 var task = sqlSugarClient.Queryable<HandlerAgvTask>().InSingle(request.TaskId);
@@ -56,39 +63,72 @@ namespace HandlerAgv.Service.Controllers
                 {
                     message = "EAP找不到任务";
                 }
-                EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMqService);
+                else
+                {
+                    var equipment = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(task.EquipmentId);
+                    MachineEstimatedService machineEstimatedService = new MachineEstimatedService(sqlSugarClient, mapper);
+                    var eqpVM = machineEstimatedService.GetEquipmentVmData(new List<HandlerEquipmentStatus> { equipment }).FirstOrDefault();
 
-                if (task.Status == AgvTaskStatus.AgvRequested)//AGV到达后首次请求
-                {
-                    task.Status = AgvTaskStatus.AgvArrived;
-                    task.AgvArriveTime = DateTime.Now;
-                    task.AgvId = request.AgvId;
-                    sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.AgvArriveTime, it.AgvId }).ExecuteCommand();
-                    clientService.MachineAgvLock(task.EquipmentId);
-                    dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, AGV任务已到达，状态更新为{task.Status}, 发送锁定指令。");
-                    clientService.UpdateClientInfo(task.EquipmentId);
-                }
-                else if (task.Status == AgvTaskStatus.AgvArrived)//AGV到达后再次请求
-                {
-                    (result, message) = clientService.GetMachineLockState(task.EquipmentId);
-                    if (result)
+
+                    var cancelStates = (dbConfiguration.GetConfigurations("CancelProcessStates") ?? "ALARM_PAUSE").Split(',');
+
+                    EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMqService);
+                    (var lockstate, message, var processState) = clientService.GetMachineLockState(task.EquipmentId);
+
+                    if (
+                        //设备处于报警状态
+                        cancelStates.Contains(processState)
+                        //设备预计可上料时间大于5分钟
+                        || (eqpVM.InputTrayNumber > 0 && eqpVM.LoadEstimatedTime > DateTime.Now.AddMinutes(5))
+                        )
                     {
-                        dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
-                        task.Status = AgvTaskStatus.MachineReady;
-                        task.MachineReadyTime = DateTime.Now;
-                        task.AgvId = request.AgvId;
-                        sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.MachineReadyTime, it.AgvId }).ExecuteCommand();
-                        clientService.UpdateClientInfo(task.EquipmentId);
+                        dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}状态为{processState}，预计可上料时间为{((DateTime)eqpVM.LoadEstimatedTime - DateTime.Now).TotalMinutes.ToString("F2")}分钟后，需要AGV取消任务。");
+                        command = "CANCEL";
+                        if (task.AgvId != request.AgvId)
+                        {
+                            task.AgvArriveTime = DateTime.Now;
+                            task.AgvId = request.AgvId;
+                            sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.AgvArriveTime, it.AgvId }).ExecuteCommand();
+                        }                
                     }
-                    else
+                    else//如果设备状态不需要取消，则继续执行AGV到达逻辑
                     {
-                        dbgLog.Info($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}还未锁定，稍后再试。");
-                        clientService.MachineAgvLock(task.EquipmentId);
+                        if (task.Status == AgvTaskStatus.AgvRequested)//AGV到达后首次请求
+                        {
+                            task.Status = AgvTaskStatus.AgvArrived;
+                            task.AgvArriveTime = DateTime.Now;
+                            task.AgvId = request.AgvId;
+                            sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.AgvArriveTime, it.AgvId }).ExecuteCommand();
+                            clientService.MachineAgvLock(task.EquipmentId);
+                            command = "WAIT";
+                            dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, AGV任务已到达，状态更新为{task.Status}, 发送锁定指令。");
+                            clientService.UpdateClientInfo(task.EquipmentId);
+                        }
+                        else if (task.Status == AgvTaskStatus.AgvArrived)//AGV到达后再次请求
+                        {
+                            if (lockstate)
+                            {
+                                dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
+                                task.Status = AgvTaskStatus.MachineReady;
+                                task.MachineReadyTime = DateTime.Now;
+                                task.AgvId = request.AgvId;
+                                sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.MachineReadyTime, it.AgvId }).ExecuteCommand();
+                                clientService.UpdateClientInfo(task.EquipmentId);
+                                command = "READY";
+                            }
+                            else
+                            {
+                                dbgLog.Info($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}还未锁定，稍后再试。");
+                                clientService.MachineAgvLock(task.EquipmentId);
+                                command = "WAIT";
+                            }
+                        }
+                        else if (task.Status == AgvTaskStatus.MachineReady)
+                        {
+                            result = true;
+                            command = "READY";
+                        }
                     }
-                }
-                else if (task.Status == AgvTaskStatus.MachineReady)
-                {
-                    result = true;
                 }
 
             }
@@ -96,9 +136,10 @@ namespace HandlerAgv.Service.Controllers
             {
                 dbgLog.Error($"GetEquipmentState: {request.TaskId}, Error: {ex.Message}");
                 message = "EAP异常.";
+                command = "WAIT";
             }
-            dbgLog.Info($"GetEquipmentState: {request.TaskId}, {result}, {message}");
-            return Json(new { Result = result, Message = message });
+            dbgLog.Info($"GetEquipmentState: {request.TaskId}, {result},{command}, {message}");
+            return Json(new GetEquipmentStateResponse { Result = result, Message = message, Command = command });
         }
 
 
@@ -133,7 +174,7 @@ namespace HandlerAgv.Service.Controllers
                         {
                             machine.InputTrayNumber = request.LotLayers ?? 0;
                             machine.CurrentLot = request.InputLot;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber ,it.CurrentLot}).ExecuteCommand();
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {request.LotLayers}, 当前Lot {request.InputLot}");
                         }
                         else if (task.Type == AgvTaskType.Output)
