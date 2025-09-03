@@ -49,6 +49,10 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                     // 判断ReportID
                     if (reportId.Length == 2)
                     {
+                        // 两位数ReportID，取第一位
+                        string index = reportId.Substring(0, 1);
+                        subEQID = subEqDict.TryGetValue(index, out var eqid) ? eqid : "Unknown";
+
                         if (name.Contains("Status"))
                         {
                             var mappedStatus = statusDict.ContainsKey(item.Value.ToUpper()) ? statusDict[item.Value.ToUpper()] : "Unknown";
