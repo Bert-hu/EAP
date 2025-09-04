@@ -43,6 +43,8 @@ namespace EAP.Client.Forms
         string currentLot = string.Empty;
         string materialName = string.Empty;
         string groupName = string.Empty;
+        string agvInventory = string.Empty;
+        string stockerInventory = string.Empty;
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -145,6 +147,32 @@ namespace EAP.Client.Forms
                 this.Invoke(new Action(() =>
                 {
                     uiTextBox_groupName.Text = groupName;
+                }));
+            }
+        }
+
+        public string AgvInventory
+        {
+            get { return agvInventory; }
+            set
+            {
+                agvInventory = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLedLabel_agvInventory.Text = agvInventory;
+                }));
+            }
+        }
+
+        public string StockerInventory
+        {
+            get { return stockerInventory; }
+            set
+            {
+                stockerInventory = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLedLabel_stockerInventory.Text = stockerInventory;
                 }));
             }
         }
@@ -424,6 +452,9 @@ namespace EAP.Client.Forms
                         CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"]?.ToString() : string.Empty;
                         MaterialName = info.Parameters.ContainsKey("MaterialName") ? info.Parameters["MaterialName"]?.ToString() : string.Empty;
                         GroupName = info.Parameters.ContainsKey("GroupName") ? info.Parameters["GroupName"]?.ToString() : string.Empty;
+                        AgvInventory = info.Parameters.ContainsKey("AgvInventory") ? info.Parameters["AgvInventory"].ToString() : "未知";
+                        StockerInventory = info.Parameters.ContainsKey("StockInventory") ? info.Parameters["StockInventory"].ToString() : "未知";
+
                     }
                 }
                 else
@@ -915,6 +946,11 @@ namespace EAP.Client.Forms
         private async void uiButton_refresh_Click(object sender, EventArgs e)
         {
             await Task.Run(() => GetMachineInfo());
+        }
+
+        private void uiCheckBox_agvLocked_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

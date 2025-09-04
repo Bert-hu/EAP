@@ -56,6 +56,14 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 {
                     MainForm.Instance.MaterialName = materialName?.ToString();
                 }
+                if (trans?.Parameters.TryGetValue("AgvInventory", out object agvInventory) ?? false)
+                {
+                    MainForm.Instance.AgvInventory = agvInventory?.ToString();
+                }
+                if (trans?.Parameters.TryGetValue("StockInventory", out object stockerInventory) ?? false)
+                {
+                    MainForm.Instance.StockerInventory = stockerInventory?.ToString();
+                }
             }
             catch (Exception ex)
             {

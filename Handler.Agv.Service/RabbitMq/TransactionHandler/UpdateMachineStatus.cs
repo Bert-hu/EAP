@@ -25,12 +25,15 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>().InSingle(trans.EquipmentID);
                 if (machine != null && trans.Parameters.ContainsKey("Status"))
                 {
-                    var status = trans.Parameters["Status"].ToString();
-                    machine.ProcessState = status;
-                    machine.UpdateTime = DateTime.Now;
-                    await sqlSugarClient.Updateable(machine)
-                        .UpdateColumns(it => new { it.ProcessState,it.UpdateTime })
-                        .ExecuteCommandAsync();
+                    var status = trans.Parameters["Status"]?.ToString();
+                    if (!string.IsNullOrEmpty(status))
+                    {
+                        machine.ProcessState = status;
+                        machine.UpdateTime = DateTime.Now;
+                        await sqlSugarClient.Updateable(machine)
+                            .UpdateColumns(it => new { it.ProcessState, it.UpdateTime })
+                            .ExecuteCommandAsync();
+                    }              
                 }
             }
             catch (Exception ex)
