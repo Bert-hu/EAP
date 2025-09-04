@@ -41,7 +41,7 @@ namespace HandlerAgv.Service.ScheduledJob
                 machines = machines.Where(it => it.InputTrayNumber <= bufferTrayCount
                 && it.LoadEstimatedTime < DateTime.Now.AddSeconds(bufferTime)
                 && string.IsNullOrEmpty(it.CurrentTaskId)
-                && it.InputTrayNumber > 0
+                && it.InputTrayNumber >= 0
                 ).ToList();
 
                 AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration,rabbitMqService);
