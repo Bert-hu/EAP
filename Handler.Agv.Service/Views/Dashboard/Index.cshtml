@@ -413,32 +413,45 @@
             min-height: 0;
         }
 
-        .handler-card:hover {
-            border-color: #4cc9f0;
-            box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
-        }
+            .handler-card:hover {
+                border-color: #4cc9f0;
+                box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
+            }
 
+        /* AGV启用时的头部样式 */
         .handler-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
             flex-shrink: 0;
+            padding: 4px 6px;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+
+        .agv-active-header {
+            background-color: rgba(0, 255, 127, 0.2);
+            border: 1px solid rgba(0, 255, 127, 0.4);
         }
 
         .handler-name {
             color: #fff;
             font-size: clamp(0.8vw, 14px, 1vw);
+            font-weight: 500;
         }
 
         .handler-agv-status {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             align-self: center;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
 
         .agv-enabled {
             background-color: #00ff7f;
+            box-shadow: 0 0 6px rgba(0, 255, 127, 0.6);
         }
 
         .agv-disabled {
@@ -464,13 +477,34 @@
             flex-shrink: 0;
         }
 
-        .handler-stats {
+        /* 任务状态样式 - 有任务时更明显 */
+        .handler-task {
+            font-size: clamp(0.65vw, 11px, 0.75vw);
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 4px;
+            flex-shrink: 0;
+            word-break: break-word;
+            transition: all 0.3s ease;
+        }
+
+        .active-task {
+            color: #4cc9f0;
+            font-weight: 500;
+            text-shadow: 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+
+        /* 有任务的卡片添加边框高亮 */
+        .handler-card.has-task {
+            border-color: rgba(76, 201, 240, 0.7);
+        }
+
+        .handler-task-time {
+            font-size: clamp(0.6vw, 10px, 0.7vw);
+            color: rgba(150, 200, 255, 0.7);
             margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            font-size: clamp(0.7vw, 12px, 0.8vw);
             flex-shrink: 0;
         }
+
 
         .carousel-controls {
             position: absolute;
@@ -571,7 +605,6 @@
         }
     </style>
 
-    <link href="~/dashboard/dashboard.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Handler & AGV Dashboard</title>
 </head>
@@ -677,7 +710,7 @@
             <div class="section handler-section">
                 <div class="section-title">
                     <span>Handler设备状态</span>
-                    <span class="subtitle">共60台设备，当前显示第<span id="currentPageText">1</span>/4页</span>
+                    <span class="subtitle">共<span id="totalHandlers">0</span>台设备，当前显示第<span id="currentPageText">1</span>/<span id="totalPages">0</span>页</span>
                 </div>
                 <div class="handler-carousel" id="handlerCarousel">
                     <div class="handler-group" id="handlerGroup">
@@ -714,24 +747,28 @@
         const models = ['A系列', 'B系列', 'C系列', 'D系列', 'E系列', 'F系列', 'G系列'];
         const stations = ['站别1', '站别2', '站别3', '站别4', '站别5', '站别6'];
 
-        // 生成Handler数据 (60台设备)
-        const handlerData = [];
-        for (let i = 1; i <= 60; i++) {
-            const statuses = ['running', 'idle', 'error', 'maintenance'];
-            const status = statuses[Math.floor(Math.random() * statuses.length)];
-            const agvEnabled = Math.random() > 0.2; // 80%概率AGV功能开启
-            const model = models[Math.floor(Math.random() * models.length)];
-            const station = stations[Math.floor(Math.random() * stations.length)];
+        // Handler数据变量
+        let handlerData = [];
 
-            handlerData.push({
-                id: i,
-                model: model,
-                station: station,
-                status: status,
-                agvEnabled: agvEnabled,
-                input: Math.floor(Math.random() * 1000),
-                output: Math.floor(Math.random() * 1000)
-            });
+        // 从API获取Handler数据
+        async function getHandlerData() {
+            try {
+                const response = await fetch('./GetHandlerStatus', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('获取Handler数据失败:', error);
+                return null;
+            }
         }
 
         // 通过HTTP GET请求获取AGV数据
@@ -846,18 +883,18 @@
                 const card = document.createElement('div');
                 card.className = 'agv-card';
                 card.innerHTML = `
-                        <div class="agv-battery">
-                            <div class="battery-icon">
-                                <div class="battery-level ${batteryClass}" style="height: ${agv.battery}%"></div>
-                                <div class="battery-cap"></div>
+                            <div class="agv-battery">
+                                <div class="battery-icon">
+                                    <div class="battery-level ${batteryClass}" style="height: ${agv.battery}%"></div>
+                                    <div class="battery-cap"></div>
+                                </div>
+                                <div class="battery-percentage">${agv.battery}%</div>
                             </div>
-                            <div class="battery-percentage">${agv.battery}%</div>
-                        </div>
-                        <div class="agv-info">
-                            <div class="agv-name" title="${displayName}">${displayName}</div>
-                            <div class="agv-status ${statusClass}">${statusText}</div>
-                        </div>
-                    `;
+                            <div class="agv-info">
+                                <div class="agv-name" title="${displayName}">${displayName}</div>
+                                <div class="agv-status ${statusClass}">${statusText}</div>
+                            </div>
+                        `;
 
                 container.appendChild(card);
             });
@@ -865,12 +902,60 @@
 
         // 渲染Handler设备卡片
         let currentGroup = 0;
-        const devicesPerGroup = 15; // 每组显示15台设备（5列×3行），4组共60台
-        const totalGroups = Math.ceil(handlerData.length / devicesPerGroup);
+        const devicesPerGroup = 15; // 每组显示15台设备（5列×3行）
+        let totalGroups = 0;
+
+        // 转换processState为中文
+        function getProcessStateText(state) {
+            const stateMap = {
+                'IDLE': '空闲',
+                'SETUP': '设置中',
+                'READY': '准备就绪',
+                'EXECUTING': '运行中',
+                'PAUSE': '暂停',
+                'ALARM_PAUSE': '报警暂停',
+                'IDLE_WITH_ALARMS': '带报警空闲',
+                'Unknown': '未知状态'
+            };
+            return stateMap[state] || state;
+        }
+
+        // 转换processState为对应的样式类
+        function getProcessStateClass(state) {
+            const classMap = {
+                'IDLE': 'status-idle',
+                'SETUP': 'status-idle',
+                'READY': 'status-running',
+                'EXECUTING': 'status-running',
+                'PAUSE': 'status-idle',
+                'ALARM_PAUSE': 'status-error',
+                'IDLE_WITH_ALARMS': 'status-error',
+                'Unknown': 'status-unknown'
+            };
+            return classMap[state] || 'status-unknown';
+        }
+
+        // 转换currentTaskState为中文
+        function getTaskStateText(state) {
+            const stateMap = {
+                'AGV任务已请求': 'AGV任务已请求',
+                'AGV已到达': 'AGV已到达',
+                '设备已锁定进出料': '设备已锁定进出料',
+                'AGV手臂任务已完成': 'AGV手臂任务已完成',
+                '未知状态': '未知状态'
+            };
+            return stateMap[state] || state;
+        }
 
         function renderHandlerGroup(groupIndex) {
             const container = document.getElementById('handlerGroup');
             container.innerHTML = '';
+
+            // 如果没有数据
+            if (handlerData.length === 0) {
+                container.innerHTML = '<div class="error-message" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center;">没有Handler数据可供显示</div>';
+                return;
+            }
 
             // 更新当前页码显示
             document.getElementById('currentPageText').textContent = groupIndex + 1;
@@ -881,49 +966,57 @@
             const currentDevices = handlerData.slice(startIndex, endIndex);
 
             currentDevices.forEach(handler => {
-                // 确定状态文本和样式
-                let statusText = '';
-                let statusClass = '';
-                switch (handler.status) {
-                    case 'running':
-                        statusText = '运行中';
-                        statusClass = 'status-running';
-                        break;
-                    case 'idle':
-                        statusText = '空闲';
-                        statusClass = 'status-idle';
-                        break;
-                    case 'error':
-                        statusText = '故障';
-                        statusClass = 'status-error';
-                        break;
-                    case 'maintenance':
-                        statusText = '维护中';
-                        statusClass = 'status-error';
-                        break;
+                // 获取状态文本和样式
+                const processStateText = getProcessStateText(handler.processState);
+                const processStateClass = getProcessStateClass(handler.processState);
+                const taskStateText = getTaskStateText(handler.currentTaskState);
+                const hasTask = !!handler.currentTaskState && handler.currentTaskState !== 'none'; // 判断是否有任务
+
+                // 计算任务请求到现在的时间差
+                let taskTime = '无';
+                if (handler.currentTaskRequestTime) {
+                    const requestDate = new Date(handler.currentTaskRequestTime);
+                    const now = new Date();
+                    const diffMs = now - requestDate;
+
+                    // 转换为不同时间单位
+                    const diffSeconds = Math.floor(diffMs / 1000);
+                    const diffMinutes = Math.floor(diffSeconds / 60);
+                    const diffHours = Math.floor(diffMinutes / 60);
+                    const diffDays = Math.floor(diffHours / 24);
+
+                    // 根据时间差选择合适的显示单位
+                    if (diffDays > 0) {
+                        taskTime = `${diffDays}天前`;
+                    } else if (diffHours > 0) {
+                        taskTime = `${diffHours}小时前`;
+                    } else if (diffMinutes > 0) {
+                        taskTime = `${diffMinutes}分钟前`;
+                    } else {
+                        taskTime = `${diffSeconds}秒前`;
+                    }
                 }
 
                 const card = document.createElement('div');
-                card.className = 'handler-card';
+                card.className = `handler-card ${hasTask ? 'has-task' : ''}`;
                 card.innerHTML = `
-                        <div class="handler-header">
-                            <div class="handler-name">Handler-${handler.id}</div>
-                            <div class="handler-agv-status ${handler.agvEnabled ? 'agv-enabled' : 'agv-disabled'}"
-                                 title="${handler.agvEnabled ? 'AGV功能已开启' : 'AGV功能已关闭'}"></div>
-                        </div>
-                        <div class="handler-info">
-                            <div>${handler.model}</div>
-                            <div>${handler.station}</div>
-                        </div>
-                        <div class="handler-status ${statusClass}">${statusText}</div>
-                        <div class="handler-stats">
-                            <div>Input: ${handler.input}</div>
-                            <div>Output: ${handler.output}</div>
-                        </div>
-                    `;
+                <div class="handler-header ${handler.agvEnabled ? 'agv-active-header' : ''}">
+                    <div class="handler-name">Handler-${handler.id}</div>
+                    <div class="handler-agv-status ${handler.agvEnabled ? 'agv-enabled' : 'agv-disabled'}"
+                         title="${handler.agvEnabled ? 'AGV功能已开启' : 'AGV功能已关闭'}"></div>
+                </div>
+                <div class="handler-info">
+                    <div>${handler.materialName || 'N/A'}</div>
+                    <div>${handler.groupName || 'N/A'}</div>
+                </div>
+                <div class="handler-status ${processStateClass}">${processStateText}</div>
+                <div class="handler-task ${hasTask ? 'active-task' : ''}">任务状态: ${taskStateText}</div>
+                <div class="handler-task-time">任务请求时间: ${taskTime}</div>
+            `;
 
                 container.appendChild(card);
             });
+
 
             // 更新指示器状态
             updateGroupIndicators(groupIndex);
@@ -948,6 +1041,8 @@
         // 初始化分组指示器
         function initGroupIndicators() {
             const container = document.getElementById('groupIndicators');
+            container.innerHTML = '';
+
             for (let i = 0; i < totalGroups; i++) {
                 const indicator = document.createElement('div');
                 indicator.className = `group-indicator ${i === 0 ? 'active' : ''}`;
@@ -969,12 +1064,12 @@
             // 如果没有数据或数据为空
             if (!inventoryStats || inventoryStats.length === 0) {
                 tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #ff4500;">
-                                未获取到库存数据或数据为空
-                            </td>
-                        </tr>
-                    `;
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #ff4500;">
+                                    未获取到库存数据或数据为空
+                                </td>
+                            </tr>
+                        `;
                 return;
             }
 
@@ -982,13 +1077,13 @@
             inventoryStats.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                        <td>${item.materialName || 'N/A'}</td>
-                        <td>${item.groupName || 'N/A'}</td>
-                        <td>${item.enableMachineCount}</td>
-                        <td>${item.agvQuantity}</td>
-                        <td>${item.stocker1Quantity}</td>
-                        <td>${item.stocker2Quantity}</td>
-                    `;
+                            <td>${item.materialName || 'N/A'}</td>
+                            <td>${item.groupName || 'N/A'}</td>
+                            <td>${item.enableMachineCount}</td>
+                            <td>${item.agvQuantity}</td>
+                            <td>${item.stocker1Quantity}</td>
+                            <td>${item.stocker2Quantity}</td>
+                        `;
                 tableBody.appendChild(row);
             });
         }
@@ -1012,68 +1107,199 @@
             return stats;
         }
 
+        //// 渲染任务统计图表
+        //function renderTaskStatsChart() {
+        //    const stats = generateTaskStats();
+        //    const ctx = document.getElementById('taskStatsChart').getContext('2d');
+
+        //    // 准备图表数据
+        //    const dates = stats.map(item => item.date);
+        //    const loadingData = stats.map(item => item.loading);
+        //    const unloadingData = stats.map(item => item.unloading);
+
+        //    new Chart(ctx, {
+        //        type: 'bar',
+        //        data: {
+        //            labels: dates,
+        //            datasets: [
+        //                {
+        //                    label: '上料任务',
+        //                    data: loadingData,
+        //                    backgroundColor: 'rgba(76, 201, 240, 0.7)',
+        //                    borderColor: 'rgba(76, 201, 240, 1)',
+        //                    borderWidth: 1
+        //                },
+        //                {
+        //                    label: '下料任务',
+        //                    data: unloadingData,
+        //                    backgroundColor: 'rgba(0, 255, 127, 0.7)',
+        //                    borderColor: 'rgba(0, 255, 127, 1)',
+        //                    borderWidth: 1
+        //                }
+        //            ]
+        //        },
+        //        options: {
+        //            responsive: true,
+        //            maintainAspectRatio: false,
+        //            scales: {
+        //                x: {
+        //                    grid: {
+        //                        color: 'rgba(255, 255, 255, 0.1)'
+        //                    },
+        //                    ticks: {
+        //                        color: 'rgba(255, 255, 255, 0.7)'
+        //                    }
+        //                },
+        //                y: {
+        //                    beginAtZero: true,
+        //                    grid: {
+        //                        color: 'rgba(255, 255, 255, 0.1)'
+        //                    },
+        //                    ticks: {
+        //                        color: 'rgba(255, 255, 255, 0.7)'
+        //                    }
+        //                }
+        //            },
+        //            plugins: {
+        //                legend: {
+        //                    labels: {
+        //                        color: 'rgba(255, 255, 255, 0.9)'
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    });
+        //}
         // 渲染任务统计图表
-        function renderTaskStatsChart() {
-            const stats = generateTaskStats();
-            const ctx = document.getElementById('taskStatsChart').getContext('2d');
+        async function renderTaskStatsChart() {
+            try {
+                // 从API获取数据
+                const response = await fetch('./GetTaskStats');
+                const stats = await response.json();
+                console.log(stats);
+                // 确保数据按日期排序（假设API返回的是无序的）
+                stats.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            // 准备图表数据
-            const dates = stats.map(item => item.date);
-            const loadingData = stats.map(item => item.loading);
-            const unloadingData = stats.map(item => item.unloading);
+                const ctx = document.getElementById('taskstatschart');
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: dates,
-                    datasets: [
-                        {
-                            label: '上料任务',
-                            data: loadingData,
-                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
-                            borderColor: 'rgba(76, 201, 240, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: '下料任务',
-                            data: unloadingData,
-                            backgroundColor: 'rgba(0, 255, 127, 0.7)',
-                            borderColor: 'rgba(0, 255, 127, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
+                // 准备图表数据
+                const dates = stats.map(item => {
+                    const date = new Date(item.date);
+                    return `${date.getMonth() + 1}/${date.getDate()}`; // 格式化日期为月/日
+                });
+                const countData = stats.map(item => item.count);
+                const successRateData = stats.map(item => item.successRate);
+                console.log(dates);
+                console.log(countData);
+                console.log(successRateData);
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            {
+                                label: '任务数量',
+                                data: countData,
+                                backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                                borderColor: 'rgba(76, 201, 240, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y' // 使用左侧Y轴
                             },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                            {
+                                label: '成功率 (%)',
+                                data: successRateData,
+                                type: 'line', // 指定为折线图
+                                fill: false,
+                                borderColor: 'rgba(255, 215, 0, 1)',
+                                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                                tension: 0.1,
+                                yAxisID: 'y1' // 使用右侧Y轴
                             }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
-                        }
+                        ]
                     },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: 'rgba(255, 255, 255, 0.9)'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: '任务数量',
+                                    color: 'rgba(255, 255, 255, 0.9)'
+                                },
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: '成功率 (%)',
+                                    color: 'rgba(255, 215, 0, 0.9)'
+                                },
+                                beginAtZero: true,
+                                max: 100, // 成功率最大值为100%
+                                grid: {
+                                    drawOnChartArea: false // 不在图表区域绘制网格线
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 215, 0, 0.7)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'rgba(255, 255, 255, 0.9)'
+                                }
                             }
                         }
                     }
+                });
+            } catch (error) {
+                console.error('获取任务统计数据失败:', error);
+            }
+        }
+
+       
+
+        // 更新Handler数据
+        async function updateHandlerData() {
+            const newData = await getHandlerData();
+            if (newData && Array.isArray(newData)) {
+                handlerData = newData;
+                totalGroups = Math.ceil(handlerData.length / devicesPerGroup);
+
+                // 更新总设备数和总页数显示
+                document.getElementById('totalHandlers').textContent = handlerData.length;
+                document.getElementById('totalPages').textContent = totalGroups;
+
+                // 确保当前组索引有效
+                if (currentGroup >= totalGroups) {
+                    currentGroup = Math.max(0, totalGroups - 1);
                 }
-            });
+
+                renderHandlerGroup(currentGroup);
+                initGroupIndicators();
+            }
         }
 
         // 初始化页面
@@ -1081,19 +1307,22 @@
             // 先加载AGV数据
             await renderAGVCards();
 
+            // 加载Handler数据
+            await updateHandlerData();
+
             // 初始化其他组件
-            initGroupIndicators();
-            renderHandlerGroup(0);
             await renderInventoryStats(); // 使用await确保库存数据加载完成
             renderTaskStatsChart();
 
             // 绑定轮播控制事件
             document.getElementById('prevGroup').addEventListener('click', () => {
+                if (totalGroups === 0) return;
                 currentGroup = (currentGroup - 1 + totalGroups) % totalGroups;
                 renderHandlerGroup(currentGroup);
             });
 
             document.getElementById('nextGroup').addEventListener('click', () => {
+                if (totalGroups === 0) return;
                 currentGroup = (currentGroup + 1) % totalGroups;
                 renderHandlerGroup(currentGroup);
             });
@@ -1106,17 +1335,8 @@
                 // 更新库存数据
                 await renderInventoryStats();
 
-                // 随机更新部分Handler数据
-                const randomHandlerIndex = Math.floor(Math.random() * handlerData.length);
-                handlerData[randomHandlerIndex].input += Math.floor(Math.random() * 10);
-                handlerData[randomHandlerIndex].output += Math.floor(Math.random() * 10);
-                if (Math.random() > 0.7) {
-                    const statuses = ['running', 'idle', 'error', 'maintenance'];
-                    handlerData[randomHandlerIndex].status = statuses[Math.floor(Math.random() * statuses.length)];
-                }
-
-                // 更新当前显示页的Handler数据
-                renderHandlerGroup(currentGroup);
+                // 更新Handler数据
+                await updateHandlerData();
             }, 5000); // 每5秒更新一次
         }
 

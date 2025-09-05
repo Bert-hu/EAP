@@ -133,7 +133,7 @@ namespace HandlerAgv.Service.Services
             }
         }
 
-        public void MachineAgvUnlock(string equipmentId)
+        public bool MachineAgvUnlock(string equipmentId)
         {
             try
             {
@@ -149,15 +149,18 @@ namespace HandlerAgv.Service.Services
                     var result = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
                     var message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "";
                     dbgLog.Info($"MachineAgvUnlock: {equipmentId}, Result: {result}, Message: {message}");
+                    return result;
                 }
                 else
                 {
                     dbgLog.Warn($"MachineAgvUnlock: {equipmentId} - No reply received or timeout.");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 dbgLog.Error(ex.ToString());
+                return false;
             }
         }
 

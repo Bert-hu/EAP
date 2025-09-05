@@ -36,7 +36,7 @@ namespace HandlerAgv.Service.ScheduledJob
                  .Where(t => taskIds.Contains(t.ID))
                  .ToList();
 
-                    tasks = tasks.Where(t => t.Status == AgvTaskStatus.AgvRobotFinished || t.Status == AgvTaskStatus.AgvRobotAbnormal).ToList();
+                    tasks = tasks.Where(t => t.Status == AgvTaskStatus.AgvRobotFinished || t.Status == AgvTaskStatus.AgvRobotAbnormal || t.Status == AgvTaskStatus.Completed || t.Status == AgvTaskStatus.AbnormalEnd).ToList();
                     EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMqService);
 
                     foreach (var task in tasks)
@@ -49,7 +49,7 @@ namespace HandlerAgv.Service.ScheduledJob
                                 var machine = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
                                     .Where(it => it.Id == task.EquipmentId)
                                     .First();
-                                if (task.Status == AgvTaskStatus.AgvRobotAbnormal)
+                                if (task.Status == AgvTaskStatus.AgvRobotAbnormal || task.Status == AgvTaskStatus.AbnormalEnd)
                                 {
                                     Log.Info($"AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁，状态更新为AbnormalEnd。");
                                     task.Status = AgvTaskStatus.AbnormalEnd;
@@ -60,7 +60,7 @@ namespace HandlerAgv.Service.ScheduledJob
                                     sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommand();
                                     clientService.UpdateClientInfo(task.EquipmentId);
                                 }
-                                else if (task.Status == AgvTaskStatus.AgvRobotFinished)
+                                else if (task.Status == AgvTaskStatus.AgvRobotFinished || task.Status == AgvTaskStatus.Completed)
                                 {
                                     Log.Info($"AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁成功，状态更新为Completed。");
                                     task.Status = AgvTaskStatus.Completed;
