@@ -45,7 +45,7 @@ namespace HandlerAgv.Service.ScheduledJob
                 && it.InputTrayNumber >= 0
                 ).ToList();
 
-                AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration,rabbitMqService);
+                AgvApiService agvApiService = new AgvApiService(sqlSugarClient, mapper, dbConfiguration, rabbitMqService);
 
                 foreach (var machine in machines)
                 {
@@ -58,10 +58,13 @@ namespace HandlerAgv.Service.ScheduledJob
 
                         if (isInputTrayFullAndEmpty || isInputTrayCTLow)
                         {
-                            agvApiService.SendInputOutputTask(machine);
-                            EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
-                            eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
-                        }                       
+                            (var result,var message) = agvApiService.SendInputOutputTask(machine).Result;
+                            if (result)
+                            {
+                                EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                                eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
+                            }                       
+                        }
                     }
                 }
             }
