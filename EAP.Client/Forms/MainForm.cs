@@ -40,11 +40,13 @@ namespace EAP.Client.Forms
         bool agvEnabled = false;
         bool agvLocked = false;
         string currentTaskState = "无AGV任务";
+        string currentTaskRequestTime = "请求时间: 无";
         string currentLot = string.Empty;
         string materialName = string.Empty;
         string groupName = string.Empty;
         string agvInventory = string.Empty;
         string stockerInventory = string.Empty;
+        bool loaderEmpty = false;
         public int InputTrayCount
         {
             get { return inputTrayCount; }
@@ -111,6 +113,18 @@ namespace EAP.Client.Forms
                 }));
             }
         }
+        public string CurrentTaskRequestTime
+        {
+            get { return currentTaskRequestTime; }
+            set
+            {
+                currentTaskRequestTime = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiLabel_taskRequestTime.Text = currentTaskRequestTime;
+                }));
+            }
+        }
 
         public string CurrentLot
         {
@@ -173,6 +187,19 @@ namespace EAP.Client.Forms
                 this.Invoke(new Action(() =>
                 {
                     uiLedLabel_stockerInventory.Text = stockerInventory;
+                }));
+            }
+        }
+
+        public bool LoaderEmpty
+        {
+            get { return loaderEmpty; }
+            set
+            {
+                loaderEmpty = value;
+                this.Invoke(new Action(() =>
+                {
+                    uiCheckBox_loaderEmpty.Checked = loaderEmpty;
                 }));
             }
         }
@@ -449,11 +476,13 @@ namespace EAP.Client.Forms
                         InputTrayCount = info.Parameters.ContainsKey("InputTrayCount") ? Convert.ToInt32(info.Parameters["InputTrayCount"]) : 0;
                         OutputTrayCount = info.Parameters.ContainsKey("OutputTrayCount") ? Convert.ToInt32(info.Parameters["OutputTrayCount"]) : 0;
                         CurrentTaskState = info.Parameters.ContainsKey("CurrentTaskState") ? info.Parameters["CurrentTaskState"].ToString() : "无AGV任务";
+                        CurrentTaskRequestTime = info.Parameters.ContainsKey("CurrentTaskRequestTime") ? info.Parameters["CurrentTaskRequestTime"].ToString() : "请求时间: 无";
                         CurrentLot = info.Parameters.ContainsKey("CurrentLot") ? info.Parameters["CurrentLot"]?.ToString() : string.Empty;
                         MaterialName = info.Parameters.ContainsKey("MaterialName") ? info.Parameters["MaterialName"]?.ToString() : string.Empty;
                         GroupName = info.Parameters.ContainsKey("GroupName") ? info.Parameters["GroupName"]?.ToString() : string.Empty;
                         AgvInventory = info.Parameters.ContainsKey("AgvInventory") ? info.Parameters["AgvInventory"].ToString() : "未知";
                         StockerInventory = info.Parameters.ContainsKey("StockInventory") ? info.Parameters["StockInventory"].ToString() : "未知";
+                        LoaderEmpty = info.Parameters.ContainsKey("LoaderEmpty") ? Convert.ToBoolean(info.Parameters["LoaderEmpty"]) : false;
 
                     }
                 }

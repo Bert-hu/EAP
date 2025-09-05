@@ -41,8 +41,11 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 {
                     MainForm.Instance.CurrentTaskState = currentTaskState.ToString();
                 }
-
-                if(trans?.Parameters.TryGetValue("CurrentLot", out object currentLot) ?? false)
+                if (trans?.Parameters.TryGetValue("CurrentTaskRequestTime", out object currentTaskRequestTime) ?? false)
+                {
+                    MainForm.Instance.CurrentTaskRequestTime =currentTaskRequestTime.ToString();
+                }
+                if (trans?.Parameters.TryGetValue("CurrentLot", out object currentLot) ?? false)
                 {
                     MainForm.Instance.CurrentLot = currentLot?.ToString();
                 }
@@ -63,6 +66,10 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 if (trans?.Parameters.TryGetValue("StockInventory", out object stockerInventory) ?? false)
                 {
                     MainForm.Instance.StockerInventory = stockerInventory?.ToString();
+                }
+                if (trans?.Parameters.TryGetValue("LoaderEmpty", out object loaderEmpty) ?? false)
+                {
+                    MainForm.Instance.LoaderEmpty = bool.Parse(loaderEmpty.ToString());
                 }
                 if (trans?.Parameters.TryGetValue("Message", out object message) ?? false)
                 {

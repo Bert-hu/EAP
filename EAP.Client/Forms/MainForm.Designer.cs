@@ -60,11 +60,13 @@ namespace EAP.Client.Forms
             uiCheckBox_agvLocked = new UICheckBox();
             uiButton_lockAgv = new UIButton();
             uiButton_unlockAgv = new UIButton();
+            uiCheckBox_loaderEmpty = new UICheckBox();
             inventoryGroup = new UIGroupBox();
             uiLabel_agvInventoryTitle = new UILabel();
             uiLedLabel_agvInventory = new UILedLabel();
             uiLedLabel_stockerInventory = new UILedLabel();
             uiLabel_stockerInventoryTitle = new UILabel();
+            uiLabel_taskRequestTime = new UILabel();
             logGroup = new UIGroupBox();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
@@ -300,7 +302,7 @@ namespace EAP.Client.Forms
             uiButton_sendInputTask.Location = new Point(15, 111);
             uiButton_sendInputTask.MinimumSize = new Size(1, 1);
             uiButton_sendInputTask.Name = "uiButton_sendInputTask";
-            uiButton_sendInputTask.Size = new Size(180, 40);
+            uiButton_sendInputTask.Size = new Size(149, 40);
             uiButton_sendInputTask.Style = UIStyle.Custom;
             uiButton_sendInputTask.TabIndex = 8;
             uiButton_sendInputTask.Text = "发送Input任务";
@@ -310,10 +312,10 @@ namespace EAP.Client.Forms
             // uiButton_sendOutputTask
             // 
             uiButton_sendOutputTask.Font = new Font("Microsoft YaHei UI", 10F);
-            uiButton_sendOutputTask.Location = new Point(205, 111);
+            uiButton_sendOutputTask.Location = new Point(181, 111);
             uiButton_sendOutputTask.MinimumSize = new Size(1, 1);
             uiButton_sendOutputTask.Name = "uiButton_sendOutputTask";
-            uiButton_sendOutputTask.Size = new Size(180, 40);
+            uiButton_sendOutputTask.Size = new Size(149, 40);
             uiButton_sendOutputTask.Style = UIStyle.Custom;
             uiButton_sendOutputTask.TabIndex = 8;
             uiButton_sendOutputTask.Text = "发送Output任务";
@@ -323,10 +325,10 @@ namespace EAP.Client.Forms
             // uiButton_sendInputOutputTask
             // 
             uiButton_sendInputOutputTask.Font = new Font("Microsoft YaHei UI", 10F);
-            uiButton_sendInputOutputTask.Location = new Point(395, 111);
+            uiButton_sendInputOutputTask.Location = new Point(351, 111);
             uiButton_sendInputOutputTask.MinimumSize = new Size(1, 1);
             uiButton_sendInputOutputTask.Name = "uiButton_sendInputOutputTask";
-            uiButton_sendInputOutputTask.Size = new Size(180, 40);
+            uiButton_sendInputOutputTask.Size = new Size(149, 40);
             uiButton_sendInputOutputTask.Style = UIStyle.Custom;
             uiButton_sendInputOutputTask.TabIndex = 8;
             uiButton_sendInputOutputTask.Text = "发送InputOutput任务";
@@ -337,9 +339,9 @@ namespace EAP.Client.Forms
             // 
             uiLabel_currenttaskState.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             uiLabel_currenttaskState.ForeColor = Color.FromArgb(46, 137, 255);
-            uiLabel_currenttaskState.Location = new Point(585, 111);
+            uiLabel_currenttaskState.Location = new Point(517, 111);
             uiLabel_currenttaskState.Name = "uiLabel_currenttaskState";
-            uiLabel_currenttaskState.Size = new Size(160, 40);
+            uiLabel_currenttaskState.Size = new Size(228, 40);
             uiLabel_currenttaskState.TabIndex = 9;
             uiLabel_currenttaskState.Text = "无AGV任务";
             uiLabel_currenttaskState.TextAlign = ContentAlignment.MiddleCenter;
@@ -353,6 +355,7 @@ namespace EAP.Client.Forms
             countAndLockGroup.Controls.Add(uiCheckBox_agvLocked);
             countAndLockGroup.Controls.Add(uiButton_lockAgv);
             countAndLockGroup.Controls.Add(uiButton_unlockAgv);
+            countAndLockGroup.Controls.Add(uiCheckBox_loaderEmpty);
             countAndLockGroup.FillColor = Color.White;
             countAndLockGroup.Font = new Font("Microsoft YaHei UI", 10F);
             countAndLockGroup.Location = new Point(20, 434);
@@ -429,13 +432,13 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvLocked.Font = new Font("Microsoft YaHei UI", 10F);
             uiCheckBox_agvLocked.ForeColor = Color.FromArgb(54, 59, 69);
-            uiCheckBox_agvLocked.Location = new Point(461, 43);
+            uiCheckBox_agvLocked.Location = new Point(461, 56);
             uiCheckBox_agvLocked.MinimumSize = new Size(1, 1);
             uiCheckBox_agvLocked.Name = "uiCheckBox_agvLocked";
             uiCheckBox_agvLocked.ReadOnly = true;
             uiCheckBox_agvLocked.Size = new Size(131, 25);
             uiCheckBox_agvLocked.TabIndex = 4;
-            uiCheckBox_agvLocked.Text = "锁定禁止进出盘";
+            uiCheckBox_agvLocked.Text = "锁定进出盘";
             uiCheckBox_agvLocked.CheckedChanged += uiCheckBox_agvLocked_CheckedChanged;
             // 
             // uiButton_lockAgv
@@ -484,6 +487,18 @@ namespace EAP.Client.Forms
             uiButton_unlockAgv.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
             uiButton_unlockAgv.Click += uiButton_unlockAgv_Click;
             // 
+            // uiCheckBox_loaderEmpty
+            // 
+            uiCheckBox_loaderEmpty.Font = new Font("Microsoft YaHei UI", 10F);
+            uiCheckBox_loaderEmpty.ForeColor = Color.FromArgb(54, 59, 69);
+            uiCheckBox_loaderEmpty.Location = new Point(461, 28);
+            uiCheckBox_loaderEmpty.MinimumSize = new Size(1, 1);
+            uiCheckBox_loaderEmpty.Name = "uiCheckBox_loaderEmpty";
+            uiCheckBox_loaderEmpty.ReadOnly = true;
+            uiCheckBox_loaderEmpty.Size = new Size(131, 25);
+            uiCheckBox_loaderEmpty.TabIndex = 11;
+            uiCheckBox_loaderEmpty.Text = "Loader为空";
+            // 
             // inventoryGroup
             // 
             inventoryGroup.Controls.Add(uiLabel_agvInventoryTitle);
@@ -498,6 +513,7 @@ namespace EAP.Client.Forms
             inventoryGroup.Controls.Add(uiButton_sendOutputTask);
             inventoryGroup.Controls.Add(uiLabel_currenttaskState);
             inventoryGroup.Controls.Add(uiButton_sendInputOutputTask);
+            inventoryGroup.Controls.Add(uiLabel_taskRequestTime);
             inventoryGroup.FillColor = Color.White;
             inventoryGroup.Font = new Font("Microsoft YaHei UI", 10F);
             inventoryGroup.Location = new Point(20, 105);
@@ -555,6 +571,17 @@ namespace EAP.Client.Forms
             uiLabel_stockerInventoryTitle.TabIndex = 17;
             uiLabel_stockerInventoryTitle.Text = "Stocker库存:";
             uiLabel_stockerInventoryTitle.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // uiLabel_taskRequestTime
+            // 
+            uiLabel_taskRequestTime.Font = new Font("Microsoft YaHei UI", 10F);
+            uiLabel_taskRequestTime.ForeColor = Color.FromArgb(54, 59, 69);
+            uiLabel_taskRequestTime.Location = new Point(517, 86);
+            uiLabel_taskRequestTime.Name = "uiLabel_taskRequestTime";
+            uiLabel_taskRequestTime.Size = new Size(228, 25);
+            uiLabel_taskRequestTime.TabIndex = 19;
+            uiLabel_taskRequestTime.Text = "请求时间: 无";
+            uiLabel_taskRequestTime.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // logGroup
             // 
@@ -662,5 +689,9 @@ namespace EAP.Client.Forms
         private UILedLabel uiLedLabel_agvInventory;
         private UILabel uiLabel_stockerInventoryTitle;
         private UILedLabel uiLedLabel_stockerInventory;
+
+        // 新增控件声明
+        private UICheckBox uiCheckBox_loaderEmpty;
+        private UILabel uiLabel_taskRequestTime;
     }
 }
