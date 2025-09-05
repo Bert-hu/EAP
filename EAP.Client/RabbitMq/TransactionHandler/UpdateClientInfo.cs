@@ -12,7 +12,7 @@ namespace EAP.Client.RabbitMq.TransactionHandler
     internal class UpdateClientInfo : ITransactionHandler
     {
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
-
+        private readonly ILog traLog = LogManager.GetLogger("Trace");
 
         public UpdateClientInfo(RabbitMqService rabbitMq, ISecsGem secsGem)
         {
@@ -63,6 +63,10 @@ namespace EAP.Client.RabbitMq.TransactionHandler
                 if (trans?.Parameters.TryGetValue("StockInventory", out object stockerInventory) ?? false)
                 {
                     MainForm.Instance.StockerInventory = stockerInventory?.ToString();
+                }
+                if (trans?.Parameters.TryGetValue("Message", out object message) ?? false)
+                {
+                    traLog.Info($"Server Message: {message.ToString()}");
                 }
             }
             catch (Exception ex)

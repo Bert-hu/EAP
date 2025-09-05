@@ -60,7 +60,11 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         .ExecuteCommandAsync();
                 }
                 switch (eventName)
-                {               
+                {
+                    case "LoadLastPanel":
+                        machine.LoaderEmpty = true;
+                        await sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommandAsync();
+                        break;
                     default:
                         break;
                 }

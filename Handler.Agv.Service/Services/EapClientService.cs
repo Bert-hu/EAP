@@ -20,7 +20,7 @@ namespace HandlerAgv.Service.Services
             this.rabbitMqService = rabbitMqService;
         }
 
-        public void UpdateClientInfo(string equipmentId)
+        public void UpdateClientInfo(string equipmentId, string message = "")
         {
             try
             {
@@ -30,7 +30,7 @@ namespace HandlerAgv.Service.Services
                 if (equipment != null)
                 {
                     string currentTaskState = "未知状态";
-
+                    string taskRequestTime = "无";
                     if (!string.IsNullOrEmpty(equipment.CurrentTaskId))
                     {
                         var task = sqlSugarClient.Queryable<HandlerAgvTask>()
@@ -38,22 +38,24 @@ namespace HandlerAgv.Service.Services
                             .First();
                         if (task != null)
                         {
+                            taskRequestTime = ((DateTime)task.AgvRequestTime).ToString("M-d HH:mm");
+                            string taskType = task.Type.ToString();
                             switch (task.Status)
                             {
                                 case AgvTaskStatus.AgvRequested:
-                                    currentTaskState = "AGV任务已请求";
+                                    currentTaskState = taskType + " 任务已请求";
                                     break;
                                 case AgvTaskStatus.AgvArrived:
-                                    currentTaskState = "AGV已到达";
+                                    currentTaskState = taskType + " AGV已到达";
                                     break;
                                 case AgvTaskStatus.MachineReady:
-                                    currentTaskState = "设备已锁定进出料";
+                                    currentTaskState = taskType + " 设备已锁定";
                                     break;
                                 case AgvTaskStatus.AgvRobotFinished:
-                                    currentTaskState = "AGV手臂任务已完成";
+                                    currentTaskState = taskType + " 已完成";
                                     break;
                                 default:
-                                    currentTaskState = "未知状态";
+                                    currentTaskState = taskType + " 未知状态";
                                     break;
                             }
                         }
@@ -63,7 +65,6 @@ namespace HandlerAgv.Service.Services
                         currentTaskState = "无AGV任务";
                     }
 
-
                     var agvInventory = "未知";
                     var stockInventory = "未知";
                     var inventory = sqlSugarClient.Queryable<HandlerInventory>().Where(t => t.MaterialName == equipment.MaterialName && t.GroupName == equipment.GroupName).First();
@@ -72,7 +73,6 @@ namespace HandlerAgv.Service.Services
                         agvInventory = inventory.AgvQuantity == -1 ? "未知" : inventory.AgvQuantity.ToString();
                         stockInventory = (inventory.Stocker1Quantity + inventory.Stocker2Quantity).ToString();
                     }
-
 
                     var trans = new RabbitMqTransaction
                     {
@@ -85,13 +85,20 @@ namespace HandlerAgv.Service.Services
                                 { "OutputTrayCount", equipment.OutputTrayNumber },
                                 { "AgvEnabled" , equipment.AgvEnabled },
                                 { "CurrentTaskState", currentTaskState },
+                                { "CurrentTaskRequestTime", taskRequestTime },
                                 { "CurrentLot", equipment.CurrentLot },
                                 { "GroupName", equipment.GroupName },
                                 { "MaterialName", equipment.MaterialName },
                                 { "AgvInventory", agvInventory },
-                                { "StockInventory", stockInventory }
+                                { "StockInventory", stockInventory },
+                                { "LoaderEmpty", equipment.LoaderEmpty}
                             }
                     };
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        trans.Parameters.Add("Message", message);
+                    }
+
                     rabbitMqService.Produce("EAP.SecsClient." + equipmentId, trans);
                 }
                 else

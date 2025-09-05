@@ -42,5 +42,6 @@ namespace HandlerAgv.Service.Models.Database
         public string IP { get; set; } = string.Empty;
         public int InputTrayCT { get; set; } = 120;
         public int OutputTrayCT { get; set; } = 120;
+        public bool LoaderEmpty { get; set; } = false;
     }
 }

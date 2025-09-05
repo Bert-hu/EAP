@@ -53,7 +53,8 @@ namespace HandlerAgv.Service.Services
                 {
                     _ = QuartzUtil.AddJob<AgvCycleTimeUpdateJob>("AgvCycleTimeUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
                     _ = QuartzUtil.AddJob<AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
-                    _ = QuartzUtil.AddJob<AgvLockMachineJob>("AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
+                    //20250905 暂时注释掉，AGV对接请求时会发送锁定请求，此处不再需要定时任务执行锁定操作
+                    //_ = QuartzUtil.AddJob<AgvLockMachineJob>("AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     _ = QuartzUtil.AddJob<AgvUnlockMachineJob>("AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     _ = QuartzUtil.AddJob<AgvInventoryUpdateJob>("AgvInventoryUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, TimeSpan.FromSeconds(30), jobDataMap);
                 }

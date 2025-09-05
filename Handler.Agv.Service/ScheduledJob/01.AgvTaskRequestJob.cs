@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Quartz;
 using SqlSugar;
 using System.Configuration;
+using System.Diagnostics;
 using System.Text;
 
 namespace HandlerAgv.Service.ScheduledJob
@@ -50,7 +51,17 @@ namespace HandlerAgv.Service.ScheduledJob
                 {
                     if (machine.OutputTrayNumber > 0)
                     {
-                        agvApiService.SendInputOutputTask(machine);
+                        //条件1：入料口CT大于BufferTime，入料口盘数为0时，发送InputOutput任务
+                        var isInputTrayFullAndEmpty = (machine.InputTrayCT > bufferTime && machine.InputTrayNumber == 0);
+                        //条件2：入料口CT小于BufferTime，不用判断入料口盘数
+                        var isInputTrayCTLow = (machine.InputTrayCT < bufferTime);
+
+                        if (isInputTrayFullAndEmpty || isInputTrayCTLow)
+                        {
+                            agvApiService.SendInputOutputTask(machine);
+                            EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
+                            eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
+                        }                       
                     }
                 }
             }

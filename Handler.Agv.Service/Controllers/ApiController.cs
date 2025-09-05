@@ -99,35 +99,52 @@ namespace HandlerAgv.Service.Controllers
                             task.AgvArriveTime = DateTime.Now;
                             task.AgvId = request.AgvId;
                             sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.AgvArriveTime, it.AgvId }).ExecuteCommand();
-                            clientService.MachineAgvLock(task.EquipmentId);
-                            command = "WAIT";
-                            dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, AGV任务已到达，状态更新为{task.Status}, 发送锁定指令。");
-                            clientService.UpdateClientInfo(task.EquipmentId);
-                        }
-                        else if (task.Status == AgvTaskStatus.AgvArrived)//AGV到达后再次请求
-                        {
-                            if (lockstate)
+                            if (equipment.LoaderEmpty)
                             {
-                                dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
-                                task.Status = AgvTaskStatus.MachineReady;
-                                task.MachineReadyTime = DateTime.Now;
-                                task.AgvId = request.AgvId;
-                                sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.MachineReadyTime, it.AgvId }).ExecuteCommand();
-                                clientService.UpdateClientInfo(task.EquipmentId);
-                                result = true;
-                                command = "READY";
+                                clientService.MachineAgvLock(task.EquipmentId);
+                                command = "WAIT";
+                                dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, AGV已到达，检测到LoaderEmpty为{equipment.LoaderEmpty}，已发送锁定指令。");
                             }
                             else
                             {
-                                dbgLog.Info($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}还未锁定，稍后再试。");
-                                clientService.MachineAgvLock(task.EquipmentId);
                                 command = "WAIT";
+                                dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, AGV已到达，检测到LoaderEmpty为{equipment.LoaderEmpty}，暂不发送锁定指令。");
                             }
+                            clientService.UpdateClientInfo(task.EquipmentId, $"AGV{request.AgvId}已到达");
+                        }
+                        else if (task.Status == AgvTaskStatus.AgvArrived)//AGV到达后再次请求
+                        {
+                            if (equipment.LoaderEmpty)
+                            {
+                                if (lockstate)
+                                {
+                                    dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
+                                    task.Status = AgvTaskStatus.MachineReady;
+                                    task.MachineReadyTime = DateTime.Now;
+                                    task.AgvId = request.AgvId;
+                                    sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.MachineReadyTime, it.AgvId }).ExecuteCommand();
+                                    clientService.UpdateClientInfo(task.EquipmentId, $"检查到设备已锁定，运行AGV{request.AgvId}继续");
+                                    result = true;
+                                    command = "READY";
+                                }
+                                else
+                                {
+                                    dbgLog.Info($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}还未锁定，稍后再试。");
+                                    clientService.MachineAgvLock(task.EquipmentId);
+                                    command = "WAIT";
+                                }
+                            }
+                            else
+                            {
+                                dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 检测到LoaderEmpty为{equipment.LoaderEmpty}，暂不发送锁定指令。");
+                                command = "WAIT";
+                            }                               
                         }
                         else if (task.Status == AgvTaskStatus.MachineReady)
                         {
                             result = true;
                             command = "READY";
+                            clientService.UpdateClientInfo(task.EquipmentId, $"检查到设备已锁定，运行AGV{request.AgvId}继续");
                         }
                     }
                 }
@@ -175,9 +192,10 @@ namespace HandlerAgv.Service.Controllers
                         {
                             if (request.LotLayers == null) return Json(new { Result = false, Message = "缺少盘数信息" });
 
-                            machine.InputTrayNumber = (int)request.LotLayers - 1;
+                            machine.InputTrayNumber = (int)request.LotLayers;
                             machine.CurrentLot = request.InputLot;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot }).ExecuteCommand();
+                            machine.LoaderEmpty = false;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot, machine.LoaderEmpty }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}");
 
 
@@ -192,10 +210,11 @@ namespace HandlerAgv.Service.Controllers
                         {
                             if (request.LotLayers == null) return Json(new { Result = false, Message = "缺少盘数信息" });
 
-                            machine.InputTrayNumber = (int)request.LotLayers - 1;
+                            machine.InputTrayNumber = (int)request.LotLayers;
                             machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot }).ExecuteCommand();
+                            machine.LoaderEmpty = false;
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot, machine.LoaderEmpty }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}， 出料口盘数 0");
                         }
 
@@ -211,6 +230,7 @@ namespace HandlerAgv.Service.Controllers
                                 sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommand();
                             }
                         }
+                        clientService.UpdateClientInfo(task.EquipmentId, $"{task.Type.ToString()}任务{request.TaskId}已完成");
                     }
                     else if (request.Result == "Cancelled")
                     {
@@ -220,9 +240,8 @@ namespace HandlerAgv.Service.Controllers
 
                         clientService.MachineAgvUnlock(task.EquipmentId);
                         dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已取消，状态更新为AbnormalEnd。");
+                        clientService.UpdateClientInfo(task.EquipmentId, $"{task.Type.ToString()}任务{request.TaskId}已取消");
                     }
-
-                    clientService.UpdateClientInfo(task.EquipmentId);
                     result = true;
                 }
             }
