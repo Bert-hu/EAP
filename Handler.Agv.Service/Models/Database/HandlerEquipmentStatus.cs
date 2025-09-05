@@ -42,5 +42,7 @@ namespace HandlerAgv.Service.Models.Database
         public string IP { get; set; } = string.Empty;
         public int InputTrayCT { get; set; } = 120;
         public int OutputTrayCT { get; set; } = 120;
+        [SugarColumn(IsNullable = true, ColumnDescription = "入料口是否为空")]
+        public bool LoaderEmpty { get; set; } = false;
     }
 }

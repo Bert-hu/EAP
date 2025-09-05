@@ -90,7 +90,7 @@ namespace HandlerAgv.Service.Controllers
         {
             var count = sqlSugarClient.Updateable(data).UpdateColumns(it => new { it.AgvEnabled, it.MaterialName, it.GroupName, it.InputTrayNumber, it.OutputTrayNumber, it.CurrentTaskId }).ExecuteCommand();
             EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMQService); 
-            clientService.UpdateClientInfo(data.Id);
+            clientService.UpdateClientInfo(data.Id,$"数据在管理页面被更新");
             return new JsonResult(new { code = count == 1 });
 
         }

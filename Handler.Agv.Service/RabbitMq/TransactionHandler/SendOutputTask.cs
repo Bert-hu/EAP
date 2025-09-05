@@ -48,7 +48,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                                 repTrans.Parameters.Add("Message", "Output任务发送成功");
                                 dbgLog.Info($"Output任务发送成功： {machine.Id}");
                                 EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
-                                eapClient.UpdateClientInfo(trans.EquipmentID);
+                                eapClient.UpdateClientInfo(trans.EquipmentID, "Output任务发送成功");
                             }
                             else
                             {
