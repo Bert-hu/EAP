@@ -12,9 +12,16 @@
       "RUN": "Run",
       "ALARM": "ALARM",
       "INIT": "Idle"
+    },
+    "SubEquipment": {
+      "TesterName": "PT",
+      "TesterID": "1009",
+      "TesterStatus": "1011",
+      "SingleTesterOutPut": "1012",
+      "SingleTesterYield": "1013"
     }
   },
   "Others": {
-
+    
   }
 }
