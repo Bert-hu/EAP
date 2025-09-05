@@ -1,25 +1,584 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ch">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+        html, body {
+            background: #000d4a url('../images/dashboard/bg.jpg') center top;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Cambria';
+            font-weight: bold;
+            color: rgba(255, 255, 255, .7);
+            cursor: default;
+            overflow: hidden;
+        }
+
+        .header {
+            top: 0;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 7%;
+            background: url(../images/dashboard/head_bg.png) no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .header .logo {
+            background-image: url('../images/Logo/Logo_W_SMDi4_400x65_简.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 20%;
+            height: 100%;
+            float: left;
+            margin-top: 1vh;
+            margin-left: 1vw;
+        }
+
+        .header .title {
+            position: absolute;
+            width: 100%;
+            color: #fff;
+            text-align: center;
+            line-height: 8vh;
+            font-size: 3vw;
+        }
+
+        .header .controlbox {
+            position: absolute;
+            font-size: 1.5vw;
+            right: 1vw;
+            top: 1vh;
+            cursor: pointer;
+            color: rgba(64, 95, 168, 0.6);
+        }
+
+        .container {
+            width: 100%;
+            height: calc(100% - 7%);
+            padding: 1%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 1%;
+        }
+
+        .section {
+            background-color: rgba(10, 30, 68, 0.6);
+            border: 1px solid rgba(32, 110, 255, 0.3);
+            border-radius: 4px;
+            padding: 1%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .section-title {
+            color: #4cc9f0;
+            font-size: 1.2vw;
+            margin-bottom: 1%;
+            padding-left: 0.5%;
+            border-left: 3px solid #4cc9f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title .subtitle {
+            font-size: 0.9vw;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* 错误提示样式 */
+        .error-message {
+            color: #ff4500;
+            text-align: center;
+            padding: 20px;
+            font-size: 1vw;
+        }
+
+        /* AGV状态样式 - 调整为2行完整显示 */
+        .agv-section {
+            height: 25%;
+            min-height: 180px; /* 确保在小屏幕上有足够高度 */
+        }
+
+        .agv-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 自动适应列数 */
+            grid-template-rows: repeat(2, 1fr); /* 固定2行 */
+            gap: 1%;
+            height: calc(100% - 30px);
+            padding: 0.5%;
+            overflow-x: auto; /* 水平滚动 */
+            overflow-y: hidden; /* 禁止垂直滚动 */
+        }
+
+        /* 隐藏水平滚动条但保留滚动功能 */
+        .agv-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .agv-container::-webkit-scrollbar-track {
+            background: rgba(10, 30, 68, 0.6);
+            border-radius: 3px;
+        }
+
+        .agv-container::-webkit-scrollbar-thumb {
+            background: rgba(32, 110, 255, 0.5);
+            border-radius: 3px;
+        }
+
+        .agv-card {
+            background-color: rgba(10, 25, 60, 0.8);
+            border: 1px solid rgba(32, 110, 255, 0.5);
+            border-radius: 6px;
+            padding: 5%;
+            display: flex; /* 水平布局 */
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            height: 100%;
+            min-width: 150px; /* 确保卡片有最小宽度 */
+        }
+
+        .agv-card:hover {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
+        }
+
+        /* 电池区域 - 占卡片宽度的1/3 */
+        .agv-battery {
+            width: 33.333%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-right: 5%;
+            box-sizing: border-box;
+        }
+
+        .battery-icon {
+            width: 80%; /* 优化电池宽度 */
+            height: 60%; /* 电池高度占电量区域的60% */
+            border: 2px solid #4cc9f0;
+            border-radius: 4px;
+            position: relative;
+            min-height: 30px;
+            margin-bottom: 5%;
+        }
+
+        .battery-level {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            border-radius: 2px;
+            transition: height 0.5s ease;
+        }
+
+        .battery-high {
+            background-color: #00ff7f;
+        }
+
+        .battery-medium {
+            background-color: #ffd700;
+        }
+
+        .battery-low {
+            background-color: #ff4500;
+        }
+
+        .battery-charging {
+            background: linear-gradient(135deg, #4cc9f0 25%, transparent 25%) -10px 0, linear-gradient(225deg, #4cc9f0 25%, transparent 25%) -10px 0, linear-gradient(315deg, #4cc9f0 25%, transparent 25%), linear-gradient(45deg, #4cc9f0 25%, transparent 25%);
+            background-size: 20px 20px;
+            animation: charge 2s linear infinite;
+        }
+
+        @@keyframes charge {
+            0% {
+                background-position: 0 0, 0 0, 10px -10px, -10px 10px;
+            }
+
+            100% {
+                background-position: 10px -10px, -10px 10px, 20px 0, 0 20px;
+            }
+        }
+
+        .battery-cap {
+            position: absolute;
+            top: -6px;
+            right: 40%;
+            width: 20%;
+            height: 15%;
+            background-color: #4cc9f0;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .battery-percentage {
+            font-family: electronicFont;
+            font-size: clamp(0.9vw, 14px, 1.1vw);
+            color: #4cc9f0;
+            white-space: nowrap;
+        }
+
+        /* 名称和状态区域 - 占卡片宽度的2/3 */
+        .agv-info {
+            width: 66.666%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 5%;
+            box-sizing: border-box;
+        }
+
+        .agv-name {
+            font-size: clamp(0.8vw, 14px, 1vw);
+            color: #fff;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+            padding: 2px 0;
+        }
+
+        .agv-status {
+            font-size: clamp(0.7vw, 12px, 0.8vw);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .status-running {
+            background-color: rgba(0, 255, 127, 0.3);
+            color: #00ff7f;
+        }
+
+        .status-idle {
+            background-color: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+
+        .status-error {
+            background-color: rgba(255, 69, 0, 0.3);
+            color: #ff4500;
+        }
+
+        .status-charging {
+            background-color: rgba(76, 201, 240, 0.3);
+            color: #4cc9f0;
+        }
+
+        .status-unknown {
+            background-color: rgba(128, 128, 128, 0.3);
+            color: #cccccc;
+        }
+
+        /* 统计和Handler组合区域 */
+        .stats-handler-container {
+            display: flex;
+            gap: 1%;
+            height: 75%;
+            min-height: 0;
+        }
+
+        /* 设备统计和库存区域 - 固定表头实现 */
+        .stats-section {
+            width: 30%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1%;
+            min-height: 0;
+        }
+
+        .inventory-section {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* 优化后的表格容器 */
+        .inventory-table-container {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+        }
+
+        /* 优化滚动条样式 */
+        .inventory-table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .inventory-table-container::-webkit-scrollbar-track {
+            background: rgba(10, 30, 68, 0.3);
+            border-radius: 4px;
+        }
+
+        .inventory-table-container::-webkit-scrollbar-thumb {
+            background: rgba(32, 110, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .inventory-table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(76, 201, 240, 0.7);
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .inventory-table th,
+        .inventory-table td {
+            border: 1px solid rgba(32, 110, 255, 0.3);
+            padding: 8px 5px;
+            text-align: center;
+            font-size: clamp(0.7vw, 12px, 0.8vw);
+            white-space: nowrap;
+        }
+
+        .inventory-table th {
+            background-color: rgba(32, 110, 255, 0.2);
+            color: #4cc9f0;
+            height: 36px; /* 固定表头高度 */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: rgba(10, 25, 60, 0.3);
+        }
+
+        .inventory-table tr:hover {
+            background-color: rgba(76, 201, 240, 0.1);
+        }
+
+        /* 任务统计图表区域 */
+        .task-chart-section {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+
+        /* Handler设备样式 */
+        .handler-section {
+            width: 70%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .handler-carousel {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 0;
+        }
+
+        .handler-group {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: clamp(8px, 1vw, 12px);
+            height: 100%;
+            transition: transform 0.5s ease;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .handler-card {
+            background-color: rgba(10, 25, 60, 0.8);
+            border: 1px solid rgba(32, 110, 255, 0.5);
+            border-radius: 4px;
+            padding: clamp(6px, 0.8vw, 10px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            min-height: 0;
+        }
+
+        .handler-card:hover {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
+        }
+
+        .handler-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            flex-shrink: 0;
+        }
+
+        .handler-name {
+            color: #fff;
+            font-size: clamp(0.8vw, 14px, 1vw);
+        }
+
+        .handler-agv-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            align-self: center;
+        }
+
+        .agv-enabled {
+            background-color: #00ff7f;
+        }
+
+        .agv-disabled {
+            background-color: #444;
+        }
+
+        .handler-info {
+            font-size: clamp(0.7vw, 12px, 0.8vw);
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .handler-status {
+            font-size: clamp(0.7vw, 12px, 0.8vw);
+            padding: 2px 6px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 6px;
+            width: fit-content;
+            flex-shrink: 0;
+        }
+
+        .handler-stats {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.7vw, 12px, 0.8vw);
+            flex-shrink: 0;
+        }
+
+        .carousel-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .carousel-btn {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(10, 30, 68, 0.8);
+            border: 1px solid rgba(32, 110, 255, 0.5);
+            color: #4cc9f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background-color: rgba(76, 201, 240, 0.2);
+            border-color: #4cc9f0;
+        }
+
+        .group-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .group-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(32, 110, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .group-indicator.active {
+            background-color: #4cc9f0;
+            width: 20px;
+            border-radius: 5px;
+        }
+
+        /* 宽屏适配调整 */
+        @@media (min-width: 1920px) {
+            .handler-card {
+                padding: 10px;
+            }
+
+            .agv-card {
+                padding: 3% 2%;
+            }
+
+            .battery-icon {
+                min-height: 40px;
+            }
+        }
+
+        /* 超宽屏特殊处理 */
+        @@media (min-width: 2560px) {
+            .handler-group {
+                gap: 15px;
+            }
+
+            .agv-container {
+                gap: 1%;
+            }
+
+            .section {
+                padding: 15px;
+            }
+        }
+
+        /* 小屏幕适配 */
+        @@media (max-width: 1366px) {
+            .agv-name {
+                font-size: 10px;
+            }
+
+            .battery-percentage {
+                font-size: 12px;
+            }
+
+            .agv-status {
+                font-size: 9px;
+                padding: 1px 4px;
+            }
+        }
     </style>
-    <link href="~/layui/css/layui.css" rel="stylesheet" />
+
     <link href="~/dashboard/dashboard.css" rel="stylesheet" />
-    <title>Laser Power Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Handler & AGV Dashboard</title>
 </head>
 
 <body>
     <script>
         function showFullScreen() {
-
             /*判断是否全屏*/
             let isFullscreen = document.fullScreenElement//W3C
                 || document.msFullscreenElement //IE11
@@ -34,11 +593,12 @@
                 } else if (el.mozRequestFullScreen) {
                     el.mozRequestFullScreen();
                 } else if (el.webkitRequestFullscreen) {
-                    el.webkitRequestFullscreen();
+                    el.webkitRequestfullscreen();
                 } else if (el.msRequestFullscreen) {
                     el.msRequestFullscreen();
                 }
-                $("#fullScreen").removeClass("fa-expand").addClass("fa-compress");
+                document.getElementById("fullScreen").classList.remove("fa-expand");
+                document.getElementById("fullScreen").classList.add("fa-compress");
             }
             else {
                 if (document.exitFullscreen) {
@@ -50,368 +610,523 @@
                 } else if (document.webkitCancelFullScreen) {
                     document.webkitCancelFullScreen();
                 }
-                $("#fullScreen").removeClass("fa-compress").addClass("fa-expand");
+                document.getElementById("fullScreen").classList.remove("fa-compress");
+                document.getElementById("fullScreen").classList.add("fa-expand");
             }
         };
     </script>
     <div class="header">
         <div class="logo"> </div>
-        <div class="title"><span>Laser Power Dashboard</span></div>
-        <i id="fullScreen" class="layui-icon layui-icon-screen-full controlbox" onclick="showFullScreen()"></i>
-
+        <div class="title"><span>Handler & AGV Dashboard</span></div>
+        <i id="fullScreen" class="fas fa-expand controlbox" onclick="showFullScreen()"></i>
     </div>
 
-    <div class="box" style="  margin: 1vh;">
-        <form class="layui-form" action="">
+    <div class="container">
+        <!-- AGV状态显示区域 -->
+        <div class="section agv-section">
+            <div class="section-title">
+                <span>AGV状态监控</span>
+                <span class="subtitle">实时更新设备运行状态与电量信息</span>
+            </div>
+            <div class="agv-container" id="agvContainer">
+                <!-- AGV卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
 
-
-            <div class="layui-inline" style="display: flex; justify-content: center;">
-                <div class="layui-form-item">
-                    <select id="eqid" lay-filter="eqid">
-                        <!-- 选项可以在这里添加 -->
-                    </select>
+        <!-- 统计和Handler组合区域 -->
+        <div class="stats-handler-container">
+            <!-- 设备统计和库存区域 -->
+            <div class="stats-section">
+                <div class="section inventory-section">
+                    <div class="section-title">
+                        <span>设备开机数量与库存统计</span>
+                        <span class="subtitle">按机种与站别分类</span>
+                    </div>
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>机种</th>
+                                    <th>站别</th>
+                                    <th>开启设备数</th>
+                                    <th>AGV库存</th>
+                                    <th>一期Stocker</th>
+                                    <th>二期Stocker</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableContent">
+                                <!-- 库存数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-inline" id="range_datepick">
-                        <div class="layui-input-inline">
-                            <input type="text" autocomplete="off" id="datepick_start" class="layui-input" placeholder="开始日期">
-                        </div>
-                        <div class="layui-form-mid">00:00</div>
-                        <div class="layui-form-mid">-</div>
-                        <div class="layui-input-inline">
-                            <input type="text" autocomplete="off" id="datepick_end" class="layui-input" placeholder="结束日期">
-                        </div>
-                        <div class="layui-form-mid">00:00</div>
+
+                <!-- 任务统计图表区域 -->
+                <div class="section task-chart-section">
+                    <div class="section-title">
+                        <span>AGV上下料任务统计</span>
+                        <span class="subtitle">最近15天数据趋势</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="taskStatsChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="layui-inline" style="display: flex; justify-content: center;">
-                <div class="layui-form-item">
-                    <div class="layui-form-mid">下限</div>
-                    <div class="layui-input-inline">
-                        <input type="number" id="lower_limit" class="layui-input" placeholder="下限">
+            <!-- Handler设备状态显示区域 -->
+            <div class="section handler-section">
+                <div class="section-title">
+                    <span>Handler设备状态</span>
+                    <span class="subtitle">共60台设备，当前显示第<span id="currentPageText">1</span>/4页</span>
+                </div>
+                <div class="handler-carousel" id="handlerCarousel">
+                    <div class="handler-group" id="handlerGroup">
+                        <!-- Handler卡片将通过JavaScript动态生成 -->
                     </div>
-                    <div class="layui-form-mid">上限</div>
-                    <div class="layui-input-inline">
-                        <input type="number" id="upper_limit" class="layui-input" placeholder="上限">
+                </div>
+                <div class="group-indicators" id="groupIndicators">
+                    <!-- 分组指示器将通过JavaScript动态生成 -->
+                </div>
+                <div class="carousel-controls">
+                    <div class="carousel-btn" id="prevGroup">
+                        <i class="fas fa-chevron-left"></i>
                     </div>
-
-
-                    <div class="layui-btn-container" style="display: flex; justify-content: center; margin-top: 10px;">
-                        <button type="button" class="layui-btn layui-btn-sm" id="setLimits">设置</button>
-                        @* <button type="button" class="layui-btn layui-btn-sm" id="loaddata">加载数据</button> *@
-                        <button type="button" class="layui-btn layui-btn-sm" id="downloaddata">下载数据</button>
+                    <div class="carousel-btn" id="nextGroup">
+                        <i class="fas fa-chevron-right"></i>
                     </div>
                 </div>
             </div>
-        </form>
-
-
-
-        <div id="datachart" class="box" style=" margin: 1vh;"></div>
-
-        <div id="useageDatachart" class="box" style=" margin: 1vh;"></div>
-
+        </div>
     </div>
-    <script src="~/jquery-3.7.1.js"></script>
+
     <script src="~/echarts/echarts.js"></script>
     <script src="~/layui/layui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        $("#datepick_start").val("@DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd")");
-        $("#datepick_end").val("@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")");
         layui.use(['form', 'slider', 'laydate', 'element'], function () {
             var form = layui.form
                 , laydate = layui.laydate
                 , slider = layui.slider
                 , element = layui.element;
+        });
 
-            laydate.render({
-                elem: '#range_datepick',
-                range: ['#datepick_start', '#datepick_end'],
-                //rangeLinked: true,
-                max: '@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")',
-                done: function (value, date, endDate) {
-                    loadData(); // Load data when date range changes
-                }
+        // 定义机种和站别数据
+        const models = ['A系列', 'B系列', 'C系列', 'D系列', 'E系列', 'F系列', 'G系列'];
+        const stations = ['站别1', '站别2', '站别3', '站别4', '站别5', '站别6'];
+
+        // 生成Handler数据 (60台设备)
+        const handlerData = [];
+        for (let i = 1; i <= 60; i++) {
+            const statuses = ['running', 'idle', 'error', 'maintenance'];
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
+            const agvEnabled = Math.random() > 0.2; // 80%概率AGV功能开启
+            const model = models[Math.floor(Math.random() * models.length)];
+            const station = stations[Math.floor(Math.random() * stations.length)];
+
+            handlerData.push({
+                id: i,
+                model: model,
+                station: station,
+                status: status,
+                agvEnabled: agvEnabled,
+                input: Math.floor(Math.random() * 1000),
+                output: Math.floor(Math.random() * 1000)
             });
+        }
 
-
-            // $.post('/Dashboard/GetMachineList', {}, function (data) {
-            //     $("#eqid").empty();
-            //     for (var i = 0; i < data.length; i++) {
-            //         $("#eqid").append("<option value='" + data[i] + "'>" + data[i] + "</option>");
-            //     }
-            //     form.render();
-            //     loadData();
-            // });
-
-            $.post('/Dashboard/GetConfigs', {}, function (data) {
-                $("#eqid").empty();
-                for (var i = 0; i < data.eqids.length; i++) {
-                    $("#eqid").append("<option value='" + data.eqids[i] + "'>" + data.eqids[i] + "</option>");
-                }
-                //$("#lower_limit").val(data.lowerlimit);
-                //$("#upper_limit").val(data.upperlimit);
-
-                form.render();
-                loadData();
-            });
-
-            form.on('select(eqid)', function (data) {
-                loadData(); // Load data when equipment ID changes
-            });
-
-
-            $("#loaddata").click(function () {
-                loadData();
-
-            });
-
-            $("#setLimits").click(function () {
-                $.post('/Dashboard/SetLimits', {
-                    equipmentid: $("#eqid").val(),
-                    lowerlimit: $("#lower_limit").val(),
-                    upperlimit: $("#upper_limit").val()
-                }, function (data) {
-                    console.log(data);
-                    loadData();
+        // 通过HTTP GET请求获取AGV数据
+        async function getAgvData() {
+            try {
+                const response = await fetch('./GetAgvData', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
-            });//
 
-            function loadData() {
-                $.post('/Dashboard/GetData', {
-                    equipmentid: $("#eqid").val(),
-                    startTime: $("#datepick_start").val(),
-                    endTime: $("#datepick_end").val()
-                }, function (data) {
-                    $("#lower_limit").val(data.lowerlimit);
-                    $("#upper_limit").val(data.upperlimit);
-                    SetPowerChart(data.chartdata, data.lowerlimit, data.upperlimit,data.min,data.max);
-                    SetUseageChart(data.useageChartData);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('获取AGV数据失败:', error);
+                // 显示错误信息
+                const container = document.getElementById('agvContainer');
+                container.innerHTML = `<div class="error-message">获取AGV数据失败: ${error.message}</div>`;
+                return null;
+            }
+        }
+
+        // 通过HTTP GET请求获取库存数据
+        async function getInventoryData() {
+            try {
+                const response = await fetch('./GetInventoryStatus', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('获取库存数据失败:', error);
+                // 返回空数组而不是null，避免页面崩溃
+                return [];
+            }
+        }
+
+        // 渲染AGV状态卡片
+        async function renderAGVCards() {
+            const container = document.getElementById('agvContainer');
+            // 从API获取数据
+            const agvData = await getAgvData();
+
+            if (!agvData || !Array.isArray(agvData)) {
+                container.innerHTML = '<div class="error-message">未获取到有效的AGV数据</div>';
+                return;
+            }
+
+            // 清空容器
+            container.innerHTML = '';
+
+            // 如果没有数据
+            if (agvData.length === 0) {
+                container.innerHTML = '<div class="error-message">没有AGV数据可供显示</div>';
+                return;
+            }
+
+            agvData.forEach(agv => {
+                // 组合ID和昵称作为显示名称，如"10:机械臂AGV028"
+                const displayName = `${agv.id}:${agv.nickname}`;
+
+                // 确定电池级别和样式
+                let batteryClass = 'battery-high';
+                if (agv.battery < 50) batteryClass = 'battery-medium';
+                if (agv.battery < 20) batteryClass = 'battery-low';
+
+                // 充电状态特殊样式
+                if (agv.sys_state === 'CHARGING') {
+                    batteryClass = 'battery-charging';
+                }
+
+                // 确定状态文本和样式
+                let statusText = '';
+                let statusClass = '';
+                switch (agv.sys_state) {
+                    case 'EXECUTING':
+                        statusText = '运行中';
+                        statusClass = 'status-running';
+                        break;
+                    case 'IDLE':
+                        statusText = '空闲';
+                        statusClass = 'status-idle';
+                        break;
+                    case 'ERROR':
+                        statusText = '故障';
+                        statusClass = 'status-error';
+                        break;
+                    case 'CHARGING':
+                        statusText = '充电中';
+                        statusClass = 'status-charging';
+                        break;
+                    case 'UNKNOWN':
+                        statusText = '未知状态';
+                        statusClass = 'status-unknown';
+                        break;
+                    default:
+                        statusText = agv.sys_state;
+                        statusClass = 'status-unknown';
+                }
+
+                const card = document.createElement('div');
+                card.className = 'agv-card';
+                card.innerHTML = `
+                        <div class="agv-battery">
+                            <div class="battery-icon">
+                                <div class="battery-level ${batteryClass}" style="height: ${agv.battery}%"></div>
+                                <div class="battery-cap"></div>
+                            </div>
+                            <div class="battery-percentage">${agv.battery}%</div>
+                        </div>
+                        <div class="agv-info">
+                            <div class="agv-name" title="${displayName}">${displayName}</div>
+                            <div class="agv-status ${statusClass}">${statusText}</div>
+                        </div>
+                    `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // 渲染Handler设备卡片
+        let currentGroup = 0;
+        const devicesPerGroup = 15; // 每组显示15台设备（5列×3行），4组共60台
+        const totalGroups = Math.ceil(handlerData.length / devicesPerGroup);
+
+        function renderHandlerGroup(groupIndex) {
+            const container = document.getElementById('handlerGroup');
+            container.innerHTML = '';
+
+            // 更新当前页码显示
+            document.getElementById('currentPageText').textContent = groupIndex + 1;
+
+            // 计算当前组的设备范围
+            const startIndex = groupIndex * devicesPerGroup;
+            const endIndex = Math.min(startIndex + devicesPerGroup, handlerData.length);
+            const currentDevices = handlerData.slice(startIndex, endIndex);
+
+            currentDevices.forEach(handler => {
+                // 确定状态文本和样式
+                let statusText = '';
+                let statusClass = '';
+                switch (handler.status) {
+                    case 'running':
+                        statusText = '运行中';
+                        statusClass = 'status-running';
+                        break;
+                    case 'idle':
+                        statusText = '空闲';
+                        statusClass = 'status-idle';
+                        break;
+                    case 'error':
+                        statusText = '故障';
+                        statusClass = 'status-error';
+                        break;
+                    case 'maintenance':
+                        statusText = '维护中';
+                        statusClass = 'status-error';
+                        break;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'handler-card';
+                card.innerHTML = `
+                        <div class="handler-header">
+                            <div class="handler-name">Handler-${handler.id}</div>
+                            <div class="handler-agv-status ${handler.agvEnabled ? 'agv-enabled' : 'agv-disabled'}"
+                                 title="${handler.agvEnabled ? 'AGV功能已开启' : 'AGV功能已关闭'}"></div>
+                        </div>
+                        <div class="handler-info">
+                            <div>${handler.model}</div>
+                            <div>${handler.station}</div>
+                        </div>
+                        <div class="handler-status ${statusClass}">${statusText}</div>
+                        <div class="handler-stats">
+                            <div>Input: ${handler.input}</div>
+                            <div>Output: ${handler.output}</div>
+                        </div>
+                    `;
+
+                container.appendChild(card);
+            });
+
+            // 更新指示器状态
+            updateGroupIndicators(groupIndex);
+        }
+
+        // 更新分组指示器
+        function updateGroupIndicators(activeIndex) {
+            const container = document.getElementById('groupIndicators');
+            container.innerHTML = '';
+
+            for (let i = 0; i < totalGroups; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = `group-indicator ${i === activeIndex ? 'active' : ''}`;
+                indicator.addEventListener('click', () => {
+                    currentGroup = i;
+                    renderHandlerGroup(currentGroup);
+                });
+                container.appendChild(indicator);
+            }
+        }
+
+        // 初始化分组指示器
+        function initGroupIndicators() {
+            const container = document.getElementById('groupIndicators');
+            for (let i = 0; i < totalGroups; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = `group-indicator ${i === 0 ? 'active' : ''}`;
+                indicator.addEventListener('click', () => {
+                    currentGroup = i;
+                    renderHandlerGroup(currentGroup);
+                });
+                container.appendChild(indicator);
+            }
+        }
+
+        // 渲染库存统计表格
+        async function renderInventoryStats() {
+            // 从API获取库存数据
+            const inventoryStats = await getInventoryData();
+            const tableBody = document.getElementById('inventoryTableContent');
+            tableBody.innerHTML = '';
+
+            // 如果没有数据或数据为空
+            if (!inventoryStats || inventoryStats.length === 0) {
+                tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #ff4500;">
+                                未获取到库存数据或数据为空
+                            </td>
+                        </tr>
+                    `;
+                return;
+            }
+
+            // 使用API返回的数据填充表格
+            inventoryStats.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${item.materialName || 'N/A'}</td>
+                        <td>${item.groupName || 'N/A'}</td>
+                        <td>${item.enableMachineCount}</td>
+                        <td>${item.agvQuantity}</td>
+                        <td>${item.stocker1Quantity}</td>
+                        <td>${item.stocker2Quantity}</td>
+                    `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 生成最近15天的任务统计数据
+        function generateTaskStats() {
+            const stats = [];
+            const today = new Date();
+
+            for (let i = 14; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+
+                stats.push({
+                    date: `${date.getMonth() + 1}/${date.getDate()}`,
+                    loading: Math.floor(Math.random() * 50) + 10,  // 上料任务
+                    unloading: Math.floor(Math.random() * 50) + 5  // 下料任务
                 });
             }
 
-            function SetPowerChart(data, lowerlimit, upperlimit,minv,maxv) {
-                console.log(data);
-                var myChart = echarts.init(document.getElementById('datachart'));
+            return stats;
+        }
 
-                var option = {
-                    tooltip: {
-                        formatter: function (params) {
-                            if (params.seriesType === 'scatter') {
-                                return params.marker + params.value[1] + "<br />" + "Station: " + params.value[2] + "<br />" + "EventTime: " + params.value[0];
-                            } else if (params.seriesType === 'markLine') {
-                                return 'Limit: ' + params.value[1]; // 自定义 markLine 的 tooltip 显示内容
-                            }
-                            return '';
-                        },
-                        textStyle: {
-                            color: '#fff' // 设置tooltip文本颜色为白色
-                        }
-                    },
-                    xAxis: {
-                        type: 'time',
-                        splitNumber: 5,
-                        axisLabel: {
-                            show: true,
-                            color: '#fff' // 坐标轴标签颜色
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        nameTextStyle: {
-                            color: '#fff' // 坐标轴名称颜色
-                        }
-                    },
-                    yAxis: {
-                        min: minv, // 设置Y轴的最小值
-                        max: maxv,
-                        axisLabel: {
-                            color: '#fff' // 坐标轴标签颜色
-                        },
-                        nameTextStyle: {
-                            color: '#fff' // 坐标轴名称颜色
-                        }
-                    },
-                    series: [
+        // 渲染任务统计图表
+        function renderTaskStatsChart() {
+            const stats = generateTaskStats();
+            const ctx = document.getElementById('taskStatsChart').getContext('2d');
+
+            // 准备图表数据
+            const dates = stats.map(item => item.date);
+            const loadingData = stats.map(item => item.loading);
+            const unloadingData = stats.map(item => item.unloading);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [
                         {
-                            symbolSize: 10,
-                            data: data,
-                            type: 'scatter',
-                            legendHoverLink: true,
-                            hoverAnimation: true,
-                            emphasis: {
-                                label: {
-                                    show: true,
-                                    formatter: function (param) {
-                                        return param.data[1];
-                                    },
-                                    position: 'top'
-                                }
+                            label: '上料任务',
+                            data: loadingData,
+                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '下料任务',
+                            data: unloadingData,
+                            backgroundColor: 'rgba(0, 255, 127, 0.7)',
+                            borderColor: 'rgba(0, 255, 127, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
                             },
-                            markLine: {
-                                data: [
-                                    { yAxis: lowerlimit, lineStyle: { type: 'dashed' }, tooltip: { formatter: 'Lower Limit: ' + lowerlimit } }, // 上限虚线
-                                    { yAxis: upperlimit, lineStyle: { type: 'dashed' }, tooltip: { formatter: 'Upper Limit: ' + upperlimit } }  // 下限虚线
-                                ]
-                            }
-                        }
-                    ],
-                    dataZoom: [
-                        {
-                            type: 'slider', // 滑块类型的缩放
-                            xAxisIndex: [0], // 适用于第一个x轴
-                            start: 0, // 起始百分比
-                            end: 100, // 结束百分比
-                            handleSize: 10, // 手柄大小
-                            textStyle: {
-                                color: '#fff' // 文字颜色
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
                             }
                         },
-                        {
-                            type: 'inside', // 内部缩放
-                            xAxisIndex: [0],
-                            start: 0,
-                            end: 100
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
                         }
-                    ],
-                    // 设置全局文本颜色为白色
-                    textStyle: {
-                        color: '#fff' // 全局文本颜色
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.9)'
+                            }
+                        }
                     }
-                };
+                }
+            });
+        }
 
+        // 初始化页面
+        async function init() {
+            // 先加载AGV数据
+            await renderAGVCards();
 
+            // 初始化其他组件
+            initGroupIndicators();
+            renderHandlerGroup(0);
+            await renderInventoryStats(); // 使用await确保库存数据加载完成
+            renderTaskStatsChart();
 
-                myChart.setOption(option);
-
-            }
-
-            function SetUseageChart(data) {
-                console.log(data);
-                var myChart = echarts.init(document.getElementById('useageDatachart'));
-
-                var option = {
-                    tooltip: {
-                        formatter: function (params) {
-                            if (params.seriesType === 'scatter') {
-                                return params.marker + params.value[1] + "<br />" + "Station: " + params.value[2] + "<br />" + "EventTime: " + params.value[0];
-                            } else if (params.seriesType === 'markLine') {
-                                return 'Limit: ' + params.value[1]; // 自定义 markLine 的 tooltip 显示内容
-                            }
-                            return '';
-                        },
-                        textStyle: {
-                            color: '#fff' // 设置tooltip文本颜色为白色
-                        }
-                    },
-                    xAxis: {
-                        type: 'time',
-                        splitNumber: 5,
-                        axisLabel: {
-                            show: true,
-                            color: '#fff' // 坐标轴标签颜色
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        nameTextStyle: {
-                            color: '#fff' // 坐标轴名称颜色
-                        }
-                    },
-                    yAxis: {
-                        axisLabel: {
-                            color: '#fff' // 坐标轴标签颜色
-                        },
-                        nameTextStyle: {
-                            color: '#fff' // 坐标轴名称颜色
-                        }
-                    },
-                    series: [
-                        {
-                            symbolSize: 10,
-                            data: data,
-                            type: 'scatter',
-                            legendHoverLink: true,
-                            hoverAnimation: true,
-                            emphasis: {
-                                label: {
-                                    show: true,
-                                    formatter: function (param) {
-                                        return param.data[1];
-                                    },
-                                    position: 'top'
-                                }
-                            }
-                        }
-                    ],
-                    dataZoom: [
-                        {
-                            type: 'slider', // 滑块类型的缩放
-                            xAxisIndex: [0], // 适用于第一个x轴
-                            start: 0, // 起始百分比
-                            end: 100, // 结束百分比
-                            handleSize: 10, // 手柄大小
-                            textStyle: {
-                                color: '#fff' // 文字颜色
-                            }
-                        },
-                        {
-                            type: 'inside', // 内部缩放
-                            xAxisIndex: [0],
-                            start: 0,
-                            end: 100
-                        }
-                    ],
-                    // 设置全局文本颜色为白色
-                    textStyle: {
-                        color: '#fff' // 全局文本颜色
-                    }
-                };
-
-
-
-                myChart.setOption(option);
-
-            }
-
-            $("#downloaddata").click(function () {
-
-
-
-                var reqdata = {
-                    equipmentid: $("#eqid").val(),
-                    startTime: $("#datepick_start").val(),
-                    endTime: $("#datepick_end").val()
-                };
-                console.log(reqdata);
-                $.ajax({
-                    url: './DownloadData',
-                    type: 'POST',
-                    data: reqdata,
-                    xhr: function () {
-                        const xhr = new window.XMLHttpRequest();
-                        xhr.responseType = 'blob'; // 设置响应类型为 blob
-                        return xhr;
-                    },
-                    success: function (blob) {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = "data.xlsx";
-                        document.body.appendChild(a);
-                        a.click();
-                        a.remove();
-                        window.URL.revokeObjectURL(url);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('There was a problem with the request:', error);
-                        alert('Request failed: ' + error);
-                    }
-                });
+            // 绑定轮播控制事件
+            document.getElementById('prevGroup').addEventListener('click', () => {
+                currentGroup = (currentGroup - 1 + totalGroups) % totalGroups;
+                renderHandlerGroup(currentGroup);
             });
 
+            document.getElementById('nextGroup').addEventListener('click', () => {
+                currentGroup = (currentGroup + 1) % totalGroups;
+                renderHandlerGroup(currentGroup);
+            });
+
+            // 定时更新数据
+            setInterval(async () => {
+                // 更新AGV数据
+                await renderAGVCards();
+
+                // 更新库存数据
+                await renderInventoryStats();
+
+                // 随机更新部分Handler数据
+                const randomHandlerIndex = Math.floor(Math.random() * handlerData.length);
+                handlerData[randomHandlerIndex].input += Math.floor(Math.random() * 10);
+                handlerData[randomHandlerIndex].output += Math.floor(Math.random() * 10);
+                if (Math.random() > 0.7) {
+                    const statuses = ['running', 'idle', 'error', 'maintenance'];
+                    handlerData[randomHandlerIndex].status = statuses[Math.floor(Math.random() * statuses.length)];
+                }
+
+                // 更新当前显示页的Handler数据
+                renderHandlerGroup(currentGroup);
+            }, 5000); // 每5秒更新一次
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+
+        // 窗口大小变化时重新布局
+        window.addEventListener('resize', () => {
+            // 重新渲染当前页的Handler卡片以适应新尺寸
+            renderHandlerGroup(currentGroup);
         });
     </script>
 </body>

@@ -8,7 +8,7 @@ namespace HandlerAgv.Service.Models.ViewModel
     }
     public class AgvInfo
     {
-        public string id { get; set; }
+        public int id { get; set; }
         public string nickname { get; set; }
         public int battery { get; set; }
         /// <summary>

@@ -210,15 +210,15 @@ namespace HandlerAgv.Service.Services
             }
         }
 
-        public async Task<List<AgvStatus>?> GetAgvStatus()
+        public async Task<List<AgvInfo>?> GetAgvStatus()
         {
             try
             {
                 var agvApiUrl = dbConfiguration.GetConfigurations("AgvApiUrl")?.TrimEnd('/');
-                var method = "/api/v3/handler/status";
+                var method = "/fms/api/v2/vehicles";
                 //dbgLog.Info($"agv request:{agvApiUrl + method}");
-                var response = await HttpClientHelper.HttpGetRequestAsync<List<AgvStatus>>(agvApiUrl + method);
-                return response;
+                var response = await HttpClientHelper.HttpGetRequestAsync<AgvStatus>(agvApiUrl + method);
+                return response.vehicles;
             }
             catch (TaskCanceledException)
             {
