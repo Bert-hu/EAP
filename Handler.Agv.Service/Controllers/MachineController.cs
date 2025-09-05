@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HandlerAgv.Service.Models;
 using HandlerAgv.Service.Models.Database;
 using HandlerAgv.Service.Models.Inventory;
 using HandlerAgv.Service.Models.ViewModel;
+using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SqlServer.Server;
@@ -21,11 +22,13 @@ namespace HandlerAgv.Service.Controllers
     {
         private readonly ISqlSugarClient sqlSugarClient;
         private readonly IMapper mapper;
+        private readonly RabbitMqService rabbitMQService;
 
-        public MachineController(ISqlSugarClient sqlSugarClient, IMapper mapper)
+        public MachineController(ISqlSugarClient sqlSugarClient, IMapper mapper, RabbitMqService rabbitMQService)
         {
             this.sqlSugarClient = sqlSugarClient;
             this.mapper = mapper;
+            this.rabbitMQService = rabbitMQService;
         }
         [HttpGet]
         public IActionResult Index()
@@ -86,6 +89,8 @@ namespace HandlerAgv.Service.Controllers
         public JsonResult UpdateMachineData(HandlerEquipmentStatus data)
         {
             var count = sqlSugarClient.Updateable(data).UpdateColumns(it => new { it.AgvEnabled, it.MaterialName, it.GroupName, it.InputTrayNumber, it.OutputTrayNumber, it.CurrentTaskId }).ExecuteCommand();
+            EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMQService); 
+            clientService.UpdateClientInfo(data.Id);
             return new JsonResult(new { code = count == 1 });
 
         }

@@ -89,7 +89,7 @@ namespace HandlerAgv.Service.Controllers
                             task.AgvArriveTime = DateTime.Now;
                             task.AgvId = request.AgvId;
                             sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.AgvArriveTime, it.AgvId }).ExecuteCommand();
-                        }                
+                        }
                     }
                     else//如果设备状态不需要取消，则继续执行AGV到达逻辑
                     {
@@ -114,6 +114,7 @@ namespace HandlerAgv.Service.Controllers
                                 task.AgvId = request.AgvId;
                                 sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.MachineReadyTime, it.AgvId }).ExecuteCommand();
                                 clientService.UpdateClientInfo(task.EquipmentId);
+                                result = true;
                                 command = "READY";
                             }
                             else
@@ -172,10 +173,14 @@ namespace HandlerAgv.Service.Controllers
 
                         if (task.Type == AgvTaskType.Input)
                         {
-                            machine.InputTrayNumber = request.LotLayers ?? 0;
+                            if (request.LotLayers == null) return Json(new { Result = false, Message = "缺少盘数信息" });
+
+                            machine.InputTrayNumber = (int)request.LotLayers - 1;
                             machine.CurrentLot = request.InputLot;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot }).ExecuteCommand();
-                            dbgLog.Info($"{machine.Id} 更新上料口盘数 {request.LotLayers}, 当前Lot {request.InputLot}");
+                            dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}");
+
+
                         }
                         else if (task.Type == AgvTaskType.Output)
                         {
@@ -185,11 +190,13 @@ namespace HandlerAgv.Service.Controllers
                         }
                         else if (task.Type == AgvTaskType.InputOutput)
                         {
-                            machine.InputTrayNumber = request.LotLayers ?? 0;
+                            if (request.LotLayers == null) return Json(new { Result = false, Message = "缺少盘数信息" });
+
+                            machine.InputTrayNumber = (int)request.LotLayers - 1;
                             machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
                             sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot }).ExecuteCommand();
-                            dbgLog.Info($"{machine.Id} 更新上料口盘数 {request.LotLayers}, 当前Lot {request.InputLot}， 出料口盘数 0");
+                            dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}， 出料口盘数 0");
                         }
 
                     }
