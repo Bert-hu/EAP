@@ -7,5 +7,6 @@ namespace HandlerAgv.Service.Models.ViewModel
         public DateTime? LoadEstimatedTime { get; set; }
         public DateTime? UnloadEstimatedTime { get; set; }
         public string? CurrentTaskState { get; set; }
+        public DateTime? CurrentTaskRequestTime { get; set; }
     }
 }
