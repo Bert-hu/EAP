@@ -195,7 +195,7 @@ namespace HandlerAgv.Service.Controllers
                             machine.InputTrayNumber = (int)request.LotLayers;
                             machine.CurrentLot = request.InputLot;
                             machine.LoaderEmpty = false;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot, machine.LoaderEmpty }).ExecuteCommand();
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.CurrentLot, it.LoaderEmpty }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}");
 
 
@@ -214,7 +214,7 @@ namespace HandlerAgv.Service.Controllers
                             machine.CurrentLot = request.InputLot;
                             machine.OutputTrayNumber = 0;
                             machine.LoaderEmpty = false;
-                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot, machine.LoaderEmpty }).ExecuteCommand();
+                            sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.InputTrayNumber, it.OutputTrayNumber, it.CurrentLot, it.LoaderEmpty }).ExecuteCommand();
                             dbgLog.Info($"{machine.Id} 更新上料口盘数 {machine.InputTrayNumber}, 当前Lot {request.InputLot}， 出料口盘数 0");
                         }
 
