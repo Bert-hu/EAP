@@ -67,8 +67,13 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     case "LoadLastPanel":
                         machine.LoaderEmpty = true;
                         await sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommandAsync();
-                        EapClientService service = new EapClientService(sqlSugarClient,rabbitMqService);
-                        service.UpdateClientInfo(trans.EquipmentID,"最后一盘已下沉");
+                        EapClientService service = new EapClientService(sqlSugarClient, rabbitMqService);
+                        if (machine.IsValiad && machine.AgvEnabled)
+                        {
+                            service.MachineAgvLock(machine.Id);
+                            service.UpdateClientInfo(trans.EquipmentID, "最后一盘已下沉,检测AGV模式已开，提前锁定机器");
+                        }
+
                         break;
                     default:
                         break;
