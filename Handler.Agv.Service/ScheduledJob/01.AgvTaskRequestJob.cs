@@ -25,6 +25,7 @@ namespace HandlerAgv.Service.ScheduledJob
             var dbConfiguration = context.JobDetail.JobDataMap["dbConfiguration"] as DbConfigurationService;
             var mapper = context.JobDetail.JobDataMap["mapper"] as IMapper;
             var rabbitMqService = context.JobDetail.JobDataMap["rabbitMqService"] as RabbitMqService;
+            var cancelStates = (dbConfiguration.GetConfigurations("CancelProcessStates") ?? "ALARM_PAUSE").Split(',');
 
             var sqlSugarClient = SqlsugarService.GetSqlSugarClient(configuration);
 
@@ -49,7 +50,8 @@ namespace HandlerAgv.Service.ScheduledJob
 
                 foreach (var machine in machines)
                 {
-                    if (machine.OutputTrayNumber > 0)
+                    //出料口有物料时，且机器不处于要取消任务的状态时
+                    if (machine.OutputTrayNumber > 0 && !cancelStates.Contains(machine.ProcessState))
                     {
                         //条件1：入料口CT大于BufferTime，入料口盘数为0时，发送InputOutput任务
                         var isInputTrayFullAndEmpty = (machine.InputTrayCT > bufferTime && machine.InputTrayNumber == 0);
@@ -58,12 +60,12 @@ namespace HandlerAgv.Service.ScheduledJob
 
                         if (isInputTrayFullAndEmpty || isInputTrayCTLow)
                         {
-                            (var result,var message) = agvApiService.SendInputOutputTask(machine).Result;
+                            (var result, var message) = agvApiService.SendInputOutputTask(machine).Result;
                             if (result)
                             {
                                 EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
                                 eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
-                            }                       
+                            }
                         }
                     }
                 }
