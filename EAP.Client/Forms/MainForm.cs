@@ -981,5 +981,29 @@ namespace EAP.Client.Forms
         {
 
         }
+
+        private void uiButton_loaderEmpty_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            uiButton_loaderEmpty.Enabled = false;
+            try
+            {
+                string confirmMsg = "确认Loader为空？";
+                if (UIMessageBox.ShowAsk2(confirmMsg))
+                {
+                    jhtHanderService.LoaderEmpty();
+                }
+            }
+            catch (Exception ex)
+            {
+                traLog.Error($"发送Loader为空时: {ex.Message}");
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+                uiButton_loaderEmpty.Enabled = true;
+            }
+
+        }
     }
 }

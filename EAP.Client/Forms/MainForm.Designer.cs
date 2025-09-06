@@ -70,6 +70,7 @@ namespace EAP.Client.Forms
             logGroup = new UIGroupBox();
             richTextBox1 = new UIRichTextBox();
             notifyIcon = new NotifyIcon(components);
+            uiButton_loaderEmpty = new UIButton();
             topPanel.SuspendLayout();
             groupBox_1.SuspendLayout();
             countAndLockGroup.SuspendLayout();
@@ -354,6 +355,7 @@ namespace EAP.Client.Forms
             countAndLockGroup.Controls.Add(uiLedLabel_outputTrayCount);
             countAndLockGroup.Controls.Add(uiCheckBox_agvLocked);
             countAndLockGroup.Controls.Add(uiButton_lockAgv);
+            countAndLockGroup.Controls.Add(uiButton_loaderEmpty);
             countAndLockGroup.Controls.Add(uiButton_unlockAgv);
             countAndLockGroup.Controls.Add(uiCheckBox_loaderEmpty);
             countAndLockGroup.FillColor = Color.White;
@@ -376,7 +378,7 @@ namespace EAP.Client.Forms
             uiButton_inputTrayCount.Location = new Point(15, 38);
             uiButton_inputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_inputTrayCount.Name = "uiButton_inputTrayCount";
-            uiButton_inputTrayCount.Size = new Size(120, 35);
+            uiButton_inputTrayCount.Size = new Size(92, 35);
             uiButton_inputTrayCount.Style = UIStyle.Custom;
             uiButton_inputTrayCount.TabIndex = 6;
             uiButton_inputTrayCount.Text = "入料口盘数";
@@ -387,7 +389,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_inputTrayCount.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold);
             uiLedLabel_inputTrayCount.ForeColor = Color.LimeGreen;
-            uiLedLabel_inputTrayCount.Location = new Point(145, 38);
+            uiLedLabel_inputTrayCount.Location = new Point(113, 38);
             uiLedLabel_inputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_inputTrayCount.Name = "uiLedLabel_inputTrayCount";
             uiLedLabel_inputTrayCount.Size = new Size(80, 35);
@@ -403,14 +405,14 @@ namespace EAP.Client.Forms
             uiButton_outputTrayCount.FillSelectedColor = Color.FromArgb(88, 152, 32);
             uiButton_outputTrayCount.Font = new Font("Microsoft YaHei UI", 10F);
             uiButton_outputTrayCount.LightColor = Color.FromArgb(245, 251, 241);
-            uiButton_outputTrayCount.Location = new Point(245, 38);
+            uiButton_outputTrayCount.Location = new Point(199, 38);
             uiButton_outputTrayCount.MinimumSize = new Size(1, 1);
             uiButton_outputTrayCount.Name = "uiButton_outputTrayCount";
             uiButton_outputTrayCount.RectColor = Color.FromArgb(110, 190, 40);
             uiButton_outputTrayCount.RectHoverColor = Color.FromArgb(139, 203, 83);
             uiButton_outputTrayCount.RectPressColor = Color.FromArgb(88, 152, 32);
             uiButton_outputTrayCount.RectSelectedColor = Color.FromArgb(88, 152, 32);
-            uiButton_outputTrayCount.Size = new Size(120, 35);
+            uiButton_outputTrayCount.Size = new Size(92, 35);
             uiButton_outputTrayCount.Style = UIStyle.Custom;
             uiButton_outputTrayCount.TabIndex = 6;
             uiButton_outputTrayCount.Text = "出料口盘数";
@@ -421,7 +423,7 @@ namespace EAP.Client.Forms
             // 
             uiLedLabel_outputTrayCount.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold);
             uiLedLabel_outputTrayCount.ForeColor = Color.LimeGreen;
-            uiLedLabel_outputTrayCount.Location = new Point(375, 38);
+            uiLedLabel_outputTrayCount.Location = new Point(297, 38);
             uiLedLabel_outputTrayCount.MinimumSize = new Size(1, 1);
             uiLedLabel_outputTrayCount.Name = "uiLedLabel_outputTrayCount";
             uiLedLabel_outputTrayCount.Size = new Size(80, 35);
@@ -432,7 +434,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_agvLocked.Font = new Font("Microsoft YaHei UI", 10F);
             uiCheckBox_agvLocked.ForeColor = Color.FromArgb(54, 59, 69);
-            uiCheckBox_agvLocked.Location = new Point(461, 56);
+            uiCheckBox_agvLocked.Location = new Point(383, 56);
             uiCheckBox_agvLocked.MinimumSize = new Size(1, 1);
             uiCheckBox_agvLocked.Name = "uiCheckBox_agvLocked";
             uiCheckBox_agvLocked.ReadOnly = true;
@@ -450,7 +452,7 @@ namespace EAP.Client.Forms
             uiButton_lockAgv.FillSelectedColor = Color.FromArgb(184, 64, 64);
             uiButton_lockAgv.Font = new Font("Microsoft YaHei UI", 10F);
             uiButton_lockAgv.LightColor = Color.FromArgb(253, 243, 243);
-            uiButton_lockAgv.Location = new Point(605, 38);
+            uiButton_lockAgv.Location = new Point(522, 38);
             uiButton_lockAgv.MinimumSize = new Size(1, 1);
             uiButton_lockAgv.Name = "uiButton_lockAgv";
             uiButton_lockAgv.RectColor = Color.FromArgb(230, 80, 80);
@@ -473,7 +475,7 @@ namespace EAP.Client.Forms
             uiButton_unlockAgv.FillSelectedColor = Color.FromArgb(88, 152, 32);
             uiButton_unlockAgv.Font = new Font("Microsoft YaHei UI", 10F);
             uiButton_unlockAgv.LightColor = Color.FromArgb(245, 251, 241);
-            uiButton_unlockAgv.Location = new Point(685, 38);
+            uiButton_unlockAgv.Location = new Point(602, 38);
             uiButton_unlockAgv.MinimumSize = new Size(1, 1);
             uiButton_unlockAgv.Name = "uiButton_unlockAgv";
             uiButton_unlockAgv.RectColor = Color.FromArgb(110, 190, 40);
@@ -491,7 +493,7 @@ namespace EAP.Client.Forms
             // 
             uiCheckBox_loaderEmpty.Font = new Font("Microsoft YaHei UI", 10F);
             uiCheckBox_loaderEmpty.ForeColor = Color.FromArgb(54, 59, 69);
-            uiCheckBox_loaderEmpty.Location = new Point(461, 28);
+            uiCheckBox_loaderEmpty.Location = new Point(383, 28);
             uiCheckBox_loaderEmpty.MinimumSize = new Size(1, 1);
             uiCheckBox_loaderEmpty.Name = "uiCheckBox_loaderEmpty";
             uiCheckBox_loaderEmpty.ReadOnly = true;
@@ -622,6 +624,19 @@ namespace EAP.Client.Forms
             notifyIcon.Visible = true;
             notifyIcon.MouseClick += notifyIcon_MouseClick;
             // 
+            // uiButton_loaderEmpty
+            // 
+            uiButton_loaderEmpty.Font = new Font("Microsoft YaHei UI", 10F);
+            uiButton_loaderEmpty.Location = new Point(685, 38);
+            uiButton_loaderEmpty.MinimumSize = new Size(1, 1);
+            uiButton_loaderEmpty.Name = "uiButton_loaderEmpty";
+            uiButton_loaderEmpty.Size = new Size(70, 35);
+            uiButton_loaderEmpty.Style = UIStyle.Custom;
+            uiButton_loaderEmpty.TabIndex = 10;
+            uiButton_loaderEmpty.Text = "Loader空";
+            uiButton_loaderEmpty.TipsFont = new Font("宋体", 9F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            uiButton_loaderEmpty.Click += uiButton_loaderEmpty_Click;
+            // 
             // MainForm
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -693,5 +708,6 @@ namespace EAP.Client.Forms
         // 新增控件声明
         private UICheckBox uiCheckBox_loaderEmpty;
         private UILabel uiLabel_taskRequestTime;
+        private UIButton uiButton_loaderEmpty;
     }
 }

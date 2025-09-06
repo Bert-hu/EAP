@@ -380,5 +380,32 @@ namespace EAP.Client.Service
             }
         }
 
+        public void LoaderEmpty()
+        {
+            try
+            {
+                // 构建RabbitMQ事务消息
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = configuration.GetSection("Custom")["EquipmentId"], // 设备ID（复用配置）
+                    TransactionName = "LoaderEmpty", // 事务名称（区分操作类型）
+                    NeedReply = false, // 需要等待回复
+                    ExpireSecond = 5, // 超时时间（保持5秒）
+                    ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"], // 回复队列（复用配置）
+                };
+
+                // 发送消息并等待回复
+                rabbitMqservice.Produce("HandlerAgv.Service", trans);
+
+
+            }
+            catch (Exception ex)
+            {
+                // 捕获异常并记录
+                traLog.Error($"发送LoaderEmpty失败: {ex.ToString()}");
+            }
+
+        }
+
     }
 }
