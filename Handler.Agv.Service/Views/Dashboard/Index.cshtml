@@ -5,607 +5,615 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        html, body {
-            background: #000d4a url('../images/dashboard/bg.jpg') center top;
-            background-size: cover;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Cambria';
-            font-weight: bold;
-            color: rgba(255, 255, 255, .7);
-            cursor: default;
-            overflow: hidden;
-        }
-
-        .header {
-            top: 0;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            height: 7%;
-            background: url(../images/dashboard/head_bg.png) no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        .header .logo {
-            background-image: url('../images/Logo/Logo_W_SMDi4_400x65_简.png');
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 20%;
-            height: 100%;
-            float: left;
-            margin-top: 1vh;
-            margin-left: 1vw;
-        }
-
-        .header .title {
-            position: absolute;
-            width: 100%;
-            color: #fff;
-            text-align: center;
-            line-height: 8vh;
-            font-size: 3vw;
-        }
-
-        .header .controlbox {
-            position: absolute;
-            font-size: 1.5vw;
-            right: 1vw;
-            top: 1vh;
-            cursor: pointer;
-            color: rgba(64, 95, 168, 0.6);
-        }
-
-        .container {
-            width: 100%;
-            height: calc(100% - 7%);
-            padding: 1%;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 1%;
-        }
-
-        .section {
-            background-color: rgba(10, 30, 68, 0.6);
-            border: 1px solid rgba(32, 110, 255, 0.3);
-            border-radius: 4px;
-            padding: 1%;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .section-title {
-            color: #4cc9f0;
-            font-size: 1.2vw;
-            margin-bottom: 1%;
-            padding-left: 0.5%;
-            border-left: 3px solid #4cc9f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title .subtitle {
-            font-size: 0.9vw;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* 错误提示样式 */
-        .error-message {
-            color: #ff4500;
-            text-align: center;
-            padding: 20px;
-            font-size: 1vw;
-        }
-
-        /* AGV状态样式 - 调整为2行完整显示 */
-        .agv-section {
-            height: 25%;
-            min-height: 180px; /* 确保在小屏幕上有足够高度 */
-        }
-
-        .agv-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 自动适应列数 */
-            grid-template-rows: repeat(2, 1fr); /* 固定2行 */
-            gap: 1%;
-            height: calc(100% - 30px);
-            padding: 0.5%;
-            overflow-x: auto; /* 水平滚动 */
-            overflow-y: hidden; /* 禁止垂直滚动 */
-        }
-
-        /* 隐藏水平滚动条但保留滚动功能 */
-        .agv-container::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .agv-container::-webkit-scrollbar-track {
-            background: rgba(10, 30, 68, 0.6);
-            border-radius: 3px;
-        }
-
-        .agv-container::-webkit-scrollbar-thumb {
-            background: rgba(32, 110, 255, 0.5);
-            border-radius: 3px;
-        }
-
-        .agv-card {
-            background-color: rgba(10, 25, 60, 0.8);
-            border: 1px solid rgba(32, 110, 255, 0.5);
-            border-radius: 6px;
-            padding: 5%;
-            display: flex; /* 水平布局 */
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            height: 100%;
-            min-width: 150px; /* 确保卡片有最小宽度 */
-        }
-
-        .agv-card:hover {
-            border-color: #4cc9f0;
-            box-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
-        }
-
-        /* 电池区域 - 占卡片宽度的1/3 */
-        .agv-battery {
-            width: 33.333%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding-right: 5%;
-            box-sizing: border-box;
-        }
-
-        .battery-icon {
-            width: 80%; /* 优化电池宽度 */
-            height: 60%; /* 电池高度占电量区域的60% */
-            border: 2px solid #4cc9f0;
-            border-radius: 4px;
-            position: relative;
-            min-height: 30px;
-            margin-bottom: 5%;
-        }
-
-        .battery-level {
-            position: absolute;
-            bottom: 2px;
-            left: 2px;
-            right: 2px;
-            border-radius: 2px;
-            transition: height 0.5s ease;
-        }
-
-        .battery-high {
-            background-color: #00ff7f;
-        }
-
-        .battery-medium {
-            background-color: #ffd700;
-        }
-
-        .battery-low {
-            background-color: #ff4500;
-        }
-
-        .battery-charging {
-            background: linear-gradient(135deg, #4cc9f0 25%, transparent 25%) -10px 0, linear-gradient(225deg, #4cc9f0 25%, transparent 25%) -10px 0, linear-gradient(315deg, #4cc9f0 25%, transparent 25%), linear-gradient(45deg, #4cc9f0 25%, transparent 25%);
-            background-size: 20px 20px;
-            animation: charge 2s linear infinite;
-        }
-
-        @@keyframes charge {
-            0% {
-                background-position: 0 0, 0 0, 10px -10px, -10px 10px;
-            }
-
-            100% {
-                background-position: 10px -10px, -10px 10px, 20px 0, 0 20px;
-            }
-        }
-
-        .battery-cap {
-            position: absolute;
-            top: -6px;
-            right: 40%;
-            width: 20%;
-            height: 15%;
-            background-color: #4cc9f0;
-            border-radius: 2px 2px 0 0;
-        }
-
-        .battery-percentage {
-            font-family: electronicFont;
-            font-size: clamp(0.9vw, 14px, 1.1vw);
-            color: #4cc9f0;
-            white-space: nowrap;
-        }
-
-        /* 名称和状态区域 - 占卡片宽度的2/3 */
-        .agv-info {
-            width: 66.666%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-left: 5%;
-            box-sizing: border-box;
-        }
-
-        .agv-name {
-            font-size: clamp(0.8vw, 14px, 1vw);
-            color: #fff;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 8px;
-            padding: 2px 0;
-        }
-
-        .agv-status {
-            font-size: clamp(0.7vw, 12px, 0.8vw);
-            padding: 3px 8px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        .status-running {
-            background-color: rgba(0, 255, 127, 0.3);
-            color: #00ff7f;
-        }
-
-        .status-idle {
-            background-color: rgba(255, 215, 0, 0.3);
-            color: #ffd700;
-        }
-
-        .status-error {
-            background-color: rgba(255, 69, 0, 0.3);
-            color: #ff4500;
-        }
-
-        .status-charging {
-            background-color: rgba(76, 201, 240, 0.3);
-            color: #4cc9f0;
-        }
-
-        .status-unknown {
-            background-color: rgba(128, 128, 128, 0.3);
-            color: #cccccc;
-        }
-
-        /* 统计和Handler组合区域 */
-        .stats-handler-container {
-            display: flex;
-            gap: 1%;
-            height: 75%;
-            min-height: 0;
-        }
-
-        /* 设备统计和库存区域 - 固定表头实现 */
-        .stats-section {
-            width: 30%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1%;
-            min-height: 0;
-        }
-
-        .inventory-section {
-            flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        /* 优化后的表格容器 */
-        .inventory-table-container {
-            flex: 1;
-            overflow: auto;
-            position: relative;
-        }
-
-        /* 优化滚动条样式 */
-        .inventory-table-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        .inventory-table-container::-webkit-scrollbar-track {
-            background: rgba(10, 30, 68, 0.3);
-            border-radius: 4px;
-        }
-
-        .inventory-table-container::-webkit-scrollbar-thumb {
-            background: rgba(32, 110, 255, 0.5);
-            border-radius: 4px;
-        }
-
-        .inventory-table-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(76, 201, 240, 0.7);
-        }
-
-        .inventory-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .inventory-table th,
-        .inventory-table td {
-            border: 1px solid rgba(32, 110, 255, 0.3);
-            padding: 8px 5px;
-            text-align: center;
-            font-size: clamp(0.7vw, 12px, 0.8vw);
-            white-space: nowrap;
-        }
-
-        .inventory-table th {
-            background-color: rgba(32, 110, 255, 0.2);
-            color: #4cc9f0;
-            height: 36px; /* 固定表头高度 */
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .inventory-table tr:nth-child(even) {
-            background-color: rgba(10, 25, 60, 0.3);
-        }
-
-        .inventory-table tr:hover {
-            background-color: rgba(76, 201, 240, 0.1);
-        }
-
-        /* 任务统计图表区域 */
-        .task-chart-section {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .chart-container {
-            width: 100%;
-            height: calc(100% - 30px);
-        }
-
-        /* Handler设备样式 */
-        .handler-section {
-            width: 70%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .handler-carousel {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            min-height: 0;
-        }
-
-        .handler-group {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: clamp(8px, 1vw, 12px);
-            height: 100%;
-            transition: transform 0.5s ease;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-
-        .handler-card {
-            background-color: rgba(10, 25, 60, 0.8);
-            border: 1px solid rgba(32, 110, 255, 0.5);
-            border-radius: 4px;
-            padding: clamp(6px, 0.8vw, 10px);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            min-height: 0;
-        }
-
-            .handler-card:hover {
-                border-color: #4cc9f0;
-                box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
-            }
-
-        /* AGV启用时的头部样式 */
-        .handler-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            flex-shrink: 0;
-            padding: 4px 6px;
-            border-radius: 3px;
-            transition: background-color 0.3s ease;
-        }
-
-        .agv-active-header {
-            background-color: rgba(0, 255, 127, 0.2);
-            border: 1px solid rgba(0, 255, 127, 0.4);
-        }
-
-        .handler-name {
-            color: #fff;
-            font-size: clamp(0.8vw, 14px, 1vw);
-            font-weight: 500;
-        }
-
-        .handler-agv-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            align-self: center;
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .agv-enabled {
-            background-color: #00ff7f;
-            box-shadow: 0 0 6px rgba(0, 255, 127, 0.6);
-        }
-
-        .agv-disabled {
-            background-color: #444;
-        }
-
-        .handler-info {
-            font-size: clamp(0.7vw, 12px, 0.8vw);
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        .handler-status {
-            font-size: clamp(0.7vw, 12px, 0.8vw);
-            padding: 2px 6px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-bottom: 6px;
-            width: fit-content;
-            flex-shrink: 0;
-        }
-
-        /* 任务状态样式 - 有任务时更明显 */
-        .handler-task {
-            font-size: clamp(0.65vw, 11px, 0.75vw);
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 4px;
-            flex-shrink: 0;
-            word-break: break-word;
-            transition: all 0.3s ease;
-        }
-
-        .active-task {
-            color: #4cc9f0;
-            font-weight: 500;
-            text-shadow: 0 0 3px rgba(76, 201, 240, 0.3);
-        }
-
-        /* 有任务的卡片添加边框高亮 */
-        .handler-card.has-task {
-            border-color: rgba(76, 201, 240, 0.7);
-        }
-
-        .handler-task-time {
-            font-size: clamp(0.6vw, 10px, 0.7vw);
-            color: rgba(150, 200, 255, 0.7);
-            margin-top: auto;
-            flex-shrink: 0;
-        }
-
-
-        .carousel-controls {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .carousel-btn {
-            width: 30px;
-            height: 30px;
-            background-color: rgba(10, 30, 68, 0.8);
-            border: 1px solid rgba(32, 110, 255, 0.5);
-            color: #4cc9f0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .carousel-btn:hover {
-            background-color: rgba(76, 201, 240, 0.2);
-            border-color: #4cc9f0;
-        }
-
-        .group-indicators {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .group-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: rgba(32, 110, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .group-indicator.active {
-            background-color: #4cc9f0;
-            width: 20px;
-            border-radius: 5px;
-        }
-
-        /* 宽屏适配调整 */
-        @@media (min-width: 1920px) {
-            .handler-card {
-                padding: 10px;
-            }
-
-            .agv-card {
-                padding: 3% 2%;
-            }
-
-            .battery-icon {
-                min-height: 40px;
-            }
-        }
-
-        /* 超宽屏特殊处理 */
-        @@media (min-width: 2560px) {
-            .handler-group {
-                gap: 15px;
-            }
-
-            .agv-container {
-                gap: 1%;
-            }
-
-            .section {
-                padding: 15px;
-            }
-        }
-
-        /* 小屏幕适配 */
-        @@media (max-width: 1366px) {
-            .agv-name {
-                font-size: 10px;
-            }
-
-            .battery-percentage {
-                font-size: 12px;
-            }
-
-            .agv-status {
-                font-size: 9px;
-                padding: 1px 4px;
-            }
-        }
+    /* 基础样式设置 */
+html, body {
+    background: #000d4a url('../images/dashboard/bg.jpg') center top;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Cambria';
+    font-weight: bold;
+    color: rgba(255, 255, 255, .7);
+    cursor: default;
+    overflow: hidden;
+}
+
+/* 头部样式 */
+.header {
+    top: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 7%;
+    background: url(../images/dashboard/head_bg.png) no-repeat center center;
+    background-size: cover;
+    position: relative;
+}
+
+.header .logo {
+    background-image: url('../images/Logo/Logo_W_SMDi4_400x65_简.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 20%;
+    height: 100%;
+    float: left;
+    margin-top: 1vh;
+    margin-left: 1vw;
+}
+
+.header .title {
+    position: absolute;
+    width: 100%;
+    color: #fff;
+    text-align: center;
+    line-height: 8vh;
+    font-size: 3vw;
+}
+
+.header .controlbox {
+    position: absolute;
+    font-size: 1.5vw;
+    right: 1vw;
+    top: 1vh;
+    cursor: pointer;
+    color: rgba(64, 95, 168, 0.6);
+}
+
+/* 容器布局 */
+.container {
+    width: 100%;
+    height: calc(100% - 7%);
+    padding: 1%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1%;
+}
+
+.section {
+    background-color: rgba(10, 30, 68, 0.6);
+    border: 1px solid rgba(32, 110, 255, 0.3);
+    border-radius: 4px;
+    padding: 1%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.section-title {
+    color: #4cc9f0;
+    font-size: 1.2vw;
+    margin-bottom: 1%;
+    padding-left: 0.5%;
+    border-left: 3px solid #4cc9f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title .subtitle {
+    font-size: 0.9vw;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 错误提示样式 */
+.error-message {
+    color: #ff4500;
+    text-align: center;
+    padding: 20px;
+    font-size: 1vw;
+}
+
+/* AGV状态样式 */
+.agv-section {
+    height: 25%;
+    min-height: 180px; /* 确保在小屏幕上有足够高度 */
+}
+
+.agv-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 自动适应列数 */
+    grid-template-rows: repeat(2, 1fr); /* 固定2行 */
+    gap: 1%;
+    height: calc(100% - 30px);
+    padding: 0.5%;
+    overflow-x: auto; /* 水平滚动 */
+    overflow-y: hidden; /* 禁止垂直滚动 */
+}
+
+/* 隐藏水平滚动条但保留滚动功能 */
+.agv-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.agv-container::-webkit-scrollbar-track {
+    background: rgba(10, 30, 68, 0.6);
+    border-radius: 3px;
+}
+
+.agv-container::-webkit-scrollbar-thumb {
+    background: rgba(32, 110, 255, 0.5);
+    border-radius: 3px;
+}
+
+.agv-card {
+    background-color: rgba(10, 25, 60, 0.8);
+    border: 1px solid rgba(32, 110, 255, 0.5);
+    border-radius: 6px;
+    padding: 5%;
+    display: flex; /* 水平布局 */
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    height: 100%;
+    min-width: 150px; /* 确保卡片有最小宽度 */
+}
+
+.agv-card:hover {
+    border-color: #4cc9f0;
+    box-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
+}
+
+/* 电池区域 - 占卡片宽度的1/3 */
+.agv-battery {
+    width: 33.333%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-right: 5%;
+    box-sizing: border-box;
+}
+
+.battery-icon {
+    width: 80%; /* 优化电池宽度 */
+    height: 60%; /* 电池高度占电量区域的60% */
+    border: 2px solid #4cc9f0;
+    border-radius: 4px;
+    position: relative;
+    min-height: 30px;
+    margin-bottom: 5%;
+}
+
+.battery-level {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    border-radius: 2px;
+    transition: height 0.5s ease;
+}
+
+.battery-high {
+    background-color: #00ff7f;
+}
+
+.battery-medium {
+    background-color: #ffd700;
+}
+
+.battery-low {
+    background-color: #ff4500;
+}
+
+.battery-charging {
+    background: linear-gradient(135deg, #4cc9f0 25%, transparent 25%) -10px 0,
+                linear-gradient(225deg, #4cc9f0 25%, transparent 25%) -10px 0,
+                linear-gradient(315deg, #4cc9f0 25%, transparent 25%),
+                linear-gradient(45deg, #4cc9f0 25%, transparent 25%);
+    background-size: 20px 20px;
+    animation: charge 2s linear infinite;
+}
+
+@@keyframes charge {
+    0% {
+        background-position: 0 0, 0 0, 10px -10px, -10px 10px;
+    }
+    100% {
+        background-position: 10px -10px, -10px 10px, 20px 0, 0 20px;
+    }
+}
+
+.battery-cap {
+    position: absolute;
+    top: -6px;
+    right: 40%;
+    width: 20%;
+    height: 15%;
+    background-color: #4cc9f0;
+    border-radius: 2px 2px 0 0;
+}
+
+.battery-percentage {
+    font-family: electronicFont;
+    font-size: clamp(0.9vw, 14px, 1.1vw);
+    color: #4cc9f0;
+    white-space: nowrap;
+}
+
+/* 名称和状态区域 - 占卡片宽度的2/3 */
+.agv-info {
+    width: 66.666%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 5%;
+    box-sizing: border-box;
+}
+
+.agv-name {
+    font-size: clamp(0.8vw, 14px, 1vw);
+    color: #fff;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
+    padding: 2px 0;
+}
+
+.agv-status {
+    font-size: clamp(0.7vw, 12px, 0.8vw);
+    padding: 3px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.status-running {
+    background-color: rgba(0, 255, 127, 0.3);
+    color: #00ff7f;
+}
+
+.status-idle {
+    background-color: rgba(255, 215, 0, 0.3);
+    color: #ffd700;
+}
+
+.status-error {
+    background-color: rgba(255, 69, 0, 0.3);
+    color: #ff4500;
+}
+
+.status-charging {
+    background-color: rgba(76, 201, 240, 0.3);
+    color: #4cc9f0;
+}
+
+.status-unknown {
+    background-color: rgba(128, 128, 128, 0.3);
+    color: #cccccc;
+}
+
+/* 统计和Handler组合区域 */
+.stats-handler-container {
+    display: flex;
+    gap: 1%;
+    height: 75%;
+    min-height: 0;
+}
+
+/* 设备统计和库存区域 */
+.stats-section {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1%;
+    min-height: 0;
+}
+
+.inventory-section {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* 表格容器 */
+.inventory-table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+}
+
+/* 优化滚动条样式 */
+.inventory-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.inventory-table-container::-webkit-scrollbar-track {
+    background: rgba(10, 30, 68, 0.3);
+    border-radius: 4px;
+}
+
+.inventory-table-container::-webkit-scrollbar-thumb {
+    background: rgba(32, 110, 255, 0.5);
+    border-radius: 4px;
+}
+
+.inventory-table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(76, 201, 240, 0.7);
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inventory-table th,
+.inventory-table td {
+    border: 1px solid rgba(32, 110, 255, 0.3);
+    padding: 8px 5px;
+    text-align: center;
+    font-size: clamp(0.7vw, 12px, 0.8vw);
+    white-space: nowrap;
+    color: #fff; /* 表格内容文字设为白色 */
+}
+
+.inventory-table th {
+    background-color: rgba(32, 110, 255, 0.2);
+    color: #4cc9f0; /* 表头颜色 */
+    height: 36px; /* 固定表头高度 */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.inventory-table tr:nth-child(even) {
+    background-color: rgba(10, 25, 60, 0.3);
+}
+
+.inventory-table tr:hover {
+    background-color: rgba(76, 201, 240, 0.1);
+}
+
+/* 任务统计图表区域 */
+.task-chart-section {
+    flex: 1;
+    min-height: 0;
+}
+
+.chart-container {
+    width: 100%;
+    height: calc(100% - 30px);
+}
+
+/* Handler设备样式 */
+.handler-section {
+    width: 70%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.handler-carousel {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+}
+
+.handler-group {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: clamp(8px, 1vw, 12px);
+    height: 100%;
+    transition: transform 0.5s ease;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.handler-card {
+    background-color: rgba(10, 25, 60, 0.8);
+    border: 1px solid rgba(32, 110, 255, 0.5);
+    border-radius: 4px;
+    padding: clamp(6px, 0.8vw, 10px);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    min-height: 0;
+}
+
+.handler-card:hover {
+    border-color: #4cc9f0;
+    box-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
+}
+
+/* AGV启用时的头部样式 */
+.handler-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+    padding: 4px 6px;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+.agv-active-header {
+    background-color: rgba(0, 255, 127, 0.2);
+    border: 1px solid rgba(0, 255, 127, 0.4);
+}
+
+.handler-name {
+    color: #fff;
+    font-size: clamp(0.8vw, 14px, 1vw);
+    font-weight: 500;
+}
+
+.handler-agv-status {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    align-self: center;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.agv-enabled {
+    background-color: #00ff7f;
+    box-shadow: 0 0 6px rgba(0, 255, 127, 0.6);
+}
+
+.agv-disabled {
+    background-color: #444;
+}
+
+.handler-info {
+    font-size: clamp(0.7vw, 12px, 0.8vw);
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.handler-status {
+    font-size: clamp(0.7vw, 12px, 0.8vw);
+    padding: 2px 6px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 6px;
+    width: fit-content;
+    flex-shrink: 0;
+}
+
+/* 任务状态样式 - 有任务时更明显 */
+.handler-task {
+    font-size: clamp(0.65vw, 11px, 0.75vw);
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 4px;
+    flex-shrink: 0;
+    word-break: break-word;
+    transition: all 0.3s ease;
+}
+
+.active-task {
+    color: #4cc9f0;
+    font-weight: 500;
+    text-shadow: 0 0 3px rgba(76, 201, 240, 0.3);
+}
+
+/* 有任务的卡片添加边框高亮 */
+.handler-card.has-task {
+    border-color: rgba(76, 201, 240, 0.7);
+}
+
+.handler-task-time {
+    font-size: clamp(0.6vw, 10px, 0.7vw);
+    color: rgba(150, 200, 255, 0.7);
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* 轮播控制 */
+.carousel-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.carousel-btn {
+    width: 30px;
+    height: 30px;
+    background-color: rgba(10, 30, 68, 0.8);
+    border: 1px solid rgba(32, 110, 255, 0.5);
+    color: #4cc9f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background-color: rgba(76, 201, 240, 0.2);
+    border-color: #4cc9f0;
+}
+
+.group-indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.group-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(32, 110, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.group-indicator.active {
+    background-color: #4cc9f0;
+    width: 20px;
+    border-radius: 5px;
+}
+
+/* 响应式适配 */
+@@media (min-width: 1920px) {
+    .handler-card {
+        padding: 10px;
+    }
+
+    .agv-card {
+        padding: 3% 2%;
+    }
+
+    .battery-icon {
+        min-height: 40px;
+    }
+}
+
+/* 超宽屏特殊处理 */
+@@media (min-width: 2560px) {
+    .handler-group {
+        gap: 15px;
+    }
+
+    .agv-container {
+        gap: 1%;
+    }
+
+    .section {
+        padding: 15px;
+    }
+}
+
+/* 小屏幕适配 */
+@@media (max-width: 1366px) {
+    .agv-name {
+        font-size: 10px;
+    }
+
+    .battery-percentage {
+        font-size: 12px;
+    }
+
+    .agv-status {
+        font-size: 9px;
+        padding: 1px 4px;
+    }
+}
+
     </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">*@
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
     <title>Handler & AGV Dashboard</title>
 </head>
 
@@ -630,8 +638,9 @@
                 } else if (el.msRequestFullscreen) {
                     el.msRequestFullscreen();
                 }
-                document.getElementById("fullScreen").classList.remove("fa-expand");
-                document.getElementById("fullScreen").classList.add("fa-compress");
+
+                document.getElementById("fullScreen").classList.remove("layui-icon-screen-full");
+                document.getElementById("fullScreen").classList.add("layui-icon-screen-restore");
             }
             else {
                 if (document.exitFullscreen) {
@@ -643,15 +652,15 @@
                 } else if (document.webkitCancelFullScreen) {
                     document.webkitCancelFullScreen();
                 }
-                document.getElementById("fullScreen").classList.remove("fa-compress");
-                document.getElementById("fullScreen").classList.add("fa-expand");
+                document.getElementById("fullScreen").classList.remove("layui-icon-screen-restore");
+                document.getElementById("fullScreen").classList.add("layui-icon-screen-full");
             }
         };
     </script>
     <div class="header">
         <div class="logo"> </div>
         <div class="title"><span>Handler & AGV Dashboard</span></div>
-        <i id="fullScreen" class="fas fa-expand controlbox" onclick="showFullScreen()"></i>
+        <i id="fullScreen" class="layui-icon layui-icon-screen-full controlbox" onclick="showFullScreen()"></i>
     </div>
 
     <div class="container">
@@ -722,10 +731,10 @@
                 </div>
                 <div class="carousel-controls">
                     <div class="carousel-btn" id="prevGroup">
-                        <i class="fas fa-chevron-left"></i>
+                        <i class="layui-icon layui-icon-left"></i>
                     </div>
                     <div class="carousel-btn" id="nextGroup">
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="layui-icon layui-icon-right"></i>
                     </div>
                 </div>
             </div>
@@ -883,18 +892,18 @@
                 const card = document.createElement('div');
                 card.className = 'agv-card';
                 card.innerHTML = `
-                            <div class="agv-battery">
-                                <div class="battery-icon">
-                                    <div class="battery-level ${batteryClass}" style="height: ${agv.battery}%"></div>
-                                    <div class="battery-cap"></div>
+                                <div class="agv-battery">
+                                    <div class="battery-icon">
+                                        <div class="battery-level ${batteryClass}" style="height: ${agv.battery}%"></div>
+                                        <div class="battery-cap"></div>
+                                    </div>
+                                    <div class="battery-percentage">${agv.battery}%</div>
                                 </div>
-                                <div class="battery-percentage">${agv.battery}%</div>
-                            </div>
-                            <div class="agv-info">
-                                <div class="agv-name" title="${displayName}">${displayName}</div>
-                                <div class="agv-status ${statusClass}">${statusText}</div>
-                            </div>
-                        `;
+                                <div class="agv-info">
+                                    <div class="agv-name" title="${displayName}">${displayName}</div>
+                                    <div class="agv-status ${statusClass}">${statusText}</div>
+                                </div>
+                            `;
 
                 container.appendChild(card);
             });
@@ -1000,19 +1009,19 @@
                 const card = document.createElement('div');
                 card.className = `handler-card ${hasTask ? 'has-task' : ''}`;
                 card.innerHTML = `
-                <div class="handler-header ${handler.agvEnabled ? 'agv-active-header' : ''}">
-                    <div class="handler-name">Handler-${handler.id}</div>
-                    <div class="handler-agv-status ${handler.agvEnabled ? 'agv-enabled' : 'agv-disabled'}"
-                         title="${handler.agvEnabled ? 'AGV功能已开启' : 'AGV功能已关闭'}"></div>
-                </div>
-                <div class="handler-info">
-                    <div>${handler.materialName || 'N/A'}</div>
-                    <div>${handler.groupName || 'N/A'}</div>
-                </div>
-                <div class="handler-status ${processStateClass}">${processStateText}</div>
-                <div class="handler-task ${hasTask ? 'active-task' : ''}">任务状态: ${taskStateText}</div>
-                <div class="handler-task-time">任务请求时间: ${taskTime}</div>
-            `;
+                    <div class="handler-header ${handler.agvEnabled ? 'agv-active-header' : ''}">
+                        <div class="handler-name">Handler-${handler.id}</div>
+                        <div class="handler-agv-status ${handler.agvEnabled ? 'agv-enabled' : 'agv-disabled'}"
+                             title="${handler.agvEnabled ? 'AGV功能已开启' : 'AGV功能已关闭'}"></div>
+                    </div>
+                    <div class="handler-info">
+                        <div>${handler.materialName || 'N/A'}</div>
+                        <div>${handler.groupName || 'N/A'}</div>
+                    </div>
+                    <div class="handler-status ${processStateClass}">${processStateText}</div>
+                    <div class="handler-task ${hasTask ? 'active-task' : ''}">任务状态: ${taskStateText}</div>
+                    <div class="handler-task-time">任务请求时间: ${taskTime}</div>
+                `;
 
                 container.appendChild(card);
             });
@@ -1023,29 +1032,13 @@
         }
 
         // 更新分组指示器
-        function updateGroupIndicators(activeIndex) {
+        function updateGroupIndicators(activeIndex = 0) {
             const container = document.getElementById('groupIndicators');
             container.innerHTML = '';
 
             for (let i = 0; i < totalGroups; i++) {
                 const indicator = document.createElement('div');
                 indicator.className = `group-indicator ${i === activeIndex ? 'active' : ''}`;
-                indicator.addEventListener('click', () => {
-                    currentGroup = i;
-                    renderHandlerGroup(currentGroup);
-                });
-                container.appendChild(indicator);
-            }
-        }
-
-        // 初始化分组指示器
-        function initGroupIndicators() {
-            const container = document.getElementById('groupIndicators');
-            container.innerHTML = '';
-
-            for (let i = 0; i < totalGroups; i++) {
-                const indicator = document.createElement('div');
-                indicator.className = `group-indicator ${i === 0 ? 'active' : ''}`;
                 indicator.addEventListener('click', () => {
                     currentGroup = i;
                     renderHandlerGroup(currentGroup);
@@ -1064,12 +1057,12 @@
             // 如果没有数据或数据为空
             if (!inventoryStats || inventoryStats.length === 0) {
                 tableBody.innerHTML = `
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: #ff4500;">
-                                    未获取到库存数据或数据为空
-                                </td>
-                            </tr>
-                        `;
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #ff4500;">
+                                        未获取到库存数据或数据为空
+                                    </td>
+                                </tr>
+                            `;
                 return;
             }
 
@@ -1077,99 +1070,19 @@
             inventoryStats.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                            <td>${item.materialName || 'N/A'}</td>
-                            <td>${item.groupName || 'N/A'}</td>
-                            <td>${item.enableMachineCount}</td>
-                            <td>${item.agvQuantity}</td>
-                            <td>${item.stocker1Quantity}</td>
-                            <td>${item.stocker2Quantity}</td>
-                        `;
+                                <td>${item.materialName || 'N/A'}</td>
+                                <td>${item.groupName || 'N/A'}</td>
+                                <td>${item.enableMachineCount}</td>
+                                <td>${item.agvQuantity}</td>
+                                <td>${item.stocker1Quantity}</td>
+                                <td>${item.stocker2Quantity}</td>
+                            `;
                 tableBody.appendChild(row);
             });
         }
 
-        // 生成最近15天的任务统计数据
-        function generateTaskStats() {
-            const stats = [];
-            const today = new Date();
 
-            for (let i = 14; i >= 0; i--) {
-                const date = new Date(today);
-                date.setDate(today.getDate() - i);
 
-                stats.push({
-                    date: `${date.getMonth() + 1}/${date.getDate()}`,
-                    loading: Math.floor(Math.random() * 50) + 10,  // 上料任务
-                    unloading: Math.floor(Math.random() * 50) + 5  // 下料任务
-                });
-            }
-
-            return stats;
-        }
-
-        //// 渲染任务统计图表
-        //function renderTaskStatsChart() {
-        //    const stats = generateTaskStats();
-        //    const ctx = document.getElementById('taskStatsChart').getContext('2d');
-
-        //    // 准备图表数据
-        //    const dates = stats.map(item => item.date);
-        //    const loadingData = stats.map(item => item.loading);
-        //    const unloadingData = stats.map(item => item.unloading);
-
-        //    new Chart(ctx, {
-        //        type: 'bar',
-        //        data: {
-        //            labels: dates,
-        //            datasets: [
-        //                {
-        //                    label: '上料任务',
-        //                    data: loadingData,
-        //                    backgroundColor: 'rgba(76, 201, 240, 0.7)',
-        //                    borderColor: 'rgba(76, 201, 240, 1)',
-        //                    borderWidth: 1
-        //                },
-        //                {
-        //                    label: '下料任务',
-        //                    data: unloadingData,
-        //                    backgroundColor: 'rgba(0, 255, 127, 0.7)',
-        //                    borderColor: 'rgba(0, 255, 127, 1)',
-        //                    borderWidth: 1
-        //                }
-        //            ]
-        //        },
-        //        options: {
-        //            responsive: true,
-        //            maintainAspectRatio: false,
-        //            scales: {
-        //                x: {
-        //                    grid: {
-        //                        color: 'rgba(255, 255, 255, 0.1)'
-        //                    },
-        //                    ticks: {
-        //                        color: 'rgba(255, 255, 255, 0.7)'
-        //                    }
-        //                },
-        //                y: {
-        //                    beginAtZero: true,
-        //                    grid: {
-        //                        color: 'rgba(255, 255, 255, 0.1)'
-        //                    },
-        //                    ticks: {
-        //                        color: 'rgba(255, 255, 255, 0.7)'
-        //                    }
-        //                }
-        //            },
-        //            plugins: {
-        //                legend: {
-        //                    labels: {
-        //                        color: 'rgba(255, 255, 255, 0.9)'
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    });
-        //}
         // 渲染任务统计图表
         async function renderTaskStatsChart() {
             try {
@@ -1189,9 +1102,6 @@
                 });
                 const countData = stats.map(item => item.count);
                 const successRateData = stats.map(item => item.successRate);
-                console.log(dates);
-                console.log(countData);
-                console.log(successRateData);
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -1279,7 +1189,7 @@
             }
         }
 
-       
+
 
         // 更新Handler数据
         async function updateHandlerData() {
@@ -1298,7 +1208,7 @@
                 }
 
                 renderHandlerGroup(currentGroup);
-                initGroupIndicators();
+                updateGroupIndicators();
             }
         }
 

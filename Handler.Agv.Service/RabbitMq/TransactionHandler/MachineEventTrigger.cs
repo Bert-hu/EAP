@@ -1,4 +1,5 @@
 ﻿using HandlerAgv.Service.Models.Database;
+using HandlerAgv.Service.Services;
 using log4net;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
@@ -10,9 +11,11 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
         private readonly ILog dbgLog = LogManager.GetLogger("Debug");
 
         private ISqlSugarClient sqlSugarClient;
-        public MachineEventTrigger(ISqlSugarClient sqlSugarClient)
+        private readonly RabbitMqService rabbitMqService;
+        public MachineEventTrigger(ISqlSugarClient sqlSugarClient, RabbitMqService rabbitMqService)
         {
             this.sqlSugarClient = sqlSugarClient;
+            this.rabbitMqService = rabbitMqService;
         }
 
         public async Task HandleTransaction(RabbitMqTransaction trans)
@@ -64,6 +67,8 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     case "LoadLastPanel":
                         machine.LoaderEmpty = true;
                         await sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommandAsync();
+                        EapClientService service = new EapClientService(sqlSugarClient,rabbitMqService);
+                        service.UpdateClientInfo(trans.EquipmentID,"最后一盘已下沉");
                         break;
                     default:
                         break;
