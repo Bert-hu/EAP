@@ -76,10 +76,11 @@ namespace HandlerAgv.Service.Controllers
                     (var lockstate, message, var processState) = clientService.GetMachineLockState(task.EquipmentId);
 
                     if (
-                        //设备处于报警状态
-                        cancelStates.Contains(processState)
-                        //设备预计可上料时间大于5分钟
-                        || (eqpVM.InputTrayNumber > 0 && eqpVM.LoadEstimatedTime > DateTime.Now.AddMinutes(5))
+                        ////设备处于报警状态
+                        //cancelStates.Contains(processState)
+                        ////设备预计可上料时间大于5分钟
+                        //|| 
+                        (eqpVM.InputTrayNumber > 0 && eqpVM.LoadEstimatedTime > DateTime.Now.AddMinutes(5))
                         )
                     {
                         dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}状态为{processState}，预计可上料时间为{((DateTime)eqpVM.LoadEstimatedTime - DateTime.Now).TotalMinutes.ToString("F2")}分钟后，需要AGV取消任务。");

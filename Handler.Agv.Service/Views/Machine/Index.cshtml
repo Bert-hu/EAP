@@ -181,21 +181,21 @@
             border-collapse: collapse;
         }
 
-        .stats-table th, .stats-table td {
-            border: 1px solid #e6e6e6;
-            padding: 6px 10px;
-            text-align: left;
-            font-size: 13px;
-        }
+            .stats-table th, .stats-table td {
+                border: 1px solid #e6e6e6;
+                padding: 6px 10px;
+                text-align: left;
+                font-size: 13px;
+            }
 
-        .stats-table th {
-            background-color: #f8f8f8;
-            font-weight: 500;
-        }
+            .stats-table th {
+                background-color: #f8f8f8;
+                font-weight: 500;
+            }
 
-        .stats-table tr:nth-child(even) {
-            background-color: #fafafa;
-        }
+            .stats-table tr:nth-child(even) {
+                background-color: #fafafa;
+            }
 
         /* 响应式调整 */
         @@media screen and (max-width: 768px) {
@@ -359,21 +359,21 @@
             var form = layui.form;
             var layer = layui.layer;
             var dropdown = layui.dropdown;
-            
+
             // 任务表格实例和对话框索引
             var taskTableIns;
             var taskDialogIndex;
-            
+
             // 枚举转换函数
             function convertTaskType(value) {
                 switch (value) {
-                    case 0: return '开机仅上料';
-                    case 1: return '取paas料后上料';
-                    case 2: return '停机或超高仅取料';
+                    case 0: return '仅上料';
+                    case 1: return '取pass料后上料';
+                    case 2: return '仅取料';
                     default: return value;
                 }
             }
-            
+
             function convertTaskStatus(value) {
                 switch (value) {
                     case 1: return '已请求AGV';
@@ -521,13 +521,13 @@
                 inventoryData.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                            <td>${item.materialName || '-'}</td>
-                            <td>${item.groupName || '-'}</td>
-                            <td>${item.enableMachineCount || 0}</td>
-                            <td>${item.agvQuantity || 0}</td>
-                            <td>${item.stocker1Quantity || 0}</td>
-                            <td>${item.stocker2Quantity || 0}</td>
-                        `;
+                                <td>${item.materialName || '-'}</td>
+                                <td>${item.groupName || '-'}</td>
+                                <td>${item.enableMachineCount || 0}</td>
+                                <td>${item.agvQuantity || 0}</td>
+                                <td>${item.stocker1Quantity || 0}</td>
+                                <td>${item.stocker2Quantity || 0}</td>
+                            `;
                     tableBody.appendChild(row);
                 });
             }
@@ -707,17 +707,17 @@
                         where: { equipmentId: equipmentId },
                         page: true,
                         cols: [[
-                            { field: 'ID', title: '任务ID', sort: true },
-                            { field: 'Type', title: '任务类型', templet: function(d) { return convertTaskType(d.Type); } },
-                            { field: 'Status', title: '状态', templet: function(d) { return convertTaskStatus(d.Status); } },
-                            { field: 'MaterialName', title: '物料机种' },
-                            { field: 'GroupName', title: '物料站别' },
-                            { field: 'AgvId', title: 'AGV唯一码' },
-                            { field: 'AgvRequestTime', title: 'AGV请求时间', sort: true },
-                            { field: 'AgvArriveTime', title: 'AGV到达时间', sort: true },
-                            { field: 'MachineReadyTime', title: '设备就绪时间', sort: true },
-                            { field: 'AgvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
-                            { field: 'CompletedTime', title: '任务完成时间', sort: true }
+                            { field: 'id', title: '任务ID', sort: true },
+                            { field: 'type', title: '任务类型', templet: function (d) { return convertTaskType(d.type); } },
+                            { field: 'status', title: '状态', templet: function (d) { return convertTaskStatus(d.status); } },
+                            { field: 'materialName', title: '物料机种' },
+                            { field: 'groupName', title: '物料站别' },
+                            { field: 'agvId', title: 'AGV唯一码' },
+                            { field: 'agvRequestTime', title: 'AGV请求时间', sort: true },
+                            { field: 'agvArriveTime', title: 'AGV到达时间', sort: true },
+                            { field: 'machineReadyTime', title: '设备就绪时间', sort: true },
+                            { field: 'agvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
+                            { field: 'completedTime', title: '任务完成时间', sort: true }
                         ]],
                         response: {
                             statusName: 'code',
@@ -735,17 +735,17 @@
                         where: { equipmentId: equipmentId },
                         page: true,
                         cols: [[
-                            { field: 'ID', title: '任务ID', sort: true },
-                            { field: 'Type', title: '任务类型', templet: function(d) { return convertTaskType(d.Type); } },
-                            { field: 'Status', title: '状态', templet: function(d) { return convertTaskStatus(d.Status); } },
-                            { field: 'MaterialName', title: '物料机种' },
-                            { field: 'GroupName', title: '物料站别' },
-                            { field: 'AgvId', title: 'AGV唯一码' },
-                            { field: 'AgvRequestTime', title: 'AGV请求时间', sort: true },
-                            { field: 'AgvArriveTime', title: 'AGV到达时间', sort: true },
-                            { field: 'MachineReadyTime', title: '设备就绪时间', sort: true },
-                            { field: 'AgvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
-                            { field: 'CompletedTime', title: '任务完成时间', sort: true }
+                            { field: 'id', title: '任务ID', sort: true },
+                            { field: 'type', title: '任务类型', templet: function (d) { return convertTaskType(d.type); } },
+                            { field: 'status', title: '状态', templet: function (d) { return convertTaskStatus(d.status); } },
+                            { field: 'materialName', title: '物料机种' },
+                            { field: 'groupName', title: '物料站别' },
+                            { field: 'agvId', title: 'AGV唯一码' },
+                            { field: 'agvRequestTime', title: 'AGV请求时间', sort: true },
+                            { field: 'agvArriveTime', title: 'AGV到达时间', sort: true },
+                            { field: 'machineReadyTime', title: '设备就绪时间', sort: true },
+                            { field: 'agvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
+                            { field: 'completedTime', title: '任务完成时间', sort: true }
                         ]],
                         response: {
                             statusName: 'code',

@@ -114,7 +114,7 @@ namespace HandlerAgv.Service.Controllers
         {
             var total = 0;
             var dbData = sqlSugarClient.Queryable<HandlerAgvTask>()
-                .Where(it => it.EquipmentId == equipmentId).OrderByDescending(it => it.ID).ToPageList(page, limit, ref total);
+                .Where(it => it.EquipmentId == equipmentId).OrderByDescending(it => it.AgvRequestTime).ToPageList(page, limit, ref total);
             return new JsonResult(new { code = 0, data = dbData, count = total });
         }
 
