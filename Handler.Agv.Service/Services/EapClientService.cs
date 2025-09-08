@@ -112,7 +112,7 @@ namespace HandlerAgv.Service.Services
             }
         }
 
-        public void MachineAgvLock(string equipmentId)
+        public async void MachineAgvLock(string equipmentId)
         {
             try
             {
@@ -120,6 +120,7 @@ namespace HandlerAgv.Service.Services
                 {
                     EquipmentID = equipmentId,
                     TransactionName = "AgvLock",
+                    NeedReply = true,
                     ExpireSecond = 5
                 };
                 var reply = rabbitMqService.ProduceWaitReply("EAP.SecsClient." + equipmentId, trans);

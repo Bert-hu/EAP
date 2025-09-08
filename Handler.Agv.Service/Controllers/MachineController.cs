@@ -89,8 +89,8 @@ namespace HandlerAgv.Service.Controllers
         public JsonResult UpdateMachineData(HandlerEquipmentStatus data)
         {
             var count = sqlSugarClient.Updateable(data).UpdateColumns(it => new { it.AgvEnabled, it.MaterialName, it.GroupName, it.InputTrayNumber, it.OutputTrayNumber, it.CurrentTaskId }).ExecuteCommand();
-            EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMQService); 
-            clientService.UpdateClientInfo(data.Id,$"数据在管理页面被更新");
+            EapClientService clientService = new EapClientService(sqlSugarClient, rabbitMQService);
+            clientService.UpdateClientInfo(data.Id, $"数据在管理页面被更新");
             return new JsonResult(new { code = count == 1 });
 
         }
@@ -101,6 +101,15 @@ namespace HandlerAgv.Service.Controllers
 
             var stocker1data = sqlSugarClient.Queryable<StockerInventory_I>().ToList();
             return new JsonResult(new { code = 0, data = dbData });
+        }
+
+        [HttpGet]
+        public JsonResult GetMachineTaskData(int page, int limit, string equipmentId)
+        {
+            var total = 0;
+            var dbData = sqlSugarClient.Queryable<HandlerAgvTask>()
+                .Where(it => it.EquipmentId == equipmentId).OrderByDescending(it => it.ID).ToPageList(page, limit, ref total);
+            return new JsonResult(new { code = 0, data = dbData, count = total });
         }
 
     }

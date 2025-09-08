@@ -280,6 +280,20 @@
         </div>
     </script>
 
+    <!-- 更多操作下拉菜单模板 -->
+    <script type="text/html" id="moreDropdown">
+        <div class="layui-dropdown-menu">
+            <ul>
+                <li><a href="javascript:;" lay-event="viewTask">查看任务</a></li>
+            </ul>
+        </div>
+    </script>
+
+    <!-- 任务查看弹窗 -->
+    <div id="taskDialog" style="display: none; padding: 15px;">
+        <table class="layui-table" id="taskTable" lay-filter="taskTable"></table>
+    </div>
+
     <!-- 编辑弹窗 -->
     <div id="editDialog" style="display: none; padding: 15px;">
         <form class="layui-form" lay-filter="editForm">
@@ -340,10 +354,38 @@
     <script src="~/jquery-3.7.1.js"></script>
     <script src="~/layui/layui.js"></script>
     <script>
-        layui.use(['table', 'form', 'layer'], function () {
+        layui.use(['table', 'form', 'layer', 'dropdown'], function () {
             var table = layui.table;
             var form = layui.form;
             var layer = layui.layer;
+            var dropdown = layui.dropdown;
+            
+            // 任务表格实例和对话框索引
+            var taskTableIns;
+            var taskDialogIndex;
+            
+            // 枚举转换函数
+            function convertTaskType(value) {
+                switch (value) {
+                    case 0: return '开机仅上料';
+                    case 1: return '取paas料后上料';
+                    case 2: return '停机或超高仅取料';
+                    default: return value;
+                }
+            }
+            
+            function convertTaskStatus(value) {
+                switch (value) {
+                    case 1: return '已请求AGV';
+                    case 2: return 'AGV已到达设备';
+                    case 3: return '设备已锁定进出料';
+                    case 4: return 'AGV手臂任务完成';
+                    case 5: return 'AGV手臂任务取消';
+                    case 10: return '已完成';
+                    case 11: return '异常完结';
+                    default: return value;
+                }
+            }
 
             // 全局变量
             var currentEditData = null;
@@ -607,11 +649,23 @@
                 } else if (obj.event === 'edit') {
                     openEditDialog(data);
                 } else if (obj.event === 'more') {
-                    layer.open({
-                        content: '更多操作功能待实现',
-                        icon: 1,
-                        time: 2000
+                    // 显示更多操作下拉菜单
+                    layui.dropdown.render({
+                        elem: this, // 触发事件的元素
+                        show: true, // 显示下拉菜单
+                        data: [{
+                            title: '查看任务',
+                            id: 'viewTask'
+                        }],
+                        click: function (menuData) {
+                            if (menuData.id === 'viewTask') {
+                                openTaskDialog(data.id);
+                            }
+                        }
                     });
+                } else if (obj.event === 'viewTask') {
+                    // 直接点击下拉菜单中的查看任务
+                    openTaskDialog(data.id);
                 }
             });
 
@@ -640,6 +694,80 @@
                     shade: 0.3,
                     scrollbar: false,
                     btnAlign: 'c'
+                });
+            }
+
+            // 打开任务查看对话框
+            function openTaskDialog(equipmentId) {
+                // 先销毁可能已存在的表格实例
+                if (typeof taskTableIns !== 'undefined') {
+                    taskTableIns.reload({
+                        elem: '#taskTable',
+                        url: './GetMachineTaskData',
+                        where: { equipmentId: equipmentId },
+                        page: true,
+                        cols: [[
+                            { field: 'ID', title: '任务ID', sort: true },
+                            { field: 'Type', title: '任务类型', templet: function(d) { return convertTaskType(d.Type); } },
+                            { field: 'Status', title: '状态', templet: function(d) { return convertTaskStatus(d.Status); } },
+                            { field: 'MaterialName', title: '物料机种' },
+                            { field: 'GroupName', title: '物料站别' },
+                            { field: 'AgvId', title: 'AGV唯一码' },
+                            { field: 'AgvRequestTime', title: 'AGV请求时间', sort: true },
+                            { field: 'AgvArriveTime', title: 'AGV到达时间', sort: true },
+                            { field: 'MachineReadyTime', title: '设备就绪时间', sort: true },
+                            { field: 'AgvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
+                            { field: 'CompletedTime', title: '任务完成时间', sort: true }
+                        ]],
+                        response: {
+                            statusName: 'code',
+                            statusCode: 0,
+                            msgName: 'msg',
+                            countName: 'count',
+                            dataName: 'data'
+                        }
+                    });
+                } else {
+                    // 创建新的表格实例
+                    taskTableIns = table.render({
+                        elem: '#taskTable',
+                        url: './GetMachineTaskData',
+                        where: { equipmentId: equipmentId },
+                        page: true,
+                        cols: [[
+                            { field: 'ID', title: '任务ID', sort: true },
+                            { field: 'Type', title: '任务类型', templet: function(d) { return convertTaskType(d.Type); } },
+                            { field: 'Status', title: '状态', templet: function(d) { return convertTaskStatus(d.Status); } },
+                            { field: 'MaterialName', title: '物料机种' },
+                            { field: 'GroupName', title: '物料站别' },
+                            { field: 'AgvId', title: 'AGV唯一码' },
+                            { field: 'AgvRequestTime', title: 'AGV请求时间', sort: true },
+                            { field: 'AgvArriveTime', title: 'AGV到达时间', sort: true },
+                            { field: 'MachineReadyTime', title: '设备就绪时间', sort: true },
+                            { field: 'AgvRobotFinishedTime', title: 'AGV手臂完成时间', sort: true },
+                            { field: 'CompletedTime', title: '任务完成时间', sort: true }
+                        ]],
+                        response: {
+                            statusName: 'code',
+                            statusCode: 0,
+                            msgName: 'msg',
+                            countName: 'count',
+                            dataName: 'data'
+                        }
+                    });
+                }
+
+                // 使用layer.open打开隐藏的div
+                taskDialogIndex = layer.open({
+                    type: 1, // 页面层类型
+                    title: '设备任务列表',
+                    content: $('#taskDialog'),
+                    area: ['90%', '90%'],
+                    maxmin: true,
+                    shade: 0.3,
+                    success: function (layero, index) {
+                        // 表格会在打开时自动渲染
+                    }
                 });
             }
 
@@ -701,10 +829,11 @@
                 return false;
             });
 
-            // 页面关闭时清理计时器，防止内存泄漏
+            // 页面关闭时清理计时器和对话框，防止内存泄漏
             window.addEventListener('beforeunload', function () {
                 if (countdownTimer) clearInterval(countdownTimer);
                 if (resizeTimeout) clearTimeout(resizeTimeout);
+                if (taskDialogIndex) layer.close(taskDialogIndex);
             });
 
             // 初始化自动刷新

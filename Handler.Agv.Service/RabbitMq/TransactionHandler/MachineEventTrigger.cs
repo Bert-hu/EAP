@@ -72,6 +72,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         {
                             service.MachineAgvLock(machine.Id);
                             service.UpdateClientInfo(trans.EquipmentID, "最后一盘已下沉,检测AGV模式已开，提前锁定机器");
+                            dbgLog.Info($"{machine.Id} 最后一盘已下沉,锁定成功");
                         }
 
                         break;

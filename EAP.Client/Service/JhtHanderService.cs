@@ -46,7 +46,7 @@ namespace EAP.Client.Service
                 {
                     EquipmentID = configuration.GetSection("Custom")["EquipmentId"],
                     TransactionName = "UpdateMachineIP",
-                    NeedReply = true,
+                    NeedReply = false,
                     ExpireSecond = 5,
                     ReplyChannel = configuration.GetSection("RabbitMQ")["QueueName"],
                     Parameters = new Dictionary<string, object>
