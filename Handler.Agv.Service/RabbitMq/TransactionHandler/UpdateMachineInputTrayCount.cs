@@ -28,8 +28,12 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                     var inputTrayCount = int.Parse(trans.Parameters["InputTrayCount"].ToString());
                     machine.InputTrayNumber = inputTrayCount;
                     machine.InputTrayUpdateTime = DateTime.Now;
+                    if (inputTrayCount > 0)
+                    {
+                        machine.LoaderEmpty = false;
+                    }
                     await sqlSugarClient.Updateable(machine)
-                        .UpdateColumns(it => new { it.InputTrayNumber, it.InputTrayUpdateTime })
+                        .UpdateColumns(it => new { it.InputTrayNumber, it.InputTrayUpdateTime,it.LoaderEmpty })
                         .ExecuteCommandAsync();
                     repTrans.Parameters.Add("Result", true);
                 }

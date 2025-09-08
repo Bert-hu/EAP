@@ -237,8 +237,8 @@ namespace HandlerAgv.Service.Controllers
                         task.Status = AgvTaskStatus.AbnormalEnd;
                         task.AgvRobotFinishedTime = DateTime.Now;
                         sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.AgvRobotFinishedTime }).ExecuteCommand();
-
-                        clientService.MachineAgvUnlock(task.EquipmentId);
+                        //20250908 任务取消，不解锁
+                        //clientService.MachineAgvUnlock(task.EquipmentId);
                         dbgLog.Info($"TaskFeedBack: 设备：{task.EquipmentId}，任务ID：{request.TaskId}，已取消，状态更新为AbnormalEnd。");
                         clientService.UpdateClientInfo(task.EquipmentId, $"{task.Type.ToString()}任务{request.TaskId}已取消");
                     }

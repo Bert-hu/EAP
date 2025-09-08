@@ -64,7 +64,7 @@ namespace HandlerAgv.Service.ScheduledJob
                             if (result)
                             {
                                 EapClientService eapClient = new EapClientService(sqlSugarClient, rabbitMqService);
-                                eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
+                                eapClient.UpdateClientInfo(machine.Id, $"当前盘数 {machine.InputTrayNumber}，状态{machine.ProcessState}，预计可上料时间 {machine.LoadEstimatedTime:yyyy-MM-dd HH:mm:ss}，已自动发送InputOutput任务。");
                             }
                         }
                     }
