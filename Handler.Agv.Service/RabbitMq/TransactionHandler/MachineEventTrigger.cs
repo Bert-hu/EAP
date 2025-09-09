@@ -58,15 +58,15 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
 
                     machine.UpdateTime = eventTime;
 
-                    await sqlSugarClient.Updateable(machine)
+                    sqlSugarClient.Updateable(machine)
                         .UpdateColumns(it => new { it.ProcessState, it.ProcessStateCode, it.RecipeName, it.UpdateTime })
-                        .ExecuteCommandAsync();
+                        .ExecuteCommand();
                 }
                 switch (eventName)
                 {
                     case "LoadLastPanel":
                         machine.LoaderEmpty = true;
-                        await sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommandAsync();
+                        sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommand();
                         EapClientService service = new EapClientService(sqlSugarClient, rabbitMqService);
                         if (machine.IsValiad && machine.AgvEnabled)
                         {
