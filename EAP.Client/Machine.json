@@ -81,7 +81,14 @@
       "705": "OP70 Query QTY",
       "706": "OP70 Count QTY",
       "707": "OP70 Number of input",
-      "708": "OP70 Number of defects"
+      "708": "OP70 Number of defects",
+      "1007": "EQID",
+      "1008": "Line",
+      "1009": "Product",
+      "1010": "WO",
+      "1011": "PartNumber",
+      "1012": "PartName",
+      "1014": "StartFlag"
     },
     "SubEquipment": {
       "1": "EQASM00010",
@@ -98,6 +105,32 @@
       "RUN": "Run",
       "ALARM": "Alarm",
       "INIT": "Idle"
+    },
+
+    "RptDict": {
+      "1": "LotDataChanged",
+      "10": "OP10 ControlStateChanged",
+      "11": "OP10 ProcessStateChanged",
+      "12": "OP10 ProductionCountChanged",
+      "20": "OP20 ControlStateChanged",
+      "21": "OP20 ProcessStateChanged",
+      "22": "OP20 ProductionCountChanged",
+      "30": "OP30 ControlStateChanged",
+      "31": "OP30 ProcessStateChanged",
+      "32": "OP30 ProductionCountChanged",
+      "40": "OP40 ControlStateChanged",
+      "41": "OP40 ProcessStateChanged",
+      "42": "OP40 ProductionCountChanged",
+      "50": "OP50 ControlStateChanged",
+      "51": "OP50 ProcessStateChanged",
+      "52": "OP50 ProductionCountChanged",
+      "60": "OP60 ControlStateChanged",
+      "61": "OP60 ProcessStateChanged",
+      "62": "OP60 ProductionCountChanged",
+      "70": "OP70 ControlStateChanged",
+      "71": "OP70 ProcessStateChanged",
+      "72": "OP70 ProductionCountChanged",
+      "6004": "ShortageAlarming"
     }
   },
   "Others": {

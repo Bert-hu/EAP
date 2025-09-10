@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EAP.Client.NonSecs.PrimaryMessageHandler
@@ -37,6 +38,36 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                 var subEqDict = configuration.GetSection("NonSecs:SubEquipment").Get<Dictionary<string, string>>();
                 // 加载Status映射字典
                 var statusDict = configuration.GetSection("NonSecs:ProcessStateCodes").Get<Dictionary<string, string>>();
+
+                var rptDict = configuration.GetSection("NonSecs:RptDict").Get<Dictionary<string, string>>();
+
+                if (string.IsNullOrEmpty(s6f11.EventID))
+                {
+                    dbgLog.Warn($"[HandlePrimaryMessage] EventID is NULL.");
+                    return;
+                }
+                    
+                // 缺料事件，特殊处理
+                var EventName = rptDict.TryGetValue(s6f11.EventID, out string eventname) ? eventname : "UnknownEvent";
+                dbgLog.Info(EventName);
+                if (EventName.Contains("Shortage"))
+                {
+
+                    string EQID = s6f11.Reports
+                    .Where(kvp => vidDict.TryGetValue(kvp.Key, out string paramName) && paramName == "EQID")
+                    .Select(kvp => kvp.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+                    string svidResult = string.Join(",",
+                         s6f11.Reports
+                              .Where(kvp => !(vidDict.TryGetValue(kvp.Key, out string paramName) && paramName == "EQID")) // 过滤掉EQID
+                              .Select(kvp => $"{(vidDict.TryGetValue(kvp.Key, out string paramName) ? paramName : kvp.Key)}={kvp.Value}")
+                     );
+
+                    UploadParameter(EQID, EventName, s6f11.EventID, svidResult);
+                    return;
+                }
+
                 foreach (var item in s6f11.Reports) // 遍历参数
                 {
                     if (!vidDict.TryGetValue(item.Key, out var name) || string.IsNullOrEmpty(name))
@@ -47,6 +78,7 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                     string reportId = s6f11.EventID;
 
                     // 判断ReportID
+
                     if (reportId.Length == 2)
                     {
                         // 两位数ReportID，取第一位
@@ -88,13 +120,16 @@ namespace EAP.Client.NonSecs.PrimaryMessageHandler
                                 UploadParameter(subEQID, name, vidStr, item.Value);
                             }
                         }
+
                     }
+
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 dbgLog.Error(ex);
             }
-           
+
 
 
         }
