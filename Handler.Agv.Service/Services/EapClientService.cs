@@ -206,5 +206,35 @@ namespace HandlerAgv.Service.Services
             return (lockState, message, processState);
         }
 
+        public bool SendStartCommand(string equipmentId)
+        {
+            try
+            {
+                var trans = new RabbitMqTransaction
+                {
+                    EquipmentID = equipmentId,
+                    TransactionName = "StartCommand",
+                    ExpireSecond = 5
+                };
+                var reply = rabbitMqService.ProduceWaitReply("EAP.SecsClient." + equipmentId, trans);
+                if (reply != null)
+                {
+                    var result = reply.Parameters.ContainsKey("Result") && (bool)reply.Parameters["Result"];
+                    var message = reply.Parameters.ContainsKey("Message") ? reply.Parameters["Message"].ToString() : "";
+                    dbgLog.Info($"SendStartCommand: {equipmentId}, Result: {result}, Message: {message}");
+                    return result;
+                }
+                else
+                {
+                    dbgLog.Warn($"SendStartCommand: {equipmentId} - No reply received or timeout.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                dbgLog.Error(ex.ToString());
+                return false;
+            }
+        }
     }
 }

@@ -229,6 +229,10 @@ namespace HandlerAgv.Service.Controllers
                             {
                                 machine.CurrentTaskId = null;
                                 sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.CurrentTaskId }).ExecuteCommand();
+                                if (task.Type == AgvTaskType.Input || task.Type == AgvTaskType.InputOutput)
+                                {
+                                    clientService.SendStartCommand(task.EquipmentId);
+                                }
                             }
                         }
                         clientService.UpdateClientInfo(task.EquipmentId, $"{task.Type.ToString()}任务{request.TaskId}已完成");
