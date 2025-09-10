@@ -62,7 +62,8 @@ namespace EAP.Client.RabbitMq
                 // Process the received message
                 dbgLog.Info("RabbitMqService Received message: " + message);
 
-                return Task.Run(() => HandleRecivedTrans(message));
+                _ = Task.Run(() => HandleRecivedTrans(message));
+                return Task.CompletedTask;
             };
             Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
             var queue = _configuration.GetSection("RabbitMQ")["QueueName"];
