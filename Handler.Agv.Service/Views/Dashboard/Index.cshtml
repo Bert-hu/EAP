@@ -1075,13 +1075,26 @@
             // 使用API返回的数据填充表格
             inventoryStats.forEach(item => {
                 const row = document.createElement('tr');
+                
+                // 检查条件：开机设备数大于0，并且AGV库存、一期Stocker、二期Stocker数量之和等于0
+                const enableMachineCount = item.enableMachineCount || 0;
+                const agvQuantity = item.agvQuantity || 0;
+                const stocker1Quantity = item.stocker1Quantity || 0;
+                const stocker2Quantity = item.stocker2Quantity || 0;
+                const totalStock = agvQuantity + stocker1Quantity + stocker2Quantity;
+                
+                // 如果满足条件，设置背景为浅红色（带透明度）
+                if (enableMachineCount > 0 && totalStock === 0) {
+                    row.style.backgroundColor = 'rgba(255, 204, 204, 0.3)'; // 浅红色背景，透明度0.3
+                }
+                
                 row.innerHTML = `
                                     <td>${item.materialName || 'N/A'}</td>
                                     <td>${item.groupName || 'N/A'}</td>
-                                    <td>${item.enableMachineCount}</td>
-                                    <td>${item.agvQuantity}</td>
-                                    <td>${item.stocker1Quantity}</td>
-                                    <td>${item.stocker2Quantity}</td>
+                                    <td>${enableMachineCount}</td>
+                                    <td>${agvQuantity}</td>
+                                    <td>${stocker1Quantity}</td>
+                                    <td>${stocker2Quantity}</td>
                                 `;
                 tableBody.appendChild(row);
             });
