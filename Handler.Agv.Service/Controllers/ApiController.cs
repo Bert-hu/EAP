@@ -115,11 +115,11 @@ namespace HandlerAgv.Service.Controllers
                         }
                         else if (task.Status == AgvTaskStatus.AgvArrived)//AGV到达后再次请求
                         {
-                            if (equipment.LoaderEmpty)
+                            if (equipment.LoaderEmpty || task.Type != AgvTaskType.InputOutput)
                             {
                                 if (lockstate)
                                 {
-                                    dbgLog.InfoFormat($"GetEquipmentState: {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
+                                    dbgLog.InfoFormat($"GetEquipmentState:{task.Type.ToString()}任务 {request.TaskId}, 设备{task.EquipmentId}锁定成功，状态更新为MachineReady。");
                                     task.Status = AgvTaskStatus.MachineReady;
                                     task.MachineReadyTime = DateTime.Now;
                                     task.AgvId = request.AgvId;

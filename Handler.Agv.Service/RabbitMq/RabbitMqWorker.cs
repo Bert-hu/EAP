@@ -34,8 +34,8 @@ namespace HandlerAgv.Service.RabbitMq
 
                 // Process the received message
                 rabbitMqLog.Info("RabbitMqService Received message: " + message);
-
-                return Task.Run(() => HandleRecivedTrans(message));
+                _ = Task.Run(() => HandleRecivedTrans(message));
+                return Task.CompletedTask;
             };
             Dictionary<string, object> arguments = new Dictionary<string, object>() { { "x-message-ttl", 300000 } };
 

@@ -44,5 +44,7 @@ namespace HandlerAgv.Service.Models.Database
         public int OutputTrayCT { get; set; } = 120;
         [SugarColumn(IsNullable = true, ColumnDescription = "入料口是否为空")]
         public bool LoaderEmpty { get; set; } = false;
+        [SugarColumn(IsNullable = true, ColumnDescription = "是否单Lot模式")]
+        public bool SingleLotMode { get; set; } = false;
     }
 }

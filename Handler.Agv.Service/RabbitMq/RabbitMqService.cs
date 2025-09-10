@@ -45,8 +45,10 @@ namespace HandlerAgv.Service.RabbitMq
             }
             else //测试环境
             {
-                consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"] + ".Test";
+                consumeQueue = configuration.GetSection("RabbitMQ")["QueueName"];
                 consumeSubQueue = consumeQueue + "." + Guid.NewGuid().ToString("N");
+                connection = factory.CreateConnectionAsync().Result;
+                channel = connection.CreateChannelAsync().Result;
             }
 
    

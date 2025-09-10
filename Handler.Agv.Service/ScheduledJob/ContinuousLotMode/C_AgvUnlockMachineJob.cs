@@ -5,16 +5,16 @@ using HandlerAgv.Service.Services;
 using log4net;
 using Quartz;
 
-namespace HandlerAgv.Service.ScheduledJob
+namespace HandlerAgv.Service.ScheduledJob.ContinuousLotMode
 {
     /// <summary>
     /// 解锁设备任务
     /// 用于AGV Robot任务完成后，或者任务异常结束后，解锁设备。
     /// </summary>
     [DisallowConcurrentExecution]
-    public class AgvUnlockMachineJob : IJob
+    public class C_AgvUnlockMachineJob : IJob
     {
-        private log4net.ILog Log = LogManager.GetLogger("Debug");
+        private ILog Log = LogManager.GetLogger("Debug");
 
         public Task Execute(IJobExecutionContext context)
         {
@@ -51,7 +51,7 @@ namespace HandlerAgv.Service.ScheduledJob
                                     .First();
                                 if (task.Status == AgvTaskStatus.AgvRobotAbnormal || task.Status == AgvTaskStatus.AbnormalEnd)
                                 {
-                                    Log.Info($"AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁，状态更新为AbnormalEnd。");
+                                    Log.Info($"C_AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁，状态更新为AbnormalEnd。");
                                     task.Status = AgvTaskStatus.AbnormalEnd;
                                     task.CompletedTime = DateTime.Now;
                                     sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.CompletedTime }).ExecuteCommand();
@@ -62,7 +62,7 @@ namespace HandlerAgv.Service.ScheduledJob
                                 }
                                 else if (task.Status == AgvTaskStatus.AgvRobotFinished || task.Status == AgvTaskStatus.Completed)
                                 {
-                                    Log.Info($"AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁成功，状态更新为Completed。");
+                                    Log.Info($"C_AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}已解锁成功，状态更新为Completed。");
                                     task.Status = AgvTaskStatus.Completed;
                                     task.CompletedTime = DateTime.Now;
                                     sqlSugarClient.Updateable(task).UpdateColumns(it => new { it.Status, it.CompletedTime }).ExecuteCommand();
@@ -74,13 +74,13 @@ namespace HandlerAgv.Service.ScheduledJob
                             }
                             else
                             {
-                                Log.Info($"AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}未解锁，发送解锁指令。");
+                                Log.Info($"C_AgvUnlockMachineJob: {task.ID}, 设备{task.EquipmentId}未解锁，发送解锁指令。");
                                 clientService.MachineAgvUnlock(task.EquipmentId);
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"AgvUnlockMachineJob: 处理任务 {task.ID} 时发生错误：{e.Message}", e);
+                            Log.Error($"C_AgvUnlockMachineJob: 处理任务 {task.ID} 时发生错误：{e.Message}", e);
                             continue; // 继续处理下一个任务
                         }
                     }

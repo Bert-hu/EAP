@@ -12,12 +12,12 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Text;
 
-namespace HandlerAgv.Service.ScheduledJob
+namespace HandlerAgv.Service.ScheduledJob.SingleLotMode
 {
     [DisallowConcurrentExecution]
-    public class AgvTaskRequestJob : IJob
+    public class S_AgvTaskRequestJob : IJob
     {
-        private static log4net.ILog Log = LogManager.GetLogger("Debug");
+        private static ILog Log = LogManager.GetLogger("Debug");
 
         public Task Execute(IJobExecutionContext context)
         {
@@ -35,7 +35,7 @@ namespace HandlerAgv.Service.ScheduledJob
                 var bufferTime = int.Parse(dbConfiguration.GetConfigurations("BufferTime") ?? "180");
 
                 var enableMachines = sqlSugarClient.Queryable<HandlerEquipmentStatus>()
-                    .Where(x => x.AgvEnabled && x.IsValiad)
+                    .Where(x => x.AgvEnabled && x.IsValiad && x.SingleLotMode)
                     .ToList();
                 MachineEstimatedService machineEstimatedService = new MachineEstimatedService(sqlSugarClient, mapper);
                 var machines = machineEstimatedService.GetEquipmentVmData(enableMachines);
@@ -54,9 +54,9 @@ namespace HandlerAgv.Service.ScheduledJob
                     if (machine.OutputTrayNumber > 0 && !cancelStates.Contains(machine.ProcessState))
                     {
                         //条件1：入料口CT大于BufferTime，入料口盘数为0时，发送InputOutput任务
-                        var isInputTrayFullAndEmpty = (machine.InputTrayCT > bufferTime && machine.InputTrayNumber == 0);
+                        var isInputTrayFullAndEmpty = machine.InputTrayCT > bufferTime && machine.InputTrayNumber == 0;
                         //条件2：入料口CT小于BufferTime，不用判断入料口盘数
-                        var isInputTrayCTLow = (machine.InputTrayCT < bufferTime);
+                        var isInputTrayCTLow = machine.InputTrayCT < bufferTime;
 
                         if (isInputTrayFullAndEmpty || isInputTrayCTLow)
                         {

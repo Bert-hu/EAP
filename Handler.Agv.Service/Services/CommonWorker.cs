@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using HandlerAgv.Service.RabbitMq;
 using HandlerAgv.Service.ScheduledJob;
+using HandlerAgv.Service.ScheduledJob.ContinuousLotMode;
+using HandlerAgv.Service.ScheduledJob.SingleLotMode;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
@@ -42,9 +44,9 @@ namespace HandlerAgv.Service.Services
                 {
 
                     //_ = QuartzUtil.AddJob<AgvCycleTimeUpdateJob>("AgvCycleTimeUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
-                    //_ = QuartzUtil.AddJob<AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
+                    //_ = QuartzUtil.AddJob<C_AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
                     //_ = QuartzUtil.AddJob<AgvLockMachineJob>("AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
-                    //_ = QuartzUtil.AddJob<AgvUnlockMachineJob>("AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
+                    //_ = QuartzUtil.AddJob<C_AgvUnlockMachineJob>("C_AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     //_ = QuartzUtil.AddJob<AgvInventoryUpdateJob>("AgvInventoryUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, TimeSpan.FromSeconds(30), jobDataMap);
                                                            
 
@@ -52,10 +54,9 @@ namespace HandlerAgv.Service.Services
                 else
                 {
                     _ = QuartzUtil.AddJob<AgvCycleTimeUpdateJob>("AgvCycleTimeUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 300000, jobDataMap);
-                    _ = QuartzUtil.AddJob<AgvTaskRequestJob>("AgvTaskGenerateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
-                    //20250905 暂时注释掉，AGV对接请求时会发送锁定请求，此处不再需要定时任务执行锁定操作
-                    //_ = QuartzUtil.AddJob<AgvLockMachineJob>("AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
-                    _ = QuartzUtil.AddJob<AgvUnlockMachineJob>("AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
+                    _ = QuartzUtil.AddJob<C_AgvTaskRequestJob>("C_AgvTaskRequestJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 10000, jobDataMap);
+                    _ = QuartzUtil.AddJob<C_AgvLockMachineJob>("C_AgvLockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 30000, jobDataMap);
+                    _ = QuartzUtil.AddJob<C_AgvUnlockMachineJob>("C_AgvUnlockMachineJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, 5000, jobDataMap);
                     _ = QuartzUtil.AddJob<AgvInventoryUpdateJob>("AgvInventoryUpdateJob", DateTime.Now.AddSeconds(3), DateTimeOffset.MaxValue, TimeSpan.FromSeconds(30), jobDataMap);
                 }
             }

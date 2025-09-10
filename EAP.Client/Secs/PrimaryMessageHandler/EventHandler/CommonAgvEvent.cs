@@ -74,7 +74,7 @@ namespace EAP.Client.Secs.PrimaryMessageHandler.EventHandler
 
                 },
                 };
-                rabbitMq.Produce("HandlerAgv.Service", rabbitTrans);
+                rabbitMq.Produce("HandlerAgv.Service.Test", rabbitTrans);
             }
             catch (Exception ex)
             {
