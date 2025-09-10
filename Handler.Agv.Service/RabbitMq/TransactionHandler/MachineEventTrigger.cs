@@ -68,10 +68,7 @@ namespace HandlerAgv.Service.RabbitMq.TransactionHandler
                         machine.LoaderEmpty = true;
                         sqlSugarClient.Updateable(machine).UpdateColumns(it => new { it.LoaderEmpty }).ExecuteCommand();
                         EapClientService service = new EapClientService(sqlSugarClient, rabbitMqService);
-                        service.MachineAgvLock(machine.Id);
-                        service.UpdateClientInfo(trans.EquipmentID, "最后一盘已下沉,检测AGV模式已开，提前锁定机器");
-                        dbgLog.Info($"{machine.Id} 最后一盘已下沉,锁定成功");
-                        if (machine.IsValiad && machine.AgvEnabled)
+                        if (machine.IsValiad && machine.AgvEnabled && !machine.SingleLotMode)
                         {
                             service.MachineAgvLock(machine.Id);
                             service.UpdateClientInfo(trans.EquipmentID, "最后一盘已下沉,检测AGV模式已开，提前锁定机器");

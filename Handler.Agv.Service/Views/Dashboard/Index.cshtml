@@ -1058,6 +1058,7 @@
             // 从API获取库存数据
             const inventoryStats = await getInventoryData();
             const tableBody = document.getElementById('inventoryTableContent');
+            const tableContainer = tableBody.closest('.inventory-table-container');
             tableBody.innerHTML = '';
 
             // 如果没有数据或数据为空
@@ -1098,6 +1099,58 @@
                                 `;
                 tableBody.appendChild(row);
             });
+
+            // 如果表格容器存在滚动条，则添加自动滚动功能
+            if (tableContainer) {
+                // 清除之前的定时器
+                if (tableContainer.autoScrollTimer) {
+                    clearInterval(tableContainer.autoScrollTimer);
+                }
+
+                // 添加鼠标事件监听器
+                tableContainer.addEventListener('mouseenter', function() {
+                    // 鼠标悬停时暂停滚动
+                    if (this.autoScrollTimer) {
+                        clearInterval(this.autoScrollTimer);
+                        this.autoScrollTimer = null;
+                    }
+                });
+
+                tableContainer.addEventListener('mouseleave', function() {
+                    // 鼠标离开时恢复滚动
+                    startAutoScroll(this);
+                });
+
+                // 启动自动滚动
+                startAutoScroll(tableContainer);
+            }
+        }
+
+        // 启动自动滚动功能
+        function startAutoScroll(container) {
+            // 只有在内容超出容器高度时才启动滚动
+            if (container.scrollHeight > container.clientHeight) {
+                // 清除之前的定时器
+                if (container.autoScrollTimer) {
+                    clearInterval(container.autoScrollTimer);
+                }
+
+                // 设置自动滚动定时器（慢速滚动）
+                container.autoScrollTimer = setInterval(function() {
+                    // 获取当前滚动位置
+                    const currentScrollTop = container.scrollTop;
+                    // 获取最大滚动位置
+                    const maxScrollTop = container.scrollHeight - container.clientHeight;
+
+                    // 如果已经滚动到底部，则回到顶部
+                    if (currentScrollTop >= maxScrollTop - 1) {
+                        container.scrollTop = 0;
+                    } else {
+                        // 否则继续向下滚动（每次滚动1像素）
+                        container.scrollTop = currentScrollTop + 1;
+                    }
+                }, 50); // 滚动速度，数值越大滚动越慢
+            }
         }
 
 
