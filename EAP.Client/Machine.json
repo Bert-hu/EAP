@@ -51,7 +51,14 @@
       "505": "OP50 Query QTY",
       "506": "OP50 Count QTY",
       "507": "OP50 Number of input",
-      "508": "OP50 Number of defects"
+      "508": "OP50 Number of defects",
+      "1007": "EQID",
+      "1008": "Line",
+      "1009": "Product",
+      "1010": "WO",
+      "1011": "PartNumber",
+      "1012": "PartName",
+      "1014": "StartFlag"
     },
     "SubEquipment": {
       "1": "EQPPR00010",
@@ -62,10 +69,32 @@
     },
     "ProcessStateCodes": {
       "IDLE": "Idle",
-      "TEST": "Idle",
+      "PAUSE": "Idle",
+      "PROCESS": "Run",
       "RUN": "Run",
+      "PROCESSACTIVE": "Run",
       "ALARM": "Alarm",
-      "INIT": "Idle"
+      "INIT": "Idle",
+      "DOWN": "Offline"
+    },
+    "RptDict": {
+      "1": "LotDataChanged",
+      "10": "OP10 ControlStateChanged",
+      "11": "OP10 ProcessStateChanged",
+      "12": "OP10 ProductionCountChanged",
+      "20": "OP20 ControlStateChanged",
+      "21": "OP20 ProcessStateChanged",
+      "22": "OP20 ProductionCountChanged",
+      "30": "OP30 ControlStateChanged",
+      "31": "OP30 ProcessStateChanged",
+      "32": "OP30 ProductionCountChanged",
+      "40": "OP40 ControlStateChanged",
+      "41": "OP40 ProcessStateChanged",
+      "42": "OP40 ProductionCountChanged",
+      "50": "OP50 ControlStateChanged",
+      "51": "OP50 ProcessStateChanged",
+      "52": "OP50 ProductionCountChanged",
+      "6004": "ShortageAlarming"
     }
   },
   "Others": {
